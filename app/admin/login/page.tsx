@@ -97,15 +97,6 @@ export default function LoginPage() {
               {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
             </Button>
           </form>
-          <div className="mt-6 p-3 bg-gray-100 rounded-lg">
-            <p className="text-xs text-gray-600 text-center">
-              <strong>Credenciales de prueba:</strong>
-              <br />
-              Usuario: admin
-              <br />
-              Contraseña: admin123
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>
