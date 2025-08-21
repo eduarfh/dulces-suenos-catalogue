@@ -8,6 +8,7 @@ import { Search, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { useProducts } from "@/contexts/products-context"
 import { useState } from "react"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 interface Electrodomestico {
   id: number
@@ -31,20 +32,21 @@ export default function CatalogoPublico() {
   )
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white border-b border-gray-100">
+      <header className="bg-background border-b">
         <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center gap-4 mb-2">
+          <div className="flex items-center justify-between mb-2">
             <Link href="/">
-              <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Volver
               </Button>
             </Link>
+            <ThemeToggle />
           </div>
-          <h1 className="text-2xl font-medium text-gray-900">Electrodomésticos</h1>
-          <p className="text-gray-500 text-sm mt-1">Productos disponibles</p>
+          <h1 className="text-2xl font-medium text-foreground">Electrodomésticos</h1>
+          <p className="text-muted-foreground text-sm mt-1">Productos disponibles</p>
         </div>
       </header>
 

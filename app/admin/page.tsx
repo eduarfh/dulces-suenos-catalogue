@@ -20,6 +20,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Search, Plus, Trash2, Edit, LogOut } from "lucide-react"
 import { useProducts } from "@/contexts/products-context"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function AdminPanel() {
   const { isAuthenticated, logout, loading } = useAuth()
@@ -119,28 +120,27 @@ export default function AdminPanel() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-background border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-2">
-            {/* Botón de volver eliminado */}
-            <div className="flex items-center gap-4">
-              {/* <Link href="/">
-                <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Volver
-                </Button>
-              </Link> */}
+            <div className="flex items-center gap-4">{/* Botón de volver eliminado */}</div>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Cerrar Sesión
+              </Button>
             </div>
-            {/* Logout button */}
-            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-gray-600 hover:text-gray-900">
-              <LogOut className="h-4 w-4 mr-2" />
-              Cerrar Sesión
-            </Button>
           </div>
-          <h1 className="text-2xl font-semibold text-gray-900">Panel de Administración</h1>
-          <p className="text-gray-600 text-sm mt-1">Gestiona tu inventario de electrodomésticos</p>
+          <h1 className="text-2xl font-semibold text-foreground">Panel de Administración</h1>
+          <p className="text-muted-foreground text-sm mt-1">Gestiona tu inventario de electrodomésticos</p>
         </div>
       </header>
 

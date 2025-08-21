@@ -8,6 +8,7 @@ import { Search, Settings } from "lucide-react"
 import Link from "next/link"
 import { useProducts } from "@/contexts/products-context"
 import { useState } from "react"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 interface Electrodomestico {
   id: number
@@ -31,19 +32,22 @@ export default function HomePage() {
   )
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="bg-white border-b border-gray-100">
+    <div className="min-h-screen bg-background">
+      <header className="bg-background border-b">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-medium text-gray-900">Electrodomésticos</h1>
-              <p className="text-gray-500 text-sm mt-1">Productos disponibles</p>
+              <h1 className="text-2xl font-medium text-foreground">Electrodomésticos</h1>
+              <p className="text-muted-foreground text-sm mt-1">Productos disponibles</p>
             </div>
-            <Link href="/admin/login">
-              <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
-                <Settings className="h-4 w-4" />
-              </Button>
-            </Link>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Link href="/admin/login">
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </header>
@@ -84,13 +88,13 @@ export default function HomePage() {
                 </div>
               </div>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium text-gray-900">{electrodomestico.nombre}</CardTitle>
-                <CardDescription className="text-gray-500">
+                <CardTitle className="text-lg font-medium text-foreground">{electrodomestico.nombre}</CardTitle>
+                <CardDescription className="text-muted-foreground">
                   {electrodomestico.marca} • {electrodomestico.categoria}
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
-                <p className="text-xl font-semibold text-gray-900">€{electrodomestico.precio}</p>
+                <p className="text-xl font-semibold text-foreground">€{electrodomestico.precio}</p>
               </CardContent>
             </Card>
           ))}
@@ -98,7 +102,7 @@ export default function HomePage() {
 
         {electrodomesticosFiltrados.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-gray-500">No se encontraron productos.</p>
+            <p className="text-muted-foreground">No se encontraron productos.</p>
           </div>
         )}
       </div>

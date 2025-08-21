@@ -4,6 +4,7 @@ import { Space_Grotesk, DM_Sans } from "next/font/google"
 import "./globals.css"
 import { AuthProvider } from "@/contexts/auth-context"
 import { ProductsProvider } from "@/contexts/products-context"
+import { ThemeProvider } from "@/components/theme-provider"
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -31,9 +32,11 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${spaceGrotesk.variable} ${dmSans.variable} antialiased`}>
       <body className="font-mono">
-        <AuthProvider>
-          <ProductsProvider>{children}</ProductsProvider>
-        </AuthProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <AuthProvider>
+            <ProductsProvider>{children}</ProductsProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
