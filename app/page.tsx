@@ -67,7 +67,7 @@ export default function HomePage() {
               <h1 className="text-2xl font-medium text-gray-900">Electrodomésticos</h1>
               <p className="text-gray-500 text-sm mt-1">Productos disponibles</p>
             </div>
-            <Link href="/admin">
+            <Link href="/admin/login">
               <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
                 <Settings className="h-4 w-4" />
               </Button>

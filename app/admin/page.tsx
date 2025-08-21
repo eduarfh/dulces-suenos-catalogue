@@ -1,5 +1,8 @@
 "use client"
 
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/auth-context"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -15,7 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { Search, Plus, Trash2, Edit, ArrowLeft } from "lucide-react"
+import { Search, Plus, Trash2, Edit, ArrowLeft, LogOut } from "lucide-react"
 import Link from "next/link"
 
 interface Electrodomestico {
@@ -29,6 +32,9 @@ interface Electrodomestico {
 }
 
 export default function AdminPanel() {
+  const { isAuthenticated, logout, loading } = useAuth()
+  const router = useRouter()
+
   const [electrodomesticos, setElectrodomesticos] = useState<Electrodomestico[]>([
     {
       id: 1,
@@ -70,6 +76,12 @@ export default function AdminPanel() {
   })
   const [editandoId, setEditandoId] = useState<number | null>(null)
   const [dialogAbierto, setDialogAbierto] = useState(false)
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      router.push("/admin/login")
+    }
+  }, [isAuthenticated, loading, router])
 
   const electrodomesticosFiltrados = electrodomesticos.filter(
     (electrodomestico) =>
@@ -117,18 +129,42 @@ export default function AdminPanel() {
     setElectrodomesticos(electrodomesticos.map((e) => (e.id === id ? { ...e, disponible: !e.disponible } : e)))
   }
 
+  const handleLogout = () => {
+    logout()
+    router.push("/")
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-gray-600">Verificando autenticación...</p>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return null
+  }
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4 mb-2">
-            <Link href="/">
-              <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Volver
-              </Button>
-            </Link>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-4">
+              <Link href="/">
+                <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Volver
+                </Button>
+              </Link>
+            </div>
+            {/* Logout button */}
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-gray-600 hover:text-gray-900">
+              <LogOut className="h-4 w-4 mr-2" />
+              Cerrar Sesión
+            </Button>
           </div>
           <h1 className="text-2xl font-semibold text-gray-900">Panel de Administración</h1>
           <p className="text-gray-600 text-sm mt-1">Gestiona tu inventario de electrodomésticos</p>
