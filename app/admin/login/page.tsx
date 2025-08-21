@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Lock } from "lucide-react"
+import { Lock, ArrowLeft } from "lucide-react"
 
 export default function LoginPage() {
   const [username, setUsername] = useState("")
@@ -37,7 +37,17 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 relative">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => router.push("/catalogo")}
+        className="absolute top-4 left-4 text-gray-600 hover:text-gray-900"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Volver al Catálogo
+      </Button>
+
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
