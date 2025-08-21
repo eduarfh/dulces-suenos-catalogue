@@ -18,8 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { Search, Plus, Trash2, Edit, ArrowLeft, LogOut } from "lucide-react"
-import Link from "next/link"
+import { Search, Plus, Trash2, Edit, LogOut } from "lucide-react"
 
 interface Electrodomestico {
   id: number
@@ -131,7 +130,7 @@ export default function AdminPanel() {
 
   const handleLogout = () => {
     logout()
-    router.push("/")
+    router.push("/catalogo") // Redirigir directamente al catálogo en lugar de la página principal
   }
 
   if (loading) {
@@ -152,13 +151,14 @@ export default function AdminPanel() {
       <header className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-2">
+            {/* Botón de volver eliminado */}
             <div className="flex items-center gap-4">
-              <Link href="/">
+              {/* <Link href="/">
                 <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Volver
                 </Button>
-              </Link>
+              </Link> */}
             </div>
             {/* Logout button */}
             <Button variant="ghost" size="sm" onClick={handleLogout} className="text-gray-600 hover:text-gray-900">
