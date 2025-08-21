@@ -18,52 +18,52 @@ import { Badge } from "@/components/ui/badge"
 import { Search, Plus, Trash2, Edit, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
-interface Lavadora {
+interface Electrodomestico {
   id: number
   nombre: string
   marca: string
-  capacidad: string
+  categoria: string
   precio: number
   imagen: string
   disponible: boolean
 }
 
 export default function AdminPanel() {
-  const [lavadoras, setLavadoras] = useState<Lavadora[]>([
+  const [electrodomesticos, setElectrodomesticos] = useState<Electrodomestico[]>([
     {
       id: 1,
       nombre: "EcoWash Pro 8kg",
       marca: "Samsung",
-      capacidad: "8 kg",
+      categoria: "Lavadora",
       precio: 599,
       imagen: "/placeholder-4g5p3.png",
       disponible: true,
     },
     {
       id: 2,
-      nombre: "TurboClean Max",
+      nombre: "CoolFresh 300L",
       marca: "LG",
-      capacidad: "10 kg",
-      precio: 749,
-      imagen: "/silver-front-load-washer.png",
+      categoria: "Refrigerador",
+      precio: 899,
+      imagen: "/modern-refrigerator.png",
       disponible: true,
     },
     {
       id: 3,
-      nombre: "QuickWash 6kg",
+      nombre: "QuickHeat 25L",
       marca: "Whirlpool",
-      capacidad: "6 kg",
-      precio: 449,
-      imagen: "/compact-white-washing-machine.png",
+      categoria: "Microondas",
+      precio: 149,
+      imagen: "/placeholder-prs7q.png",
       disponible: false,
     },
   ])
 
   const [busqueda, setBusqueda] = useState("")
-  const [nuevaLavadora, setNuevaLavadora] = useState({
+  const [nuevoElectrodomestico, setNuevoElectrodomestico] = useState({
     nombre: "",
     marca: "",
-    capacidad: "",
+    categoria: "",
     precio: 0,
     imagen: "",
     disponible: true,
@@ -71,77 +71,80 @@ export default function AdminPanel() {
   const [editandoId, setEditandoId] = useState<number | null>(null)
   const [dialogAbierto, setDialogAbierto] = useState(false)
 
-  const lavadorasFiltradas = lavadoras.filter(
-    (lavadora) =>
-      lavadora.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-      lavadora.marca.toLowerCase().includes(busqueda.toLowerCase()),
+  const electrodomesticosFiltrados = electrodomesticos.filter(
+    (electrodomestico) =>
+      electrodomestico.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+      electrodomestico.marca.toLowerCase().includes(busqueda.toLowerCase()) ||
+      electrodomestico.categoria.toLowerCase().includes(busqueda.toLowerCase()),
   )
 
-  const agregarLavadora = () => {
-    const id = Math.max(...lavadoras.map((l) => l.id), 0) + 1
-    setLavadoras([...lavadoras, { ...nuevaLavadora, id }])
-    setNuevaLavadora({ nombre: "", marca: "", capacidad: "", precio: 0, imagen: "", disponible: true })
+  const agregarElectrodomestico = () => {
+    const id = Math.max(...electrodomesticos.map((e) => e.id), 0) + 1
+    setElectrodomesticos([...electrodomesticos, { ...nuevoElectrodomestico, id }])
+    setNuevoElectrodomestico({ nombre: "", marca: "", categoria: "", precio: 0, imagen: "", disponible: true })
     setDialogAbierto(false)
   }
 
-  const editarLavadora = () => {
+  const editarElectrodomestico = () => {
     if (editandoId) {
-      setLavadoras(lavadoras.map((l) => (l.id === editandoId ? { ...nuevaLavadora, id: editandoId } : l)))
+      setElectrodomesticos(
+        electrodomesticos.map((e) => (e.id === editandoId ? { ...nuevoElectrodomestico, id: editandoId } : e)),
+      )
       setEditandoId(null)
-      setNuevaLavadora({ nombre: "", marca: "", capacidad: "", precio: 0, imagen: "", disponible: true })
+      setNuevoElectrodomestico({ nombre: "", marca: "", categoria: "", precio: 0, imagen: "", disponible: true })
       setDialogAbierto(false)
     }
   }
 
-  const eliminarLavadora = (id: number) => {
-    setLavadoras(lavadoras.filter((l) => l.id !== id))
+  const eliminarElectrodomestico = (id: number) => {
+    setElectrodomesticos(electrodomesticos.filter((e) => e.id !== id))
   }
 
-  const iniciarEdicion = (lavadora: Lavadora) => {
-    setNuevaLavadora({
-      nombre: lavadora.nombre,
-      marca: lavadora.marca,
-      capacidad: lavadora.capacidad,
-      precio: lavadora.precio,
-      imagen: lavadora.imagen,
-      disponible: lavadora.disponible,
+  const iniciarEdicion = (electrodomestico: Electrodomestico) => {
+    setNuevoElectrodomestico({
+      nombre: electrodomestico.nombre,
+      marca: electrodomestico.marca,
+      categoria: electrodomestico.categoria,
+      precio: electrodomestico.precio,
+      imagen: electrodomestico.imagen,
+      disponible: electrodomestico.disponible,
     })
-    setEditandoId(lavadora.id)
+    setEditandoId(electrodomestico.id)
     setDialogAbierto(true)
   }
 
   const toggleDisponibilidad = (id: number) => {
-    setLavadoras(lavadoras.map((l) => (l.id === id ? { ...l, disponible: !l.disponible } : l)))
+    setElectrodomesticos(electrodomesticos.map((e) => (e.id === id ? { ...e, disponible: !e.disponible } : e)))
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-card border-b border-border">
-        <div className="container mx-auto px-4 py-6">
+      <header className="bg-white border-b border-gray-200">
+        <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4 mb-2">
             <Link href="/">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Volver
               </Button>
             </Link>
           </div>
-          <h1 className="text-3xl font-bold text-foreground font-sans">Panel de Administración</h1>
-          <p className="text-muted-foreground mt-2">Gestiona tu inventario de lavadoras</p>
+          <h1 className="text-2xl font-semibold text-gray-900">Panel de Administración</h1>
+          <p className="text-gray-600 text-sm mt-1">Gestiona tu inventario de electrodomésticos</p>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6">
         {/* Barra de búsqueda y botón agregar */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
-              placeholder="Buscar por nombre o marca..."
+              placeholder="Buscar por nombre, marca o categoría..."
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
-              className="pl-10"
+              className="pl-10 border-gray-200 focus:border-gray-400"
             />
           </div>
 
@@ -150,121 +153,168 @@ export default function AdminPanel() {
               <Button
                 onClick={() => {
                   setEditandoId(null)
-                  setNuevaLavadora({ nombre: "", marca: "", capacidad: "", precio: 0, imagen: "", disponible: true })
+                  setNuevoElectrodomestico({
+                    nombre: "",
+                    marca: "",
+                    categoria: "",
+                    precio: 0,
+                    imagen: "",
+                    disponible: true,
+                  })
                 }}
-                className="font-sans"
+                className="bg-gray-900 hover:bg-gray-800 text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Agregar Lavadora
+                Agregar Producto
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle className="font-sans">
-                  {editandoId ? "Editar Lavadora" : "Agregar Nueva Lavadora"}
-                </DialogTitle>
-                <DialogDescription>
+                <DialogTitle>{editandoId ? "Editar Producto" : "Agregar Nuevo Producto"}</DialogTitle>
+                <DialogDescription className="text-gray-600">
                   {editandoId
-                    ? "Modifica los datos de la lavadora."
-                    : "Completa los datos para agregar una nueva lavadora al catálogo."}
+                    ? "Modifica los datos del electrodoméstico."
+                    : "Completa los datos para agregar un nuevo producto al catálogo."}
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="nombre">Nombre</Label>
+                  <Label htmlFor="nombre" className="text-gray-700">
+                    Nombre
+                  </Label>
                   <Input
                     id="nombre"
-                    value={nuevaLavadora.nombre}
-                    onChange={(e) => setNuevaLavadora({ ...nuevaLavadora, nombre: e.target.value })}
+                    value={nuevoElectrodomestico.nombre}
+                    onChange={(e) => setNuevoElectrodomestico({ ...nuevoElectrodomestico, nombre: e.target.value })}
                     placeholder="Ej: EcoWash Pro 8kg"
+                    className="border-gray-200"
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="marca">Marca</Label>
+                  <Label htmlFor="marca" className="text-gray-700">
+                    Marca
+                  </Label>
                   <Input
                     id="marca"
-                    value={nuevaLavadora.marca}
-                    onChange={(e) => setNuevaLavadora({ ...nuevaLavadora, marca: e.target.value })}
+                    value={nuevoElectrodomestico.marca}
+                    onChange={(e) => setNuevoElectrodomestico({ ...nuevoElectrodomestico, marca: e.target.value })}
                     placeholder="Ej: Samsung"
+                    className="border-gray-200"
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="capacidad">Capacidad</Label>
+                  <Label htmlFor="categoria" className="text-gray-700">
+                    Categoría
+                  </Label>
                   <Input
-                    id="capacidad"
-                    value={nuevaLavadora.capacidad}
-                    onChange={(e) => setNuevaLavadora({ ...nuevaLavadora, capacidad: e.target.value })}
-                    placeholder="Ej: 8 kg"
+                    id="categoria"
+                    value={nuevoElectrodomestico.categoria}
+                    onChange={(e) => setNuevoElectrodomestico({ ...nuevoElectrodomestico, categoria: e.target.value })}
+                    placeholder="Ej: Lavadora, Refrigerador, Microondas"
+                    className="border-gray-200"
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="precio">Precio (€)</Label>
+                  <Label htmlFor="precio" className="text-gray-700">
+                    Precio (€)
+                  </Label>
                   <Input
                     id="precio"
                     type="number"
-                    value={nuevaLavadora.precio}
-                    onChange={(e) => setNuevaLavadora({ ...nuevaLavadora, precio: Number(e.target.value) })}
+                    value={nuevoElectrodomestico.precio}
+                    onChange={(e) =>
+                      setNuevoElectrodomestico({ ...nuevoElectrodomestico, precio: Number(e.target.value) })
+                    }
                     placeholder="599"
+                    className="border-gray-200"
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="imagen">URL de Imagen (opcional)</Label>
+                  <Label htmlFor="imagen" className="text-gray-700">
+                    URL de Imagen (opcional)
+                  </Label>
                   <Input
                     id="imagen"
-                    value={nuevaLavadora.imagen}
-                    onChange={(e) => setNuevaLavadora({ ...nuevaLavadora, imagen: e.target.value })}
+                    value={nuevoElectrodomestico.imagen}
+                    onChange={(e) => setNuevoElectrodomestico({ ...nuevoElectrodomestico, imagen: e.target.value })}
                     placeholder="https://ejemplo.com/imagen.jpg"
+                    className="border-gray-200"
                   />
                 </div>
               </div>
               <DialogFooter>
-                <Button onClick={editandoId ? editarLavadora : agregarLavadora} className="font-sans">
-                  {editandoId ? "Guardar Cambios" : "Agregar Lavadora"}
+                <Button
+                  onClick={editandoId ? editarElectrodomestico : agregarElectrodomestico}
+                  className="bg-gray-900 hover:bg-gray-800 text-white"
+                >
+                  {editandoId ? "Guardar Cambios" : "Agregar Producto"}
                 </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
 
-        {/* Grid de lavadoras */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {lavadorasFiltradas.map((lavadora) => (
-            <Card key={lavadora.id} className="overflow-hidden">
+        {/* Grid de electrodomésticos */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {electrodomesticosFiltrados.map((electrodomestico) => (
+            <Card
+              key={electrodomestico.id}
+              className="overflow-hidden border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+            >
               <div className="aspect-video relative">
                 <img
-                  src={lavadora.imagen || "/placeholder.svg?height=200&width=300&query=washing machine"}
-                  alt={lavadora.nombre}
+                  src={electrodomestico.imagen || "/placeholder.svg?height=200&width=300&query=appliance"}
+                  alt={electrodomestico.nombre}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute top-2 right-2">
-                  <Badge variant={lavadora.disponible ? "default" : "secondary"}>
-                    {lavadora.disponible ? "Disponible" : "Agotado"}
+                  <Badge
+                    variant={electrodomestico.disponible ? "default" : "secondary"}
+                    className={
+                      electrodomestico.disponible ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600"
+                    }
+                  >
+                    {electrodomestico.disponible ? "Disponible" : "Agotado"}
                   </Badge>
                 </div>
               </div>
-              <CardHeader>
-                <CardTitle className="font-sans">{lavadora.nombre}</CardTitle>
-                <CardDescription>
-                  {lavadora.marca} • {lavadora.capacidad}
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg text-gray-900">{electrodomestico.nombre}</CardTitle>
+                <CardDescription className="text-gray-600">
+                  {electrodomestico.marca} • {electrodomestico.categoria}
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold text-primary font-sans">€{lavadora.precio}</p>
+              <CardContent className="pb-2">
+                <p className="text-xl font-semibold text-gray-900">€{electrodomestico.precio}</p>
               </CardContent>
-              <CardFooter className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => iniciarEdicion(lavadora)} className="flex-1">
+              <CardFooter className="flex gap-2 pt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => iniciarEdicion(electrodomestico)}
+                  className="flex-1 border-gray-200 text-gray-700 hover:bg-gray-50"
+                >
                   <Edit className="h-4 w-4 mr-1" />
                   Editar
                 </Button>
                 <Button
-                  variant={lavadora.disponible ? "secondary" : "default"}
+                  variant={electrodomestico.disponible ? "secondary" : "default"}
                   size="sm"
-                  onClick={() => toggleDisponibilidad(lavadora.id)}
-                  className="flex-1"
+                  onClick={() => toggleDisponibilidad(electrodomestico.id)}
+                  className={`flex-1 ${
+                    electrodomestico.disponible
+                      ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      : "bg-green-100 text-green-800 hover:bg-green-200"
+                  }`}
                 >
-                  {lavadora.disponible ? "Marcar Agotado" : "Marcar Disponible"}
+                  {electrodomestico.disponible ? "Marcar Agotado" : "Marcar Disponible"}
                 </Button>
-                <Button variant="destructive" size="sm" onClick={() => eliminarLavadora(lavadora.id)}>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => eliminarElectrodomestico(electrodomestico.id)}
+                  className="bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
+                >
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </CardFooter>
@@ -272,9 +322,9 @@ export default function AdminPanel() {
           ))}
         </div>
 
-        {lavadorasFiltradas.length === 0 && (
+        {electrodomesticosFiltrados.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-muted-foreground text-lg">No se encontraron lavadoras que coincidan con tu búsqueda.</p>
+            <p className="text-gray-500">No se encontraron productos que coincidan con tu búsqueda.</p>
           </div>
         )}
       </div>
