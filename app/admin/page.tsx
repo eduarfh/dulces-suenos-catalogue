@@ -40,6 +40,9 @@ export default function AdminPanel() {
     marca: "",
     categoria: "lavadora" as "lavadora" | "refrigerador" | "microondas",
     precio: 0,
+    precioMinorista: 0,
+    precioMayorista: 0,
+    cantidadMinimaMayorista: 1,
     imagen: "",
     disponible: true,
   })
@@ -61,7 +64,17 @@ export default function AdminPanel() {
 
   const handleAgregarElectrodomestico = () => {
     agregarElectrodomestico(nuevoElectrodomestico)
-    setNuevoElectrodomestico({ nombre: "", marca: "", categoria: "lavadora", precio: 0, imagen: "", disponible: true })
+    setNuevoElectrodomestico({
+      nombre: "",
+      marca: "",
+      categoria: "lavadora",
+      precio: 0,
+      precioMinorista: 0,
+      precioMayorista: 0,
+      cantidadMinimaMayorista: 1,
+      imagen: "",
+      disponible: true,
+    })
     setDialogAbierto(false)
   }
 
@@ -74,6 +87,9 @@ export default function AdminPanel() {
         marca: "",
         categoria: "lavadora",
         precio: 0,
+        precioMinorista: 0,
+        precioMayorista: 0,
+        cantidadMinimaMayorista: 1,
         imagen: "",
         disponible: true,
       })
@@ -91,6 +107,9 @@ export default function AdminPanel() {
       marca: electrodomestico.marca,
       categoria: electrodomestico.categoria,
       precio: electrodomestico.precio,
+      precioMinorista: electrodomestico.precioMinorista || electrodomestico.precio,
+      precioMayorista: electrodomestico.precioMayorista || electrodomestico.precio,
+      cantidadMinimaMayorista: electrodomestico.cantidadMinimaMayorista || 1,
       imagen: electrodomestico.imagen,
       disponible: electrodomestico.disponible,
     })
@@ -167,6 +186,9 @@ export default function AdminPanel() {
                     marca: "",
                     categoria: "lavadora",
                     precio: 0,
+                    precioMinorista: 0,
+                    precioMayorista: 0,
+                    cantidadMinimaMayorista: 1,
                     imagen: "",
                     disponible: true,
                   })
@@ -224,17 +246,50 @@ export default function AdminPanel() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="precio" className="text-gray-700">
-                    Precio (€)
+                  <Label htmlFor="precioMinorista" className="text-gray-700">
+                    Precio Minorista ($)
                   </Label>
                   <Input
-                    id="precio"
+                    id="precioMinorista"
                     type="number"
-                    value={nuevoElectrodomestico.precio}
+                    value={nuevoElectrodomestico.precioMinorista}
                     onChange={(e) =>
-                      setNuevoElectrodomestico({ ...nuevoElectrodomestico, precio: Number(e.target.value) })
+                      setNuevoElectrodomestico({ ...nuevoElectrodomestico, precioMinorista: Number(e.target.value) })
                     }
                     placeholder="599"
+                    className="border-gray-200"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="precioMayorista" className="text-gray-700">
+                    Precio Mayorista ($)
+                  </Label>
+                  <Input
+                    id="precioMayorista"
+                    type="number"
+                    value={nuevoElectrodomestico.precioMayorista}
+                    onChange={(e) =>
+                      setNuevoElectrodomestico({ ...nuevoElectrodomestico, precioMayorista: Number(e.target.value) })
+                    }
+                    placeholder="499"
+                    className="border-gray-200"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="cantidadMinimaMayorista" className="text-gray-700">
+                    Cantidad Mínima Mayorista
+                  </Label>
+                  <Input
+                    id="cantidadMinimaMayorista"
+                    type="number"
+                    value={nuevoElectrodomestico.cantidadMinimaMayorista}
+                    onChange={(e) =>
+                      setNuevoElectrodomestico({
+                        ...nuevoElectrodomestico,
+                        cantidadMinimaMayorista: Number(e.target.value),
+                      })
+                    }
+                    placeholder="5"
                     className="border-gray-200"
                   />
                 </div>
@@ -294,7 +349,17 @@ export default function AdminPanel() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="pb-2">
-                <p className="text-xl font-semibold text-gray-900">€{electrodomestico.precio}</p>
+                <div className="space-y-1">
+                  <p className="text-xl font-semibold text-gray-900">
+                    ${electrodomestico.precioMinorista || electrodomestico.precio}
+                  </p>
+                  <p className="text-lg font-medium text-green-600">
+                    ${electrodomestico.precioMayorista || electrodomestico.precio}
+                    <span className="text-sm text-gray-500 ml-1">
+                      (min. {electrodomestico.cantidadMinimaMayorista || 1})
+                    </span>
+                  </p>
+                </div>
               </CardContent>
               <CardFooter className="flex gap-2 pt-2">
                 <Button

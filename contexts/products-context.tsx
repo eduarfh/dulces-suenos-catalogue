@@ -6,7 +6,10 @@ export interface Electrodomestico {
   id: number
   nombre: string
   marca: string
-  precio: number
+  precio: number // Mantenemos para compatibilidad
+  precioMinorista: number
+  precioMayorista: number
+  cantidadMinimaMayorista: number
   imagen: string
   categoria: "lavadora" | "refrigerador" | "microondas"
   disponible: boolean
@@ -21,6 +24,7 @@ interface ProductsContextType {
   editarElectrodomestico: (id: number, producto: Partial<Electrodomestico>) => void
   eliminarElectrodomestico: (id: number) => void
   toggleDisponibilidad: (id: number) => void
+  isLoading: boolean
 }
 
 const ProductsContext = createContext<ProductsContextType | undefined>(undefined)
@@ -30,7 +34,10 @@ const productosIniciales: Electrodomestico[] = [
     id: 1,
     nombre: "EcoWash Pro",
     marca: "Samsung",
-    precio: 899,
+    precio: 899, // Mantenemos para compatibilidad
+    precioMinorista: 899,
+    precioMayorista: 750,
+    cantidadMinimaMayorista: 5,
     imagen: "/placeholder-b1p3f.png",
     categoria: "lavadora",
     disponible: true,
@@ -42,6 +49,9 @@ const productosIniciales: Electrodomestico[] = [
     nombre: "AquaClean Max",
     marca: "LG",
     precio: 1299,
+    precioMinorista: 1299,
+    precioMayorista: 1100,
+    cantidadMinimaMayorista: 3,
     imagen: "/placeholder-9mb9b.png",
     categoria: "lavadora",
     disponible: true,
@@ -53,6 +63,9 @@ const productosIniciales: Electrodomestico[] = [
     nombre: "PowerWash Elite",
     marca: "Whirlpool",
     precio: 749,
+    precioMinorista: 749,
+    precioMayorista: 650,
+    cantidadMinimaMayorista: 6,
     imagen: "/white-whirlpool-washing-machine.png",
     categoria: "lavadora",
     disponible: false,
@@ -64,6 +77,9 @@ const productosIniciales: Electrodomestico[] = [
     nombre: "CoolMax Pro",
     marca: "Samsung",
     precio: 1599,
+    precioMinorista: 1599,
+    precioMayorista: 1350,
+    cantidadMinimaMayorista: 2,
     imagen: "/stainless-steel-samsung-refrigerator.png",
     categoria: "refrigerador",
     disponible: true,
@@ -75,6 +91,9 @@ const productosIniciales: Electrodomestico[] = [
     nombre: "FreshKeep Ultra",
     marca: "LG",
     precio: 1899,
+    precioMinorista: 1899,
+    precioMayorista: 1600,
+    cantidadMinimaMayorista: 2,
     imagen: "/black-lg-refrigerator-icemaker.png",
     categoria: "refrigerador",
     disponible: true,
@@ -86,6 +105,9 @@ const productosIniciales: Electrodomestico[] = [
     nombre: "QuickHeat Pro",
     marca: "Panasonic",
     precio: 299,
+    precioMinorista: 299,
+    precioMayorista: 250,
+    cantidadMinimaMayorista: 10,
     imagen: "/stainless-steel-panasonic-microwave.png",
     categoria: "microondas",
     disponible: true,
@@ -96,20 +118,55 @@ const productosIniciales: Electrodomestico[] = [
 
 export function ProductsProvider({ children }: { children: ReactNode }) {
   const [electrodomesticos, setElectrodomesticosState] = useState<Electrodomestico[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const productosGuardados = localStorage.getItem("electrodomesticos")
-    if (productosGuardados) {
-      setElectrodomesticosState(JSON.parse(productosGuardados))
-    } else {
-      setElectrodomesticosState(productosIniciales)
-      localStorage.setItem("electrodomesticos", JSON.stringify(productosIniciales))
+    const cargarProductos = async () => {
+      try {
+        const response = await fetch("/api/products")
+        const data = await response.json()
+
+        if (data.products) {
+          setElectrodomesticosState(data.products)
+        } else {
+          setElectrodomesticosState(productosIniciales)
+          await guardarProductos(productosIniciales)
+        }
+      } catch (error) {
+        console.error("Error cargando productos:", error)
+        const productosGuardados = localStorage.getItem("electrodomesticos")
+        if (productosGuardados) {
+          setElectrodomesticosState(JSON.parse(productosGuardados))
+        } else {
+          setElectrodomesticosState(productosIniciales)
+        }
+      } finally {
+        setIsLoading(false)
+      }
     }
+
+    cargarProductos()
   }, [])
+
+  const guardarProductos = async (productos: Electrodomestico[]) => {
+    try {
+      await fetch("/api/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ products: productos }),
+      })
+      localStorage.setItem("electrodomesticos", JSON.stringify(productos))
+    } catch (error) {
+      console.error("Error guardando productos:", error)
+      localStorage.setItem("electrodomesticos", JSON.stringify(productos))
+    }
+  }
 
   const setElectrodomesticos = (productos: Electrodomestico[]) => {
     setElectrodomesticosState(productos)
-    localStorage.setItem("electrodomesticos", JSON.stringify(productos))
+    guardarProductos(productos)
   }
 
   const agregarElectrodomestico = (producto: Omit<Electrodomestico, "id">) => {
@@ -134,6 +191,24 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
     setElectrodomesticos(nuevosProductos)
   }
 
+  if (isLoading) {
+    return (
+      <ProductsContext.Provider
+        value={{
+          electrodomesticos: [],
+          setElectrodomesticos: () => {},
+          agregarElectrodomestico: () => {},
+          editarElectrodomestico: () => {},
+          eliminarElectrodomestico: () => {},
+          toggleDisponibilidad: () => {},
+          isLoading: true,
+        }}
+      >
+        {children}
+      </ProductsContext.Provider>
+    )
+  }
+
   return (
     <ProductsContext.Provider
       value={{
@@ -143,6 +218,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
         editarElectrodomestico,
         eliminarElectrodomestico,
         toggleDisponibilidad,
+        isLoading: false,
       }}
     >
       {children}

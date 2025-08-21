@@ -16,6 +16,9 @@ interface Electrodomestico {
   marca: string
   categoria: string
   precio: number
+  precioMinorista: number
+  precioMayorista: number
+  cantidadMinimaMayorista: number
   imagen: string
   disponible: boolean
 }
@@ -86,13 +89,23 @@ export default function CatalogoPublico() {
                 </div>
               </div>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium text-gray-900">{electrodomestico.nombre}</CardTitle>
-                <CardDescription className="text-gray-500">
+                <CardTitle className="text-lg font-medium text-foreground">{electrodomestico.nombre}</CardTitle>
+                <CardDescription className="text-muted-foreground">
                   {electrodomestico.marca} • {electrodomestico.categoria}
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
-                <p className="text-xl font-semibold text-gray-900">€{electrodomestico.precio}</p>
+                <div className="space-y-1">
+                  <p className="text-xl font-semibold text-foreground">
+                    ${electrodomestico.precioMinorista || electrodomestico.precio}
+                  </p>
+                  <p className="text-lg font-medium text-green-600">
+                    ${electrodomestico.precioMayorista || electrodomestico.precio}
+                    <span className="text-sm text-muted-foreground ml-1">
+                      (min. {electrodomestico.cantidadMinimaMayorista || 1} unidades)
+                    </span>
+                  </p>
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -100,7 +113,7 @@ export default function CatalogoPublico() {
 
         {electrodomesticosFiltrados.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-gray-500">No se encontraron productos.</p>
+            <p className="text-muted-foreground">No se encontraron productos.</p>
           </div>
         )}
       </div>

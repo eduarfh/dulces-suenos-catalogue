@@ -16,6 +16,9 @@ interface Electrodomestico {
   marca: string
   categoria: string
   precio: number
+  precioMinorista: number
+  precioMayorista: number
+  cantidadMinimaMayorista: number
   imagen: string
   disponible: boolean
 }
@@ -94,7 +97,17 @@ export default function HomePage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
-                <p className="text-xl font-semibold text-foreground">€{electrodomestico.precio}</p>
+                <div className="space-y-1">
+                  <p className="text-xl font-semibold text-foreground">
+                    ${electrodomestico.precioMinorista || electrodomestico.precio}
+                  </p>
+                  <p className="text-lg font-medium text-green-600">
+                    ${electrodomestico.precioMayorista || electrodomestico.precio}
+                    <span className="text-sm text-muted-foreground ml-1">
+                      (min. {electrodomestico.cantidadMinimaMayorista || 1} unidades)
+                    </span>
+                  </p>
+                </div>
               </CardContent>
             </Card>
           ))}
