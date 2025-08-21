@@ -204,7 +204,7 @@ export default function AdminPanel() {
                 Agregar Producto
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[425px] max-h-[80vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>{editandoId ? "Editar Producto" : "Agregar Nuevo Producto"}</DialogTitle>
                 <DialogDescription className="text-gray-600">
@@ -213,7 +213,7 @@ export default function AdminPanel() {
                     : "Completa los datos para agregar un nuevo producto al catálogo."}
                 </DialogDescription>
               </DialogHeader>
-              <div className="grid gap-4 py-4">
+              <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto">
                 <div className="grid gap-2">
                   <Label htmlFor="nombre" className="text-gray-700">
                     Nombre
