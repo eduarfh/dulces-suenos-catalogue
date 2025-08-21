@@ -41,7 +41,7 @@ export default function LoginPage() {
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => router.push("/catalogo")}
+        onClick={() => router.push("/")}
         className="absolute top-4 left-4 text-gray-600 hover:text-gray-900"
       >
         <ArrowLeft className="w-4 h-4 mr-2" />
