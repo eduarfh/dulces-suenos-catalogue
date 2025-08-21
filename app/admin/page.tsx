@@ -44,6 +44,7 @@ export default function AdminPanel() {
     precioMayorista: 0,
     cantidadMinimaMayorista: 1,
     imagen: "",
+    descripcion: "",
     disponible: true,
   })
   const [editandoId, setEditandoId] = useState<number | null>(null)
@@ -73,6 +74,7 @@ export default function AdminPanel() {
       precioMayorista: 0,
       cantidadMinimaMayorista: 1,
       imagen: "",
+      descripcion: "",
       disponible: true,
     })
     setDialogAbierto(false)
@@ -91,6 +93,7 @@ export default function AdminPanel() {
         precioMayorista: 0,
         cantidadMinimaMayorista: 1,
         imagen: "",
+        descripcion: "",
         disponible: true,
       })
       setDialogAbierto(false)
@@ -111,6 +114,7 @@ export default function AdminPanel() {
       precioMayorista: electrodomestico.precioMayorista || electrodomestico.precio,
       cantidadMinimaMayorista: electrodomestico.cantidadMinimaMayorista || 1,
       imagen: electrodomestico.imagen,
+      descripcion: electrodomestico.descripcion || "",
       disponible: electrodomestico.disponible,
     })
     setEditandoId(electrodomestico.id)
@@ -190,6 +194,7 @@ export default function AdminPanel() {
                     precioMayorista: 0,
                     cantidadMinimaMayorista: 1,
                     imagen: "",
+                    descripcion: "",
                     disponible: true,
                   })
                 }}
@@ -302,6 +307,20 @@ export default function AdminPanel() {
                     value={nuevoElectrodomestico.imagen}
                     onChange={(e) => setNuevoElectrodomestico({ ...nuevoElectrodomestico, imagen: e.target.value })}
                     placeholder="https://ejemplo.com/imagen.jpg"
+                    className="border-gray-200"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="descripcion" className="text-gray-700">
+                    Descripción
+                  </Label>
+                  <Input
+                    id="descripcion"
+                    value={nuevoElectrodomestico.descripcion}
+                    onChange={(e) =>
+                      setNuevoElectrodomestico({ ...nuevoElectrodomestico, descripcion: e.target.value })
+                    }
+                    placeholder="Descripción detallada del producto"
                     className="border-gray-200"
                   />
                 </div>

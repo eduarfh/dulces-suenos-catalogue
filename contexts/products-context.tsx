@@ -13,7 +13,7 @@ export interface Electrodomestico {
   imagen: string
   categoria: "lavadora" | "refrigerador" | "microondas"
   disponible: boolean
-  descripcion?: string
+  descripcion: string
   caracteristicas?: string[]
 }
 

@@ -9,6 +9,7 @@ import Link from "next/link"
 import { useProducts } from "@/contexts/products-context"
 import { useState } from "react"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { ProductPreviewModal } from "@/components/product-preview-modal"
 
 interface Electrodomestico {
   id: number
@@ -26,6 +27,8 @@ interface Electrodomestico {
 export default function CatalogoPublico() {
   const { electrodomesticos } = useProducts()
   const [busqueda, setBusqueda] = useState("")
+  const [selectedProduct, setSelectedProduct] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const electrodomesticosFiltrados = electrodomesticos.filter(
     (electrodomestico) =>
@@ -33,6 +36,11 @@ export default function CatalogoPublico() {
       electrodomestico.marca.toLowerCase().includes(busqueda.toLowerCase()) ||
       electrodomestico.categoria.toLowerCase().includes(busqueda.toLowerCase()),
   )
+
+  const handleProductClick = (product) => {
+    setSelectedProduct(product)
+    setIsModalOpen(true)
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -49,7 +57,9 @@ export default function CatalogoPublico() {
             <ThemeToggle />
           </div>
           <h1 className="text-2xl font-medium text-foreground">Electrodomésticos</h1>
-          <p className="text-muted-foreground text-sm mt-1">Productos disponibles</p>
+          <p className="text-muted-foreground text-sm mt-1">
+            Todos los productos vienen con factura y 3 meses de garantía
+          </p>
         </div>
       </header>
 
@@ -68,7 +78,11 @@ export default function CatalogoPublico() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {electrodomesticosFiltrados.map((electrodomestico) => (
-            <Card key={electrodomestico.id} className="border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+            <Card
+              key={electrodomestico.id}
+              className="border-gray-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => handleProductClick(electrodomestico)}
+            >
               <div className="aspect-square relative bg-gray-50">
                 <img
                   src={electrodomestico.imagen || "/placeholder.svg"}
@@ -117,6 +131,8 @@ export default function CatalogoPublico() {
           </div>
         )}
       </div>
+
+      <ProductPreviewModal product={selectedProduct} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   )
 }
