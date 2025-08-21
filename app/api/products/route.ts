@@ -27,6 +27,7 @@ export async function POST(request: Request) {
     const blob = await put(PRODUCTS_BLOB_NAME, JSON.stringify(products, null, 2), {
       access: "public",
       contentType: "application/json",
+      allowOverwrite: true,
     })
 
     return NextResponse.json({ success: true, url: blob.url })
