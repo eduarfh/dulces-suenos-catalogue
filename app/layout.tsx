@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Space_Grotesk, DM_Sans } from "next/font/google"
 import "./globals.css"
 import { AuthProvider } from "@/contexts/auth-context"
+import { ProductsProvider } from "@/contexts/products-context"
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -30,7 +31,9 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${spaceGrotesk.variable} ${dmSans.variable} antialiased`}>
       <body className="font-mono">
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <ProductsProvider>{children}</ProductsProvider>
+        </AuthProvider>
       </body>
     </html>
   )

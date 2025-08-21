@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Search, Settings } from "lucide-react"
 import Link from "next/link"
+import { useProducts } from "@/contexts/products-context"
+import { useState } from "react"
 
 interface Electrodomestico {
   id: number
@@ -19,36 +20,7 @@ interface Electrodomestico {
 }
 
 export default function HomePage() {
-  const [electrodomesticos] = useState<Electrodomestico[]>([
-    {
-      id: 1,
-      nombre: "EcoWash Pro 8kg",
-      marca: "Samsung",
-      categoria: "Lavadora",
-      precio: 599,
-      imagen: "/placeholder-c6cei.png",
-      disponible: true,
-    },
-    {
-      id: 2,
-      nombre: "CoolMax Inverter",
-      marca: "LG",
-      categoria: "Refrigerador",
-      precio: 899,
-      imagen: "/modern-refrigerator.png",
-      disponible: true,
-    },
-    {
-      id: 3,
-      nombre: "QuickHeat Pro",
-      marca: "Whirlpool",
-      categoria: "Microondas",
-      precio: 249,
-      imagen: "/placeholder-prs7q.png",
-      disponible: false,
-    },
-  ])
-
+  const { electrodomesticos } = useProducts()
   const [busqueda, setBusqueda] = useState("")
 
   const electrodomesticosFiltrados = electrodomesticos.filter(

@@ -19,56 +19,25 @@ import {
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { Search, Plus, Trash2, Edit, LogOut } from "lucide-react"
-
-interface Electrodomestico {
-  id: number
-  nombre: string
-  marca: string
-  categoria: string
-  precio: number
-  imagen: string
-  disponible: boolean
-}
+import { useProducts } from "@/contexts/products-context"
 
 export default function AdminPanel() {
   const { isAuthenticated, logout, loading } = useAuth()
   const router = useRouter()
 
-  const [electrodomesticos, setElectrodomesticos] = useState<Electrodomestico[]>([
-    {
-      id: 1,
-      nombre: "EcoWash Pro 8kg",
-      marca: "Samsung",
-      categoria: "Lavadora",
-      precio: 599,
-      imagen: "/placeholder-4g5p3.png",
-      disponible: true,
-    },
-    {
-      id: 2,
-      nombre: "CoolFresh 300L",
-      marca: "LG",
-      categoria: "Refrigerador",
-      precio: 899,
-      imagen: "/modern-refrigerator.png",
-      disponible: true,
-    },
-    {
-      id: 3,
-      nombre: "QuickHeat 25L",
-      marca: "Whirlpool",
-      categoria: "Microondas",
-      precio: 149,
-      imagen: "/placeholder-prs7q.png",
-      disponible: false,
-    },
-  ])
+  const {
+    electrodomesticos,
+    agregarElectrodomestico,
+    editarElectrodomestico,
+    eliminarElectrodomestico,
+    toggleDisponibilidad,
+  } = useProducts()
 
   const [busqueda, setBusqueda] = useState("")
   const [nuevoElectrodomestico, setNuevoElectrodomestico] = useState({
     nombre: "",
     marca: "",
-    categoria: "",
+    categoria: "lavadora" as "lavadora" | "refrigerador" | "microondas",
     precio: 0,
     imagen: "",
     disponible: true,
@@ -89,29 +58,33 @@ export default function AdminPanel() {
       electrodomestico.categoria.toLowerCase().includes(busqueda.toLowerCase()),
   )
 
-  const agregarElectrodomestico = () => {
-    const id = Math.max(...electrodomesticos.map((e) => e.id), 0) + 1
-    setElectrodomesticos([...electrodomesticos, { ...nuevoElectrodomestico, id }])
-    setNuevoElectrodomestico({ nombre: "", marca: "", categoria: "", precio: 0, imagen: "", disponible: true })
+  const handleAgregarElectrodomestico = () => {
+    agregarElectrodomestico(nuevoElectrodomestico)
+    setNuevoElectrodomestico({ nombre: "", marca: "", categoria: "lavadora", precio: 0, imagen: "", disponible: true })
     setDialogAbierto(false)
   }
 
-  const editarElectrodomestico = () => {
+  const handleEditarElectrodomestico = () => {
     if (editandoId) {
-      setElectrodomesticos(
-        electrodomesticos.map((e) => (e.id === editandoId ? { ...nuevoElectrodomestico, id: editandoId } : e)),
-      )
+      editarElectrodomestico(editandoId, nuevoElectrodomestico)
       setEditandoId(null)
-      setNuevoElectrodomestico({ nombre: "", marca: "", categoria: "", precio: 0, imagen: "", disponible: true })
+      setNuevoElectrodomestico({
+        nombre: "",
+        marca: "",
+        categoria: "lavadora",
+        precio: 0,
+        imagen: "",
+        disponible: true,
+      })
       setDialogAbierto(false)
     }
   }
 
-  const eliminarElectrodomestico = (id: number) => {
-    setElectrodomesticos(electrodomesticos.filter((e) => e.id !== id))
+  const handleEliminarElectrodomestico = (id: number) => {
+    eliminarElectrodomestico(id)
   }
 
-  const iniciarEdicion = (electrodomestico: Electrodomestico) => {
+  const iniciarEdicion = (electrodomestico: any) => {
     setNuevoElectrodomestico({
       nombre: electrodomestico.nombre,
       marca: electrodomestico.marca,
@@ -124,13 +97,13 @@ export default function AdminPanel() {
     setDialogAbierto(true)
   }
 
-  const toggleDisponibilidad = (id: number) => {
-    setElectrodomesticos(electrodomesticos.map((e) => (e.id === id ? { ...e, disponible: !e.disponible } : e)))
+  const handleToggleDisponibilidad = (id: number) => {
+    toggleDisponibilidad(id)
   }
 
   const handleLogout = () => {
     logout()
-    router.push("/catalogo") // Redirigir directamente al catálogo en lugar de la página principal
+    router.push("/")
   }
 
   if (loading) {
@@ -192,7 +165,7 @@ export default function AdminPanel() {
                   setNuevoElectrodomestico({
                     nombre: "",
                     marca: "",
-                    categoria: "",
+                    categoria: "lavadora",
                     precio: 0,
                     imagen: "",
                     disponible: true,
@@ -280,7 +253,7 @@ export default function AdminPanel() {
               </div>
               <DialogFooter>
                 <Button
-                  onClick={editandoId ? editarElectrodomestico : agregarElectrodomestico}
+                  onClick={editandoId ? handleEditarElectrodomestico : handleAgregarElectrodomestico}
                   className="bg-gray-900 hover:bg-gray-800 text-white"
                 >
                   {editandoId ? "Guardar Cambios" : "Agregar Producto"}
@@ -336,7 +309,7 @@ export default function AdminPanel() {
                 <Button
                   variant={electrodomestico.disponible ? "secondary" : "default"}
                   size="sm"
-                  onClick={() => toggleDisponibilidad(electrodomestico.id)}
+                  onClick={() => handleToggleDisponibilidad(electrodomestico.id)}
                   className={`flex-1 ${
                     electrodomestico.disponible
                       ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -348,7 +321,7 @@ export default function AdminPanel() {
                 <Button
                   variant="destructive"
                   size="sm"
-                  onClick={() => eliminarElectrodomestico(electrodomestico.id)}
+                  onClick={() => handleEliminarElectrodomestico(electrodomestico.id)}
                   className="bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
                 >
                   <Trash2 className="h-4 w-4" />
