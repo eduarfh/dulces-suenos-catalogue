@@ -10,24 +10,12 @@ import { useProducts } from "@/contexts/products-context"
 import { useState } from "react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { ProductPreviewModal } from "@/components/product-preview-modal"
-
-interface Electrodomestico {
-  id: number
-  nombre: string
-  marca: string
-  categoria: string
-  precio: number
-  precioMinorista: number
-  precioMayorista: number
-  cantidadMinimaMayorista: number
-  imagen: string
-  disponible: boolean
-}
+import type { Electrodomestico } from "@/contexts/products-context"
 
 export default function CatalogoPublico() {
   const { electrodomesticos } = useProducts()
   const [busqueda, setBusqueda] = useState("")
-  const [selectedProduct, setSelectedProduct] = useState(null)
+  const [selectedProduct, setSelectedProduct] = useState<import("@/contexts/products-context").Electrodomestico | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const electrodomesticosFiltrados = electrodomesticos.filter(
@@ -37,7 +25,7 @@ export default function CatalogoPublico() {
       electrodomestico.categoria.toLowerCase().includes(busqueda.toLowerCase()),
   )
 
-  const handleProductClick = (product) => {
+  const handleProductClick = (product: import("@/contexts/products-context").Electrodomestico) => {
     setSelectedProduct(product)
     setIsModalOpen(true)
   }
@@ -133,6 +121,21 @@ export default function CatalogoPublico() {
       </div>
 
       <ProductPreviewModal product={selectedProduct} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+
+      {/* Footer */}
+      <footer className="bg-background border-t py-6 mt-8">
+        <div className="container mx-auto px-6 text-center">
+          <p className="text-foreground text-sm">
+            <strong>Dirección:</strong> Monte y Romay #1069, por Monte, Cerro
+          </p>
+          <p className="text-foreground text-sm">
+            <strong>Horario:</strong> Abierto de 9:00 AM a 5:00 PM
+          </p>
+          <p className="text-foreground text-sm">
+            <strong>Contacto por WhatsApp:</strong> +53 55550301, +53 54499134
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }

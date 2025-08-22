@@ -38,7 +38,7 @@ export default function AdminPanel() {
   const [nuevoElectrodomestico, setNuevoElectrodomestico] = useState({
     nombre: "",
     marca: "",
-    categoria: "lavadora" as "lavadora" | "refrigerador" | "microondas",
+    categoria: "",
     precio: 0,
     precioMinorista: 0,
     precioMayorista: 0,
@@ -68,7 +68,7 @@ export default function AdminPanel() {
     setNuevoElectrodomestico({
       nombre: "",
       marca: "",
-      categoria: "lavadora",
+      categoria: "",
       precio: 0,
       precioMinorista: 0,
       precioMayorista: 0,
@@ -87,7 +87,7 @@ export default function AdminPanel() {
       setNuevoElectrodomestico({
         nombre: "",
         marca: "",
-        categoria: "lavadora",
+        categoria: "",
         precio: 0,
         precioMinorista: 0,
         precioMayorista: 0,
@@ -188,7 +188,7 @@ export default function AdminPanel() {
                   setNuevoElectrodomestico({
                     nombre: "",
                     marca: "",
-                    categoria: "lavadora",
+                    categoria: "",
                     precio: 0,
                     precioMinorista: 0,
                     precioMayorista: 0,
@@ -245,7 +245,7 @@ export default function AdminPanel() {
                   <Input
                     id="categoria"
                     value={nuevoElectrodomestico.categoria}
-                    onChange={(e) => setNuevoElectrodomestico({ ...nuevoElectrodomestico, categoria: e.target.value })}
+                    onChange={(e) => setNuevoElectrodomestico({ ...nuevoElectrodomestico, categoria: e.target.value})}
                     placeholder="Ej: Lavadora, Refrigerador, Microondas"
                     className="border-gray-200"
                   />
@@ -354,7 +354,9 @@ export default function AdminPanel() {
                   <Badge
                     variant={electrodomestico.disponible ? "default" : "secondary"}
                     className={
-                      electrodomestico.disponible ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600"
+                      electrodomestico.disponible
+                        ? "bg-green-100 text-green-800"
+                        : "bg-pink-100 text-red-600"
                     }
                   >
                     {electrodomestico.disponible ? "Disponible" : "Agotado"}
@@ -362,14 +364,14 @@ export default function AdminPanel() {
                 </div>
               </div>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg text-gray-900">{electrodomestico.nombre}</CardTitle>
-                <CardDescription className="text-gray-600">
+                <CardTitle className="text-lg font-medium text-foreground">{electrodomestico.nombre}</CardTitle>
+                <CardDescription className="text-muted-foreground">
                   {electrodomestico.marca} • {electrodomestico.categoria}
                 </CardDescription>
               </CardHeader>
               <CardContent className="pb-2">
                 <div className="space-y-1">
-                  <p className="text-xl font-semibold text-gray-900">
+                  <p className="text-xl font-semibold text-foreground">
                     ${electrodomestico.precioMinorista || electrodomestico.precio}
                   </p>
                   <p className="text-lg font-medium text-green-600">
@@ -391,13 +393,13 @@ export default function AdminPanel() {
                   Editar
                 </Button>
                 <Button
-                  variant={electrodomestico.disponible ? "secondary" : "default"}
+                  variant="default"
                   size="sm"
                   onClick={() => handleToggleDisponibilidad(electrodomestico.id)}
                   className={`flex-1 ${
                     electrodomestico.disponible
-                      ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                      : "bg-green-100 text-green-800 hover:bg-green-200"
+                      ? "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
+                      : "bg-green-100 text-green-800 hover:bg-green-300 border border-green-400"
                   }`}
                 >
                   {electrodomestico.disponible ? "Marcar Agotado" : "Marcar Disponible"}

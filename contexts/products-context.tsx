@@ -11,7 +11,7 @@ export interface Electrodomestico {
   precioMayorista: number
   cantidadMinimaMayorista: number
   imagen: string
-  categoria: "lavadora" | "refrigerador" | "microondas"
+  categoria: string
   disponible: boolean
   descripcion: string
   caracteristicas?: string[]
