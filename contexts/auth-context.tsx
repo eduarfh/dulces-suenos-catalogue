@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = (username: string, password: string) => {
     // Credenciales simples (en producción usar un sistema más seguro)
-    if (username === "admin" && password === "admin123") {
+    if (username === "myeventas" && password === "myeventas123") {
       setIsAuthenticated(true)
       localStorage.setItem("admin-authenticated", "true")
       return true
