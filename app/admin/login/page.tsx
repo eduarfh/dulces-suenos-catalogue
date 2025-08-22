@@ -10,7 +10,8 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Lock } from "lucide-react"
+import { Lock, ArrowLeft } from "lucide-react"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function LoginPage() {
   const [username, setUsername] = useState("")
@@ -30,21 +31,35 @@ export default function LoginPage() {
     if (success) {
       router.push("/admin")
     } else {
-      setError("Credenciales incorrectas. Usuario: admin, Contraseña: admin123")
+      setError("Credenciales incorrectas. Por favor, intenta nuevamente.")
     }
 
     setLoading(false)
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => router.push("/")}
+        className="absolute top-4 left-4 text-muted-foreground hover:text-foreground"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Volver al Catálogo
+      </Button>
+
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="mx-auto w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-            <Lock className="w-6 h-6 text-gray-600" />
+          <div className="mx-auto w-12 h-12 bg-muted rounded-full flex items-center justify-center mb-4">
+            <Lock className="w-6 h-6 text-muted-foreground" />
           </div>
-          <CardTitle className="text-2xl font-semibold text-gray-900">Acceso Administrativo</CardTitle>
-          <CardDescription className="text-gray-600">
+          <CardTitle className="text-2xl font-semibold text-foreground">Acceso Administrativo</CardTitle>
+          <CardDescription className="text-muted-foreground">
             Ingresa tus credenciales para acceder al panel de administración
           </CardDescription>
         </CardHeader>
@@ -87,15 +102,6 @@ export default function LoginPage() {
               {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
             </Button>
           </form>
-          <div className="mt-6 p-3 bg-gray-100 rounded-lg">
-            <p className="text-xs text-gray-600 text-center">
-              <strong>Credenciales de prueba:</strong>
-              <br />
-              Usuario: admin
-              <br />
-              Contraseña: admin123
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>

@@ -1,130 +1,138 @@
 "use client"
 
-import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Search, ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { useProducts } from "@/contexts/products-context"
+import { useState } from "react"
+import { ThemeToggle } from "@/components/theme-toggle"
+import { ProductPreviewModal } from "@/components/product-preview-modal"
 
-interface Lavadora {
+interface Electrodomestico {
   id: number
   nombre: string
   marca: string
-  capacidad: string
+  categoria: string
   precio: number
+  precioMinorista: number
+  precioMayorista: number
+  cantidadMinimaMayorista: number
   imagen: string
   disponible: boolean
 }
 
 export default function CatalogoPublico() {
-  const [lavadoras] = useState<Lavadora[]>([
-    {
-      id: 1,
-      nombre: "EcoWash Pro 8kg",
-      marca: "Samsung",
-      capacidad: "8 kg",
-      precio: 599,
-      imagen: "/placeholder-4g5p3.png",
-      disponible: true,
-    },
-    {
-      id: 2,
-      nombre: "TurboClean Max",
-      marca: "LG",
-      capacidad: "10 kg",
-      precio: 749,
-      imagen: "/silver-front-load-washer.png",
-      disponible: true,
-    },
-    {
-      id: 3,
-      nombre: "QuickWash 6kg",
-      marca: "Whirlpool",
-      capacidad: "6 kg",
-      precio: 449,
-      imagen: "/compact-white-washing-machine.png",
-      disponible: false,
-    },
-  ])
-
+  const { electrodomesticos } = useProducts()
   const [busqueda, setBusqueda] = useState("")
+  const [selectedProduct, setSelectedProduct] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const lavadorasFiltradas = lavadoras.filter(
-    (lavadora) =>
-      lavadora.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-      lavadora.marca.toLowerCase().includes(busqueda.toLowerCase()),
+  const electrodomesticosFiltrados = electrodomesticos.filter(
+    (electrodomestico) =>
+      electrodomestico.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+      electrodomestico.marca.toLowerCase().includes(busqueda.toLowerCase()) ||
+      electrodomestico.categoria.toLowerCase().includes(busqueda.toLowerCase()),
   )
+
+  const handleProductClick = (product) => {
+    setSelectedProduct(product)
+    setIsModalOpen(true)
+  }
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-card border-b border-border">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center gap-4 mb-2">
+      <header className="bg-background border-b">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between mb-2">
             <Link href="/">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Volver
               </Button>
             </Link>
+            <ThemeToggle />
           </div>
-          <h1 className="text-3xl font-bold text-foreground font-sans">Catálogo de Lavadoras</h1>
-          <p className="text-muted-foreground mt-2">Explora nuestros productos disponibles</p>
+          <h1 className="text-2xl font-medium text-foreground">Electrodomésticos</h1>
+          <p className="text-muted-foreground text-sm mt-1">
+            Todos los productos vienen con factura y 3 meses de garantía
+          </p>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-6 py-8">
         <div className="mb-8">
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <div className="relative max-w-sm">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
-              placeholder="Buscar por nombre o marca..."
+              placeholder="Buscar productos..."
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
-              className="pl-10"
+              className="pl-10 border-gray-200 focus:border-gray-300 focus:ring-0"
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {lavadorasFiltradas.map((lavadora) => (
-            <Card key={lavadora.id} className="overflow-hidden">
-              <div className="aspect-video relative">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {electrodomesticosFiltrados.map((electrodomestico) => (
+            <Card
+              key={electrodomestico.id}
+              className="border-gray-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => handleProductClick(electrodomestico)}
+            >
+              <div className="aspect-square relative bg-gray-50">
                 <img
-                  src={lavadora.imagen || "/placeholder.svg?height=200&width=300&query=washing machine"}
-                  alt={lavadora.nombre}
-                  className="w-full h-full object-cover"
+                  src={electrodomestico.imagen || "/placeholder.svg"}
+                  alt={electrodomestico.nombre}
+                  className="w-full h-full object-cover rounded-t-lg"
                 />
-                <div className="absolute top-2 right-2">
-                  <Badge variant={lavadora.disponible ? "default" : "secondary"}>
-                    {lavadora.disponible ? "Disponible" : "Agotado"}
+                <div className="absolute top-3 right-3">
+                  <Badge
+                    variant={electrodomestico.disponible ? "default" : "secondary"}
+                    className={
+                      electrodomestico.disponible
+                        ? "bg-green-100 text-green-800 border-green-200"
+                        : "bg-gray-100 text-gray-600"
+                    }
+                  >
+                    {electrodomestico.disponible ? "Disponible" : "Agotado"}
                   </Badge>
                 </div>
               </div>
-              <CardHeader>
-                <CardTitle className="font-sans">{lavadora.nombre}</CardTitle>
-                <CardDescription>
-                  {lavadora.marca} • {lavadora.capacidad}
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-medium text-foreground">{electrodomestico.nombre}</CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  {electrodomestico.marca} • {electrodomestico.categoria}
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold text-primary font-sans">€{lavadora.precio}</p>
-                {lavadora.disponible && (
-                  <p className="text-sm text-muted-foreground mt-2">Contacta con nosotros para más información</p>
-                )}
+              <CardContent className="pt-0">
+                <div className="space-y-1">
+                  <p className="text-xl font-semibold text-foreground">
+                    ${electrodomestico.precioMinorista || electrodomestico.precio}
+                  </p>
+                  <p className="text-lg font-medium text-green-600">
+                    ${electrodomestico.precioMayorista || electrodomestico.precio}
+                    <span className="text-sm text-muted-foreground ml-1">
+                      (min. {electrodomestico.cantidadMinimaMayorista || 1} unidades)
+                    </span>
+                  </p>
+                </div>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {lavadorasFiltradas.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground text-lg">No se encontraron lavadoras que coincidan con tu búsqueda.</p>
+        {electrodomesticosFiltrados.length === 0 && (
+          <div className="text-center py-16">
+            <p className="text-muted-foreground">No se encontraron productos.</p>
           </div>
         )}
       </div>
+
+      <ProductPreviewModal product={selectedProduct} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   )
 }
