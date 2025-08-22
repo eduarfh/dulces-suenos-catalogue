@@ -10,24 +10,12 @@ import { useProducts } from "@/contexts/products-context"
 import { useState } from "react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { ProductPreviewModal } from "@/components/product-preview-modal"
-
-interface Electrodomestico {
-  id: number
-  nombre: string
-  marca: string
-  categoria: string
-  precio: number
-  precioMinorista: number
-  precioMayorista: number
-  cantidadMinimaMayorista: number
-  imagen: string
-  disponible: boolean
-}
+import type { Electrodomestico } from "@/contexts/products-context"
 
 export default function HomePage() {
   const { electrodomesticos } = useProducts()
   const [busqueda, setBusqueda] = useState("")
-  const [selectedProduct, setSelectedProduct] = useState(null)
+  const [selectedProduct, setSelectedProduct] = useState<Electrodomestico | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const electrodomesticosFiltrados = electrodomesticos.filter(
@@ -37,7 +25,7 @@ export default function HomePage() {
       electrodomestico.categoria.toLowerCase().includes(busqueda.toLowerCase()),
   )
 
-  const handleProductClick = (product) => {
+  const handleProductClick = (product: Electrodomestico) => {
     setSelectedProduct(product)
     setIsModalOpen(true)
   }

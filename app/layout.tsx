@@ -19,7 +19,7 @@ const dmSans = DM_Sans({
 })
 
 export const metadata: Metadata = {
-  title: "Catálogo de Lavadoras",
+  title: "Catálogo de Electrodomésticos",
   description: "Gestiona tu inventario de lavadoras fácilmente",
   generator: "v0.app",
 }
