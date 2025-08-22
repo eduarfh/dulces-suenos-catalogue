@@ -31,7 +31,7 @@ export default function LoginPage() {
     if (success) {
       router.push("/admin")
     } else {
-      setError("Credenciales incorrectas. Usuario: admin, Contraseña: admin123")
+      setError("Credenciales incorrectas. Por favor, intenta nuevamente.")
     }
 
     setLoading(false)
