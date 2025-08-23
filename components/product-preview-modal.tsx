@@ -24,7 +24,7 @@ export function ProductPreviewModal({ product, isOpen, onClose }: ProductPreview
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
-              <Image src={product.imagen || "/placeholder.svg"} alt={product.nombre} fill className="object-cover" />
+              <Image src={product.imagenURL || "/placeholder.svg"} alt={product.nombre} fill className="object-cover" />
             </div>
 
             <div className="flex items-center gap-2">
@@ -42,20 +42,6 @@ export function ProductPreviewModal({ product, isOpen, onClose }: ProductPreview
               <h3 className="text-lg font-semibold mb-2">Descripción</h3>
               <p className="text-muted-foreground leading-relaxed">{product.descripcion}</p>
             </div>
-
-            {product.caracteristicas && product.caracteristicas.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Características</h3>
-                <ul className="space-y-1">
-                  {product.caracteristicas.map((caracteristica, index) => (
-                    <li key={index} className="text-muted-foreground flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0" />
-                      {caracteristica}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
 
             <div className="space-y-3 pt-4 border-t">
               <div>

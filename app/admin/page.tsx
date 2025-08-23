@@ -34,6 +34,7 @@ export default function AdminPanel() {
     toggleDisponibilidad,
   } = useProducts()
 
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [busqueda, setBusqueda] = useState("")
   const [nuevoElectrodomestico, setNuevoElectrodomestico] = useState({
     nombre: "",
@@ -63,21 +64,31 @@ export default function AdminPanel() {
       electrodomestico.categoria.toLowerCase().includes(busqueda.toLowerCase()),
   )
 
-  const handleAgregarElectrodomestico = () => {
-    agregarElectrodomestico(nuevoElectrodomestico)
-    setNuevoElectrodomestico({
-      nombre: "",
-      marca: "",
-      categoria: "",
-      precio: 0,
-      precioMinorista: 0,
-      precioMayorista: 0,
-      cantidadMinimaMayorista: 1,
-      imagen: "",
-      descripcion: "",
-      disponible: true,
-    })
-    setDialogAbierto(false)
+  const handleAgregarElectrodomestico = async () => {
+    try {
+      setIsSubmitting(true)
+      await agregarElectrodomestico(nuevoElectrodomestico)
+      // reset form
+      setNuevoElectrodomestico({
+        nombre: "",
+        marca: "",
+        categoria: "",
+        precio: 0,
+        precioMinorista: 0,
+        precioMayorista: 0,
+        cantidadMinimaMayorista: 1,
+        imagen: "",
+        descripcion: "",
+        disponible: true,
+      })
+      setDialogAbierto(false)
+      alert("Producto agregado correctamente") // o usar tu sistema de toasts
+    } catch (err) {
+      console.error(err)
+      alert("Error al agregar producto")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleEditarElectrodomestico = () => {
@@ -245,7 +256,7 @@ export default function AdminPanel() {
                   <Input
                     id="categoria"
                     value={nuevoElectrodomestico.categoria}
-                    onChange={(e) => setNuevoElectrodomestico({ ...nuevoElectrodomestico, categoria: e.target.value})}
+                    onChange={(e) => setNuevoElectrodomestico({ ...nuevoElectrodomestico, categoria: e.target.value })}
                     placeholder="Ej: Lavadora, Refrigerador, Microondas"
                     className="border-gray-200"
                   />
@@ -329,8 +340,9 @@ export default function AdminPanel() {
                 <Button
                   onClick={editandoId ? handleEditarElectrodomestico : handleAgregarElectrodomestico}
                   className="bg-gray-900 hover:bg-gray-800 text-white"
+                  disabled={isSubmitting}
                 >
-                  {editandoId ? "Guardar Cambios" : "Agregar Producto"}
+                  {isSubmitting ? "Enviando..." : editandoId ? "Guardar Cambios" : "Agregar Producto"}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -346,7 +358,7 @@ export default function AdminPanel() {
             >
               <div className="aspect-video relative">
                 <img
-                  src={electrodomestico.imagen || "/placeholder.svg?height=200&width=300&query=appliance"}
+                  src={electrodomestico.imagenURL || "/placeholder.svg?height=200&width=300&query=appliance"}
                   alt={electrodomestico.nombre}
                   className="w-full h-full object-cover"
                 />
@@ -372,10 +384,10 @@ export default function AdminPanel() {
               <CardContent className="pb-2">
                 <div className="space-y-1">
                   <p className="text-xl font-semibold text-foreground">
-                    ${electrodomestico.precioMinorista || electrodomestico.precio}
+                    ${electrodomestico.precioMinorista}
                   </p>
                   <p className="text-lg font-medium text-green-600">
-                    ${electrodomestico.precioMayorista || electrodomestico.precio}
+                    ${electrodomestico.precioMayorista}
                     <span className="text-sm text-gray-500 ml-1">
                       (min. {electrodomestico.cantidadMinimaMayorista || 1})
                     </span>
@@ -396,11 +408,10 @@ export default function AdminPanel() {
                   variant="default"
                   size="sm"
                   onClick={() => handleToggleDisponibilidad(electrodomestico.id)}
-                  className={`flex-1 ${
-                    electrodomestico.disponible
+                  className={`flex-1 ${electrodomestico.disponible
                       ? "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
                       : "bg-green-100 text-green-800 hover:bg-green-300 border border-green-400"
-                  }`}
+                    }`}
                 >
                   {electrodomestico.disponible ? "Marcar Agotado" : "Marcar Disponible"}
                 </Button>

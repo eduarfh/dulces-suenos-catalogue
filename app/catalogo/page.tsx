@@ -74,7 +74,7 @@ export default function CatalogoPublico() {
               >
                 <div className="aspect-square relative bg-gray-50">
                   <img
-                    src={electrodomestico.imagen || "/placeholder.svg"}
+                    src={electrodomestico.imagenURL || "/placeholder.svg"}
                     alt={electrodomestico.nombre}
                     className="w-full h-full object-cover rounded-t-lg"
                   />
@@ -100,10 +100,10 @@ export default function CatalogoPublico() {
                 <CardContent className="pt-0">
                   <div className="space-y-1">
                     <p className="text-xl font-semibold text-foreground">
-                      ${electrodomestico.precioMinorista || electrodomestico.precio}
+                      ${electrodomestico.precioMinorista}
                     </p>
                     <p className="text-lg font-medium text-green-600">
-                      ${electrodomestico.precioMayorista || electrodomestico.precio}
+                      ${electrodomestico.precioMayorista}
                       <span className="text-sm text-muted-foreground ml-1">
                         (min. {electrodomestico.cantidadMinimaMayorista || 1} unidades)
                       </span>
