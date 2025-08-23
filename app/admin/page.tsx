@@ -91,9 +91,13 @@ export default function AdminPanel() {
     }
   }
 
-  const handleEditarElectrodomestico = () => {
-    if (editandoId) {
-      editarElectrodomestico(editandoId, nuevoElectrodomestico)
+    const handleEditarElectrodomestico = async () => {
+    if (editandoId === null) return;
+
+    try {
+      setIsSubmitting(true)
+      // llamar la función del contexto que ahora es async
+      await editarElectrodomestico(editandoId, nuevoElectrodomestico)
       setEditandoId(null)
       setNuevoElectrodomestico({
         nombre: "",
@@ -108,8 +112,15 @@ export default function AdminPanel() {
         disponible: true,
       })
       setDialogAbierto(false)
+      alert("Producto actualizado correctamente")
+    } catch (err) {
+      console.error("Error guardando cambios:", err)
+      alert("No se pudo actualizar el producto: " + (err instanceof Error ? err.message : "error desconocido"))
+    } finally {
+      setIsSubmitting(false)
     }
   }
+
 
   const handleEliminarElectrodomestico = (id: number) => {
     eliminarElectrodomestico(id)

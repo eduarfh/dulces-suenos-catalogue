@@ -134,10 +134,60 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const editarElectrodomestico = (id: number, producto: Partial<Electrodomestico>) => {
-    const nuevosProductos = electrodomesticos.map((e) => (e.id === id ? { ...e, ...producto } : e))
-    setElectrodomesticos(nuevosProductos)
+    const editarElectrodomestico = async (id: number, producto: Partial<Electrodomestico>) => {
+    try {
+      // Llamada al backend
+      const response = await fetch("/api/products", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, ...producto }),
+      });
+
+      const text = await response.text();
+      let data: any = null;
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch (err) {
+        console.error("Respuesta del servidor no es JSON:", text);
+        throw new Error("Respuesta inválida del servidor");
+      }
+
+      if (!response.ok) {
+        const msg = (data && (data.error || data.message)) || `HTTP ${response.status}`;
+        throw new Error(msg);
+      }
+
+      // Interpretar posible formato de respuesta
+      let updatedProduct: Electrodomestico | undefined;
+      if (data?.product) {
+        updatedProduct = Array.isArray(data.product) ? data.product[0] : data.product;
+      } else if (Array.isArray(data)) {
+        updatedProduct = data[0];
+      } else if (data && data[0]) {
+        updatedProduct = data[0];
+      } else if (typeof data === "object" && data !== null) {
+        updatedProduct = data as Electrodomestico;
+      }
+
+      if (updatedProduct && updatedProduct.id) {
+        // Reemplazar el producto con la versión que venga del servidor
+        const nuevosProductos = electrodomesticos.map((e) => (e.id === id ? { ...e, ...updatedProduct } : e));
+        setElectrodomesticosState(nuevosProductos);
+        guardarProductos(nuevosProductos);
+        return;
+      }
+
+      // Fallback: actualización optimista local si la respuesta no trae el producto
+      const nuevosProductos = electrodomesticos.map((e) => (e.id === id ? { ...e, ...producto } : e));
+      setElectrodomesticosState(nuevosProductos);
+      guardarProductos(nuevosProductos);
+    } catch (error) {
+      console.error("Error actualizando producto:", error);
+      // Re-lanzar si quieres que el componente que llamó lo maneje
+      throw error;
+    }
   }
+
 
   const eliminarElectrodomestico = async (id: number) => {
     try {
