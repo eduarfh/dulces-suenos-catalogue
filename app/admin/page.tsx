@@ -91,7 +91,7 @@ export default function AdminPanel() {
     }
   }
 
-    const handleEditarElectrodomestico = async () => {
+  const handleEditarElectrodomestico = async () => {
     if (editandoId === null) return;
 
     try {
@@ -132,10 +132,11 @@ export default function AdminPanel() {
       marca: electrodomestico.marca,
       categoria: electrodomestico.categoria,
       precio: electrodomestico.precio,
-      precioMinorista: electrodomestico.precioMinorista || electrodomestico.precio,
-      precioMayorista: electrodomestico.precioMayorista || electrodomestico.precio,
-      cantidadMinimaMayorista: electrodomestico.cantidadMinimaMayorista || 1,
-      imagen: electrodomestico.imagen,
+      // preferir imagenURL si existe
+      imagen: electrodomestico.imagenURL || electrodomestico.imagen || "",
+      precioMinorista: electrodomestico.precioMinorista ?? 0,
+      precioMayorista: electrodomestico.precioMayorista ?? 0,
+      cantidadMinimaMayorista: electrodomestico.cantidadMinimaMayorista ?? 1,
       descripcion: electrodomestico.descripcion || "",
       disponible: electrodomestico.disponible,
     })
@@ -215,11 +216,12 @@ export default function AdminPanel() {
                     precioMinorista: 0,
                     precioMayorista: 0,
                     cantidadMinimaMayorista: 1,
-                    imagen: "",
+                    imagen: "", // <- aquí la url será visible al editar
                     descripcion: "",
                     disponible: true,
                   })
                 }}
+
                 className="bg-gray-900 hover:bg-gray-800 text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -272,54 +274,80 @@ export default function AdminPanel() {
                     className="border-gray-200"
                   />
                 </div>
+                {/* Precio Minorista */}
                 <div className="grid gap-2">
                   <Label htmlFor="precioMinorista" className="text-gray-700">
                     Precio Minorista ($)
                   </Label>
                   <Input
                     id="precioMinorista"
-                    type="number"
-                    value={nuevoElectrodomestico.precioMinorista}
-                    onChange={(e) =>
-                      setNuevoElectrodomestico({ ...nuevoElectrodomestico, precioMinorista: Number(e.target.value) })
-                    }
+                    type="text"
+                    inputMode="decimal"
+                    pattern="[0-9]*([.,][0-9]+)?"
+                    value={String(nuevoElectrodomestico.precioMinorista ?? "")}
+                    onChange={(e) => {
+                      // permitir sólo dígitos, punto y coma como decimal (coma -> punto)
+                      const raw = e.target.value.replace(/[^\d.,]/g, "")
+                      const normalized = raw.replace(",", ".")
+                      // si está vacío, lo dejamos como empty string para que el usuario pueda borrar
+                      setNuevoElectrodomestico({
+                        ...nuevoElectrodomestico,
+                        precioMinorista: normalized === "" ? "" : Number(normalized),
+                      } as any)
+                    }}
                     placeholder="599"
                     className="border-gray-200"
                   />
                 </div>
+
+                {/* Precio Mayorista */}
                 <div className="grid gap-2">
                   <Label htmlFor="precioMayorista" className="text-gray-700">
                     Precio Mayorista ($)
                   </Label>
                   <Input
                     id="precioMayorista"
-                    type="number"
-                    value={nuevoElectrodomestico.precioMayorista}
-                    onChange={(e) =>
-                      setNuevoElectrodomestico({ ...nuevoElectrodomestico, precioMayorista: Number(e.target.value) })
-                    }
+                    type="text"
+                    inputMode="decimal"
+                    pattern="[0-9]*([.,][0-9]+)?"
+                    value={String(nuevoElectrodomestico.precioMayorista ?? "")}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/[^\d.,]/g, "")
+                      const normalized = raw.replace(",", ".")
+                      setNuevoElectrodomestico({
+                        ...nuevoElectrodomestico,
+                        precioMayorista: normalized === "" ? "" : Number(normalized),
+                      } as any)
+                    }}
                     placeholder="499"
                     className="border-gray-200"
                   />
                 </div>
+
+                {/* Cantidad Mínima Mayorista (enteros sólo) */}
                 <div className="grid gap-2">
                   <Label htmlFor="cantidadMinimaMayorista" className="text-gray-700">
                     Cantidad Mínima Mayorista
                   </Label>
                   <Input
                     id="cantidadMinimaMayorista"
-                    type="number"
-                    value={nuevoElectrodomestico.cantidadMinimaMayorista}
-                    onChange={(e) =>
+                    type="text"
+                    inputMode="numeric"
+                    pattern="\d*"
+                    value={String(nuevoElectrodomestico.cantidadMinimaMayorista ?? "")}
+                    onChange={(e) => {
+                      // permitir solo dígitos
+                      const digits = e.target.value.replace(/\D/g, "")
                       setNuevoElectrodomestico({
                         ...nuevoElectrodomestico,
-                        cantidadMinimaMayorista: Number(e.target.value),
-                      })
-                    }
+                        cantidadMinimaMayorista: digits === "" ? "" : Number(digits),
+                      } as any)
+                    }}
                     placeholder="5"
                     className="border-gray-200"
                   />
                 </div>
+
                 <div className="grid gap-2">
                   <Label htmlFor="imagen" className="text-gray-700">
                     URL de Imagen (opcional)
@@ -420,8 +448,8 @@ export default function AdminPanel() {
                   size="sm"
                   onClick={() => handleToggleDisponibilidad(electrodomestico.id)}
                   className={`flex-1 ${electrodomestico.disponible
-                      ? "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
-                      : "bg-green-100 text-green-800 hover:bg-green-300 border border-green-400"
+                    ? "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
+                    : "bg-green-100 text-green-800 hover:bg-green-300 border border-green-400"
                     }`}
                 >
                   {electrodomestico.disponible ? "Marcar Agotado" : "Marcar Disponible"}
