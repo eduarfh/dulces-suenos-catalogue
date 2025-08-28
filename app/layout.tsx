@@ -1,5 +1,5 @@
 // app/layout.tsx
-import type { ReactNode } from "react"
+import type React from "react"
 import type { Metadata } from "next"
 import { Space_Grotesk, DM_Sans } from "next/font/google"
 import "./globals.css"
@@ -19,36 +19,43 @@ const dmSans = DM_Sans({
   variable: "--font-dm-sans",
 })
 
+const SITE_URL = "https://v0-electrodomestics-catalogue.vercel.app/"
+const OG_IMAGE =
+  "https://yzjvywcplllhsqqcfsyb.supabase.co/storage/v1/object/public/Fotos%20Catalogo/Imagen%20de%20WhatsApp%202025-08-28%20a%20las%2001.31.16_e81b24b7.jpg"
+
 export const metadata: Metadata = {
   title: "Catálogo de Electrodomésticos",
   description: "Date la oportunidad de mejorar tu estilo de vida con nuestros electrodomésticos de calidad.",
+  metadataBase: new URL(SITE_URL),
   openGraph: {
     title: "Catálogo de Electrodomésticos",
-    description: "Electrodomésticos con factura y 3 meses de garantía.",
-    url: "https://v0-electrodomestics-catalogue.vercel.app/", // reemplaza por tu dominio
+    description: "Date la oportunidad de mejorar tu estilo de vida con nuestros electrodomésticos de calidad.",
+    url: SITE_URL,
     siteName: "Catálogo de Electrodomésticos",
-    type: "website",
-    locale: "es_ES",
     images: [
       {
-        url: "https://yzjvywcplllhsqqcfsyb.supabase.co/storage/v1/object/public/Fotos%20Catalogo/Imagen%20de%20WhatsApp%202025-08-28%20a%20las%2001.31.16_e81b24b7.jpg",
+        url: OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: "Imagen promocional - Catálogo de Electrodomésticos",
+        alt: "Catálogo de Electrodomésticos - Miniatura",
       },
     ],
+    locale: "es_ES",
+    type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Catálogo de Electrodomésticos",
-    description: "Electrodomésticos con factura y 3 meses de garantía.",
-    images: [
-      "https://yzjvywcplllhsqqcfsyb.supabase.co/storage/v1/object/public/Fotos%20Catalogo/Imagen%20de%20WhatsApp%202025-08-28%20a%20las%2001.31.16_e81b24b7.jpg",
-    ],
+    description: "Date la oportunidad de mejorar tu estilo de vida con nuestros electrodomésticos de calidad.",
+    images: [OG_IMAGE],
   },
 }
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
   return (
     <html lang="es" className={`${spaceGrotesk.variable} ${dmSans.variable} antialiased`}>
       <body className="font-mono">
