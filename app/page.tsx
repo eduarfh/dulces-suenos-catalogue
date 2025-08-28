@@ -1,3 +1,4 @@
+// app/page.tsx  (o donde tengas tu HomePage)
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,6 +12,7 @@ import { useState } from "react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { ProductPreviewModal } from "@/components/product-preview-modal"
 import type { Electrodomestico } from "@/contexts/products-context"
+import ContactBubble from "@/components/contact-bubble"
 
 export default function HomePage() {
   const { electrodomesticos } = useProducts()
@@ -123,6 +125,9 @@ export default function HomePage() {
       </div>
 
       <ProductPreviewModal product={selectedProduct} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+
+      {/* Burbuja de contacto */}
+      <ContactBubble />
     </div>
   )
 }

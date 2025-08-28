@@ -1,3 +1,4 @@
+// app/catalogo/page.tsx  (o donde tengas CatalogoPublico)
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,7 +11,7 @@ import { useProducts } from "@/contexts/products-context"
 import { useState } from "react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { ProductPreviewModal } from "@/components/product-preview-modal"
-
+import ContactBubble from "@/components/contact-bubble"
 
 export default function CatalogoPublico() {
   const { electrodomesticos } = useProducts()
@@ -33,7 +34,6 @@ export default function CatalogoPublico() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* Header */}
       <header className="bg-background border-b">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between mb-2">
@@ -123,6 +123,9 @@ export default function CatalogoPublico() {
 
         <ProductPreviewModal product={selectedProduct} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </main>
+
+      {/* Burbuja de contacto */}
+      <ContactBubble />
     </div>
   )
 }
