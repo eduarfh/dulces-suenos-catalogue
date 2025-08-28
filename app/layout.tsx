@@ -1,4 +1,5 @@
-import type React from "react"
+// app/layout.tsx
+import type { ReactNode } from "react"
 import type { Metadata } from "next"
 import { Space_Grotesk, DM_Sans } from "next/font/google"
 import "./globals.css"
@@ -21,14 +22,33 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "Catálogo de Electrodomésticos",
   description: "Date la oportunidad de mejorar tu estilo de vida con nuestros electrodomésticos de calidad.",
-  generator: "v0.app",
+  openGraph: {
+    title: "Catálogo de Electrodomésticos",
+    description: "Electrodomésticos con factura y 3 meses de garantía.",
+    url: "https://v0-electrodomestics-catalogue.vercel.app/", // reemplaza por tu dominio
+    siteName: "Catálogo de Electrodomésticos",
+    type: "website",
+    locale: "es_ES",
+    images: [
+      {
+        url: "https://yzjvywcplllhsqqcfsyb.supabase.co/storage/v1/object/public/Fotos%20Catalogo/Imagen%20de%20WhatsApp%202025-08-28%20a%20las%2001.31.16_e81b24b7.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Imagen promocional - Catálogo de Electrodomésticos",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Catálogo de Electrodomésticos",
+    description: "Electrodomésticos con factura y 3 meses de garantía.",
+    images: [
+      "https://yzjvywcplllhsqqcfsyb.supabase.co/storage/v1/object/public/Fotos%20Catalogo/Imagen%20de%20WhatsApp%202025-08-28%20a%20las%2001.31.16_e81b24b7.jpg",
+    ],
+  },
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="es" className={`${spaceGrotesk.variable} ${dmSans.variable} antialiased`}>
       <body className="font-mono">

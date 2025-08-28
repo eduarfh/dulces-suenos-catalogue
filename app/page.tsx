@@ -117,7 +117,7 @@ export default function HomePage() {
 
         {electrodomesticosFiltrados.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-muted-foreground">No se encontraron productos.</p>
+            <p className="text-muted-foreground">No se encontraron productos 😪</p>
           </div>
         )}
       </div>
