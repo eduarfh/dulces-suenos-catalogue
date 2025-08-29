@@ -108,7 +108,7 @@ export default function HomePage() {
                   <p className="text-lg font-medium text-green-600">
                     ${electrodomestico.precioMayorista}
                     <span className="text-sm text-muted-foreground ml-1">
-                      (min. {electrodomestico.cantidadMinimaMayorista || 0} unidades)
+                      (mínimo {electrodomestico.cantidadMinimaMayorista || 0} unidades)
                     </span>
                   </p>
                 </div>

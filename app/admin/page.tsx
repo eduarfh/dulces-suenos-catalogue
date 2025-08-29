@@ -428,7 +428,7 @@ export default function AdminPanel() {
                   <p className="text-lg font-medium text-green-600">
                     ${electrodomestico.precioMayorista}
                     <span className="text-sm text-gray-500 ml-1">
-                      (min. {electrodomestico.cantidadMinimaMayorista || 0})
+                      (mínimo {electrodomestico.cantidadMinimaMayorista || 0})
                     </span>
                   </p>
                 </div>

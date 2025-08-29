@@ -131,7 +131,7 @@ export default function ContactBubble() {
             <DialogFooter className="mt-4">
               <Button asChild>
                 <Link href={mapsLink} target="_blank" rel="noopener noreferrer">
-                  Ir a Google Maps
+                  Ir al Mapa
                 </Link>
               </Button>
             </DialogFooter>
