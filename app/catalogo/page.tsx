@@ -105,7 +105,7 @@ export default function CatalogoPublico() {
                     <p className="text-lg font-medium text-green-600">
                       ${electrodomestico.precioMayorista}
                       <span className="text-sm text-muted-foreground ml-1">
-                        (min. {electrodomestico.cantidadMinimaMayorista || 1} unidades)
+                        (min. {electrodomestico.cantidadMinimaMayorista || 0} unidades)
                       </span>
                     </p>
                   </div>
@@ -116,7 +116,7 @@ export default function CatalogoPublico() {
 
           {electrodomesticosFiltrados.length === 0 && (
             <div className="text-center py-16">
-              <p className="text-muted-foreground">No se encontraron productos.</p>
+              <p className="text-muted-foreground">No se encontraron productos 😪</p>
             </div>
           )}
         </div>
