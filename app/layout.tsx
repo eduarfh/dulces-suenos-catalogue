@@ -21,7 +21,7 @@ const dmSans = DM_Sans({
 
 const SITE_URL = "https://v0-electrodomesticoscatalogue.vercel.app/"
 const OG_IMAGE =
-  "https://yzjvywcplllhsqqcfsyb.supabase.co/storage/v1/object/public/Fotos%20Catalogo/Imagen%20de%20WhatsApp%202025-08-28%20a%20las%2001.31.16_e81b24b7.jpg"
+  "https://yzjvywcplllhsqqcfsyb.supabase.co/storage/v1/object/public/Fotos%20Catalogo/Presentation%20Image.jpg"
 
 export const metadata: Metadata = {
   title: "Catálogo de Electrodomésticos",
