@@ -28,7 +28,7 @@ export function ProductPreviewModal({ product, isOpen, onClose }: ProductPreview
             </div>
 
             <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="text-sm hover: bg-blue-100 border border-blue-200 text-blue-800">
+              <Badge variant="secondary" className="text-sm hover: bg-orange-100 border border-orange-200 text-orange-800">
                 {product.marca}
               </Badge>
               <Badge variant={product.disponible ? "default" : "secondary"} className={`text-sm ${product.disponible
