@@ -84,11 +84,10 @@ export default function HomePage() {
                 <div className="absolute top-3 right-3">
                   <Badge
                     variant={electrodomestico.disponible ? "default" : "secondary"}
-                    className={
-                      electrodomestico.disponible
-                        ? "bg-green-100 text-green-800 border-green-200"
-                        : "bg-gray-100 text-gray-600"
-                    }
+                    className={`flex-1 ${electrodomestico.disponible
+                    ? "bg-green-100 text-green-800 hover:bg-green-300 border border-green-400"
+                    : "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
+                    }`}
                   >
                     {electrodomestico.disponible ? "Disponible" : "Agotado"}
                   </Badge>

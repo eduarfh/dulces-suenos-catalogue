@@ -28,10 +28,13 @@ export function ProductPreviewModal({ product, isOpen, onClose }: ProductPreview
             </div>
 
             <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="text-sm">
+              <Badge variant="secondary" className="text-sm hover: bg-blue-100 border border-blue-200 text-blue-800">
                 {product.marca}
               </Badge>
-              <Badge variant={product.disponible ? "default" : "destructive"} className="text-sm">
+              <Badge variant={product.disponible ? "default" : "secondary"} className={`text-sm ${product.disponible
+                    ? "bg-green-100 text-green-800 hover:bg-green-300 border border-green-400"
+                    : "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
+                    }`}>
                 {product.disponible ? "Disponible" : "Agotado"}
               </Badge>
             </div>
