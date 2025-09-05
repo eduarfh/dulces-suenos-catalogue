@@ -32,33 +32,35 @@ export function ProductPreviewModal({ product, isOpen, onClose }: ProductPreview
                 {product.marca}
               </Badge>
               <Badge variant={product.disponible ? "default" : "secondary"} className={`text-sm ${product.disponible
-                    ? "bg-green-100 text-green-800 hover:bg-green-300 border border-green-400"
-                    : "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
-                    }`}>
+                ? "bg-green-100 text-green-800 hover:bg-green-300 border border-green-400"
+                : "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
+                }`}>
                 {product.disponible ? "Disponible" : "Agotado"}
               </Badge>
             </div>
           </div>
 
           <div className="space-y-4">
+
             <div>
-              <h3 className="text-lg font-semibold mb-2">Descripción</h3>
-              <p className="text-muted-foreground leading-relaxed">{product.descripcion}</p>
+              <span className="text-sm text-muted-foreground">Precio Minorista</span>
+              <p className="text-2xl font-bold text-blue-600">${product.precioMinorista}</p>
+            </div>
+
+            <div>
+              <span className="text-sm text-muted-foreground">
+                Precio Mayorista (mín. {product.cantidadMinimaMayorista} unidades)
+              </span>
+              <p className="text-2xl font-bold text-green-600">${product.precioMayorista}</p>
             </div>
 
             <div className="space-y-3 pt-4 border-t">
               <div>
-                <span className="text-sm text-muted-foreground">Precio Minorista</span>
-                <p className="text-2xl font-bold text-blue-600">${product.precioMinorista}</p>
-              </div>
-
-              <div>
-                <span className="text-sm text-muted-foreground">
-                  Precio Mayorista (mín. {product.cantidadMinimaMayorista} unidades)
-                </span>
-                <p className="text-2xl font-bold text-green-600">${product.precioMayorista}</p>
+                <h3 className="text-lg font-semibold mb-2">Descripción</h3>
+                <p className="text-muted-foreground leading-relaxed">{product.descripcion}</p>
               </div>
             </div>
+
           </div>
         </div>
       </DialogContent>
