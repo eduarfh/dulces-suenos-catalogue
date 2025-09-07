@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Search, Settings } from "lucide-react"
 import Link from "next/link"
 import { useProducts } from "@/contexts/products-context"
-import { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { ProductPreviewModal } from "@/components/product-preview-modal"
 import type { Electrodomestico } from "@/contexts/products-context"
@@ -27,6 +27,16 @@ export default function HomePage() {
   const [nameSortActive, setNameSortActive] = useState(false)
   const [priceSortActive, setPriceSortActive] = useState(false)
   const anySortActive = nameSortActive || priceSortActive
+
+  // estado para detectar si estamos en mobile (breakpoint sm = 640px)
+  const [isMobile, setIsMobile] = useState<boolean>(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640) // sm breakpoint
+    check()
+    window.addEventListener("resize", check)
+    return () => window.removeEventListener("resize", check)
+  }, [])
 
   const electrodomesticosFiltrados = electrodomesticos.filter(
     (electrodomestico) =>
@@ -51,8 +61,8 @@ export default function HomePage() {
   // cuando focused o anySortActive en móvil, usamos column layout
   const wrapperClass = `flex items-center gap-3 ${searchFocused || anySortActive ? "flex-col" : "flex-row"} sm:flex-row`
 
-  // sorts centrados en móvil cuando hay anySortActive
-  const sortsClass = `flex items-center gap-2 ${anySortActive ? "w-full justify-center" : "flex-none"}`
+  // w-full solo en mobile; en sm+ usar auto para no robar espacio al search
+  const sortsClass = `flex items-center gap-2 ${anySortActive ? "w-full justify-center sm:w-auto sm:justify-end" : "flex-none"}`
 
   return (
     <div className="min-h-screen bg-background">
@@ -86,7 +96,8 @@ export default function HomePage() {
                 onChange={(v) => setBusqueda(v)}
                 placeholder="Buscar productos"
                 onFocusChange={handleSearchFocusChange}
-                enlarged={anySortActive} // <- importante
+                // enlarged solo si hay foco o (si estamos en mobile y hay sort activo)
+                enlarged={searchFocused || (anySortActive && isMobile)}
               />
             </div>
 

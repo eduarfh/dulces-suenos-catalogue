@@ -41,10 +41,10 @@ export default function SearchBar({
     onFocusChange?.(false)
   }
 
-  // si focused || enlarged -> scale-105 en mobile, pero revertir en sm+
-  const scaleClass = focused || enlarged ? "scale-105 sm:scale-100" : "scale-100"
-  // si enlarged -> full width en mobile, pero en sm volver a max-w-sm
-  const maxWidthClass = enlarged ? "max-w-full sm:max-w-sm" : "max-w-sm"
+  // si focused || enlarged -> scale-105 (ahora se mantiene también en desktop)
+  const scaleClass = focused || enlarged ? "scale-105" : "scale-100"
+  // si enlarged -> full width incluso en sm+ (ya no vuelve a sm:max-w-sm)
+  const maxWidthClass = enlarged ? "max-w-full" : "max-w-sm"
 
   return (
     <div
