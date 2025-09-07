@@ -20,7 +20,6 @@ export default function SortByPrice({ onActiveChange }: Props) {
     }
   }, [electrodomesticos])
 
-  // NOTIFICAR AL PADRE cada vez que changes direction
   useEffect(() => {
     onActiveChange?.(direction !== "none")
   }, [direction, onActiveChange])
@@ -49,9 +48,16 @@ export default function SortByPrice({ onActiveChange }: Props) {
 
   return (
     <div className="flex items-center gap-2">
+      {/* Etiqueta para escritorio */}
       <div className="hidden sm:flex flex-col">
         <span className="text-sm text-muted-foreground">Ordenar</span>
         <span className="text-xs text-muted-foreground/70">por precio</span>
+      </div>
+
+      {/* Mobile: etiqueta encima (centro) */}
+      <div className="sm:hidden flex flex-col items-center mb-1">
+        <span className="text-[10px] text-muted-foreground">Ordenar</span>
+        <span className="text-[9px] text-muted-foreground/80">por precio</span>
       </div>
 
       <div className="flex items-center gap-1 bg-card/50 p-1 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform-gpu">
