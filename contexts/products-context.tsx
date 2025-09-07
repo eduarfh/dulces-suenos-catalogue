@@ -9,7 +9,7 @@ export interface Electrodomestico {
   precioMinorista: number
   precioMayorista: number
   cantidadMinimaMayorista: number
-  imagenURL?: string // <-- ahora opcional (OPCIÓN A)
+  imagenURL?: string
   categoria: string
   disponible: boolean
   descripcion: string

@@ -2,7 +2,6 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Search, Settings } from "lucide-react"
@@ -13,12 +12,21 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { ProductPreviewModal } from "@/components/product-preview-modal"
 import type { Electrodomestico } from "@/contexts/products-context"
 import ContactBubble from "@/components/contact-bubble"
+import SortByName from "@/components/ui/sort-by-name"
+import SearchBar from "@/components/ui/search-bar"
+import SortByPrice from "@/components/ui/sort-by-price"
 
 export default function HomePage() {
   const { electrodomesticos } = useProducts()
   const [busqueda, setBusqueda] = useState("")
   const [selectedProduct, setSelectedProduct] = useState<Electrodomestico | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [searchFocused, setSearchFocused] = useState(false)
+
+  // estados para saber si hay algun sort activo
+  const [nameSortActive, setNameSortActive] = useState(false)
+  const [priceSortActive, setPriceSortActive] = useState(false)
+  const anySortActive = nameSortActive || priceSortActive
 
   const electrodomesticosFiltrados = electrodomesticos.filter(
     (electrodomestico) =>
@@ -31,6 +39,20 @@ export default function HomePage() {
     setSelectedProduct(product)
     setIsModalOpen(true)
   }
+
+  const handleSearchFocusChange = (focused: boolean) => {
+    if (!focused) {
+      window.setTimeout(() => setSearchFocused(false), 160)
+    } else {
+      setSearchFocused(true)
+    }
+  }
+
+  // cuando focused o anySortActive en móvil, usamos column layout
+  const wrapperClass = `flex items-center gap-3 ${searchFocused || anySortActive ? "flex-col" : "flex-row"} sm:flex-row`
+
+  // sorts centrados en móvil cuando hay anySortActive
+  const sortsClass = `flex items-center gap-2 ${anySortActive ? "w-full justify-center" : "flex-none"}`
 
   return (
     <div className="min-h-screen bg-background">
@@ -57,14 +79,23 @@ export default function HomePage() {
 
       <div className="container mx-auto px-6 py-8">
         <div className="mb-8">
-          <div className="relative max-w-sm">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Buscar productos..."
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-              className="pl-10 border-gray-200 focus:border-gray-300 focus:ring-0"
-            />
+          <div className={wrapperClass}>
+            <div className="flex-1 min-w-0 w-full">
+              <SearchBar
+                value={busqueda}
+                onChange={(v) => setBusqueda(v)}
+                placeholder="Buscar productos"
+                onFocusChange={handleSearchFocusChange}
+                enlarged={anySortActive} // <- importante
+              />
+            </div>
+
+            <div className={sortsClass}>
+              <div className={`flex items-center gap-2`}>
+                <SortByName onActiveChange={(active) => setNameSortActive(active)} />
+                <SortByPrice onActiveChange={(active) => setPriceSortActive(active)} />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -85,9 +116,9 @@ export default function HomePage() {
                   <Badge
                     variant={electrodomestico.disponible ? "default" : "secondary"}
                     className={`flex-1 ${electrodomestico.disponible
-                    ? "bg-green-100 text-green-800 hover:bg-green-300 border border-green-400"
-                    : "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
-                    }`}
+                      ? "bg-green-100 text-green-800 hover:bg-green-300 border border-green-400"
+                      : "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
+                      }`}
                   >
                     {electrodomestico.disponible ? "Disponible" : "Agotado"}
                   </Badge>
