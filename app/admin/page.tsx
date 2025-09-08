@@ -43,7 +43,7 @@ export default function AdminPanel() {
     precio: 0,
     precioMinorista: 0,
     precioMayorista: 0,
-    cantidadMinimaMayorista: 1,
+    cantidadMinimaMayorista: 0,
     imagen: "",
     descripcion: "",
     disponible: true,
@@ -76,7 +76,7 @@ export default function AdminPanel() {
         precio: 0,
         precioMinorista: 0,
         precioMayorista: 0,
-        cantidadMinimaMayorista: 1,
+        cantidadMinimaMayorista: 0,
         imagen: "",
         descripcion: "",
         disponible: true,
@@ -96,7 +96,6 @@ export default function AdminPanel() {
 
     try {
       setIsSubmitting(true)
-      // llamar la función del contexto que ahora es async
       await editarElectrodomestico(editandoId, nuevoElectrodomestico)
       setEditandoId(null)
       setNuevoElectrodomestico({
@@ -106,7 +105,7 @@ export default function AdminPanel() {
         precio: 0,
         precioMinorista: 0,
         precioMayorista: 0,
-        cantidadMinimaMayorista: 1,
+        cantidadMinimaMayorista: 0,
         imagen: "",
         descripcion: "",
         disponible: true,
@@ -136,7 +135,7 @@ export default function AdminPanel() {
       imagen: electrodomestico.imagenURL || electrodomestico.imagen || "",
       precioMinorista: electrodomestico.precioMinorista ?? 0,
       precioMayorista: electrodomestico.precioMayorista ?? 0,
-      cantidadMinimaMayorista: electrodomestico.cantidadMinimaMayorista ?? 1,
+      cantidadMinimaMayorista: electrodomestico.cantidadMinimaMayorista ?? 0,
       descripcion: electrodomestico.descripcion || "",
       disponible: electrodomestico.disponible,
     })

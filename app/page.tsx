@@ -1,4 +1,4 @@
-// app/page.tsx  (o donde tengas tu HomePage)
+// app/page.tsx
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -62,7 +62,6 @@ export default function HomePage() {
   // clave que cambia cuando cambia búsqueda o sorts
   const animKey = `${busqueda}-${nameSortActive}-${priceSortActive}`;
 
-
   // cuando focused o anySortActive en móvil, usamos column layout
   const wrapperClass = `flex items-center gap-3 ${isMobile && (searchFocused || anySortActive) ? "flex-col" : "flex-row"} sm:flex-row`
 
@@ -119,7 +118,7 @@ export default function HomePage() {
           <AnimatePresence mode="sync">
             {electrodomesticosFiltrados.map((electrodomestico) => (
               <motion.div
-                key={electrodomestico.id + animKey} // 👈 importante!
+                key={electrodomestico.id + animKey}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}

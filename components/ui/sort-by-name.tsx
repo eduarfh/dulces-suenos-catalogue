@@ -58,7 +58,7 @@ export default function SortByName({ onActiveChange }: Props) {
         <span className="text-xs text-muted-foreground/70">por nombre</span>
       </div>
 
-      {/* En mobile: etiqueta encima (centro) */}
+      {/* En mobile */}
       <div className="sm:hidden flex flex-col items-center mb-1">
         <span className="text-[10px] text-muted-foreground">Ordenar</span>
         <span className="text-[9px] text-muted-foreground/80">por nombre</span>
