@@ -14,6 +14,9 @@ export default function SortByPrice({ onActiveChange }: Props) {
   const [direction, setDirection] = useState<"none" | "asc" | "desc">("none")
   const originalRef = useRef<typeof electrodomesticos | null>(null)
 
+  const labelRef = useRef<HTMLDivElement | null>(null)
+  const [hideLabel, setHideLabel] = useState(false)
+
   useEffect(() => {
     if (!originalRef.current && electrodomesticos && electrodomesticos.length > 0) {
       originalRef.current = [...electrodomesticos]
@@ -46,6 +49,35 @@ export default function SortByPrice({ onActiveChange }: Props) {
   const handleAscClick = () => (direction === "asc" ? resetOrder() : sortAsc())
   const handleDescClick = () => (direction === "desc" ? resetOrder() : sortDesc())
 
+  useEffect(() => {
+    const checkOverlap = () => {
+      try {
+        const searchEl = document.getElementById("site-search")
+        const labelEl = labelRef.current
+        if (!searchEl || !labelEl) {
+          setHideLabel(false)
+          return
+        }
+        const r1 = searchEl.getBoundingClientRect()
+        const r2 = labelEl.getBoundingClientRect()
+        const overlap = !(r1.right < r2.left || r1.left > r2.right || r1.bottom < r2.top || r1.top > r2.bottom)
+        setHideLabel(overlap)
+      } catch {
+        setHideLabel(false)
+      }
+    }
+
+    checkOverlap()
+    window.addEventListener("resize", checkOverlap)
+    window.addEventListener("orientationchange", checkOverlap)
+    const t = setTimeout(checkOverlap, 300)
+    return () => {
+      window.removeEventListener("resize", checkOverlap)
+      window.removeEventListener("orientationchange", checkOverlap)
+      clearTimeout(t)
+    }
+  }, [])
+
   return (
     <div className="flex items-center gap-2">
       {/* Etiqueta para escritorio */}
@@ -54,13 +86,17 @@ export default function SortByPrice({ onActiveChange }: Props) {
         <span className="text-xs text-muted-foreground/70">por precio</span>
       </div>
 
-      {/* Mobile: etiqueta encima (centro) */}
-      <div className="sm:hidden flex flex-col items-center mb-1">
-        <span className="text-[10px] text-muted-foreground">Ordenar</span>
-        <span className="text-[9px] text-muted-foreground/80">por precio</span>
-      </div>
+      {/* Mobile: label encima (centro); se oculta si overlap detectado */}
+      {!hideLabel && (
+        <div ref={labelRef} className="sm:hidden w-full text-center mb-2">
+          <div className="inline-block">
+            <span className="text-[10px] text-muted-foreground block">Ordenar</span>
+            <span className="text-[9px] text-muted-foreground/80 block">por precio</span>
+          </div>
+        </div>
+      )}
 
-      <div className="flex items-center gap-1 bg-card/50 p-1 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform-gpu">
+      <div className="flex items-center gap-1 bg-card/50 p-1 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform-gpu mx-auto">
         <Button
           variant={direction === "asc" ? "default" : "ghost"}
           size="sm"

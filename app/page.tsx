@@ -63,10 +63,11 @@ export default function HomePage() {
   const animKey = `${busqueda}-${nameSortActive}-${priceSortActive}`;
 
   // cuando focused o anySortActive en móvil, usamos column layout
-  const wrapperClass = `flex items-center gap-3 ${isMobile && (searchFocused || anySortActive) ? "flex-col" : "flex-row"} sm:flex-row`
+  // añadimos flex-wrap para permitir que los sorts bajen cuando falte espacio
+  const wrapperClass = `flex flex-wrap ${isMobile && (searchFocused || anySortActive) ? "flex-col items-stretch" : "flex-row items-center"} gap-3 sm:flex-row`
 
-  // w-full solo en mobile; en sm+ usar auto para no robar espacio al search
-  const sortsClass = `flex items-center gap-2 ${anySortActive ? "w-full justify-center sm:w-auto sm:justify-end" : "flex-none"}`
+  // sortsClass: en mobile, si estamos en modo "enlarged" o hay sort activo, que ocupen w-full y se centren
+  const sortsClass = `flex items-center gap-2 ${isMobile ? (searchFocused || anySortActive ? "w-full justify-center" : "flex-none") : (anySortActive ? "w-auto justify-end" : "flex-none")}`
 
   return (
     <div className="min-h-screen bg-background">
@@ -96,13 +97,14 @@ export default function HomePage() {
           <div className={wrapperClass}>
             <div className="flex-1 min-w-0 w-full">
               <SearchBar
+                id="site-search"
                 value={busqueda}
                 onChange={(v) => setBusqueda(v)}
                 placeholder="Buscar productos"
                 onFocusChange={handleSearchFocusChange}
-                // enlarged solo si hay foco o (si estamos en mobile y hay sort activo)
                 enlarged={isMobile && (searchFocused || anySortActive)}
               />
+
             </div>
 
             <div className={sortsClass}>

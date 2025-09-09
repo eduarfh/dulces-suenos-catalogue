@@ -121,3 +121,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* evita que aparezca/desaparezca el scrollbar y cause desplazamientos */
+html {
+  /* support moderno: reserva el gutter del scrollbar */
+  scrollbar-gutter: stable both-edges;
+}

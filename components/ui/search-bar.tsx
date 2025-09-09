@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Search, X } from "lucide-react"
 
 type SearchBarProps = {
+  id?: string
   value: string
   onChange: (value: string) => void
   placeholder?: string
@@ -17,9 +18,10 @@ type SearchBarProps = {
 }
 
 export default function SearchBar({
+  id,
   value,
   onChange,
-  placeholder = "Buscar productos...",
+  placeholder = "  Buscar productos  ",
   className = "",
   autoFocus = false,
   onEnter,
@@ -41,16 +43,15 @@ export default function SearchBar({
     onFocusChange?.(false)
   }
 
-  // si focused || enlarged -> scale-105 (ahora se mantiene también en desktop)
-  const scaleClass = focused || enlarged ? "scale-105" : "scale-100"
-  // si enlarged -> full width incluso en sm+ (ya no vuelve a sm:max-w-sm)
-  const maxWidthClass = enlarged ? "max-w-full" : "max-w-sm"
+  // En lugar de usar transform:scale, controlamos el ancho (layout real)
+  const expandedClass = focused || enlarged ? "max-w-full mb-2" : "max-w-sm mb-0"
 
   return (
     <div
-      className={`relative w-full ${className} transition-all duration-200 ease-in-out transform ${scaleClass} ${maxWidthClass}`}
+      id={id}
+      className={`relative w-full ${className} transition-all duration-200 ease-in-out ${expandedClass} min-w-0 z-10`}
     >
-      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 h-4 w-4" />
 
       <Input
         placeholder={placeholder}
@@ -60,7 +61,11 @@ export default function SearchBar({
         onFocus={handleFocus}
         onBlur={handleBlur}
         autoFocus={autoFocus}
-        className="pl-10 w-full border-gray-200 focus:border-gray-300 focus:ring-0 transition-all duration-200"
+        className={
+          "pl-10 w-full bg-card/50 dark:bg-transparent border-transparent rounded-lg outline-none transition-all duration-200 placeholder:text-muted-foreground text-foreground " +
+          "ring-1 ring-gray-200 dark:ring-slate-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-slate-600 " +
+          "shadow-sm focus:shadow-md"
+        }
       />
 
       {value && (
