@@ -42,7 +42,6 @@ export default function ContactBubble() {
   const address = "Monte y Romay #1069, Monte, Cerro"
   const hours = "Lunes/Sábado: 9:00 AM - 5:00 PM"
 
-  // controlamos el open para detectar cierre y forzar blur si hace falta
   const [open, setOpen] = useState(false)
 
   const handleOpenChange = (isOpen: boolean) => {
@@ -51,17 +50,10 @@ export default function ContactBubble() {
     if (typeof window === "undefined") return;
 
     if (isOpen) {
-      // ancho del scrollbar (si hay)
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-      // guardamos como variable CSS en :root para usarla en el estilo del wrapper
       document.documentElement.style.setProperty("--sb-offset", `${scrollbarWidth}px`);
-      // opcional: si tu dialog no bloquea scroll, podrías forzar overflow hidden:
-      // document.body.style.overflow = "hidden";
     } else {
-      // limpias la variable
       document.documentElement.style.removeProperty("--sb-offset");
-      // document.body.style.overflow = ""; // si la cambiaste arriba
-      // y quitas foco para evitar "ring" visual
       setTimeout(() => {
         try {
           (document.activeElement as HTMLElement | null)?.blur();
@@ -70,17 +62,11 @@ export default function ContactBubble() {
     }
   };
 
-
   useEffect(() => {
-    // Opcional: si el comportamiento viene de mobile browsers que cambian viewport
-    // puedes activar este handler para fijar la posición del botón relativo a visualViewport.
-    // Está comentado por defecto porque en muchos casos no es necesario.
     if (typeof window !== "undefined" && (window as any).visualViewport) {
       const onResize = () => {
         const vv = (window as any).visualViewport
         const bottom = window.innerHeight - vv.height - vv.offsetTop
-        // ajusta si necesitas: por ejemplo aplicar un CSS variable o inline style
-        // document.documentElement.style.setProperty('--vb-bottom-offset', `${Math.max(0, bottom)}px`)
       }
       (window as any).visualViewport.addEventListener('resize', onResize)
       return () => (window as any).visualViewport.removeEventListener('resize', onResize)
@@ -89,13 +75,10 @@ export default function ContactBubble() {
 
   return (
     <>
-      {/* Wrapper: fixed, sin transición en posición; transform hardware accel para suavizar renders */}
       <div
         className="fixed right-6 bottom-6 z-50"
         style={{
-          // evitar transiciones en position/offset que pueden causar "saltitos"
           transition: "none",
-          // forzar composición en GPU (reduce repaints bruscos)
           transform: "translateZ(0)",
           willChange: "transform",
         }}
@@ -103,7 +86,6 @@ export default function ContactBubble() {
         <Dialog open={open} onOpenChange={handleOpenChange}>
           <DialogTrigger asChild>
             <motion.button
-              // conservamos las mismas clases visuales que el Button para que se vea igual
               className={
                 "rounded-full h-14 w-14 p-0 flex items-center justify-center " +
                 "bg-primary hover:brightness-95 " +
@@ -113,7 +95,6 @@ export default function ContactBubble() {
               title="Información de contacto"
               aria-label="Contactar"
               whileTap={{ scale: 0.94 }}
-              // opcional: pequeño y rápido spring para mejor "bounciness"
               transition={{ type: "spring", stiffness: 400, damping: 28, duration: 0.12 }}
             >
               <Info className="h-6 w-6 text-primary-foreground" />
@@ -121,7 +102,8 @@ export default function ContactBubble() {
           </DialogTrigger>
 
 
-          <DialogContent className="w-full sm:max-w-sm overflow-hidden">
+          {/* Nota: quité `overflow-hidden` para evitar recortes inesperados en desktop */}
+          <DialogContent className="w-full sm:max-w-sm">
             <DialogHeader>
               <DialogTitle>Contáctanos</DialogTitle>
               <DialogDescription>Información rápida para comunicarte o visitarnos.</DialogDescription>
@@ -132,27 +114,52 @@ export default function ContactBubble() {
                 <Phone className="h-5 w-5 text-muted-foreground mt-1 flex-shrink-0" />
                 <div className="min-w-0">
                   <p className="text-sm text-muted-foreground">Teléfonos / WhatsApp</p>
-                  <div className="flex flex-wrap sm:flex-row sm:gap-3 mt-1 items-center gap-2">
-                    <a href={telLink1} className="text-sm font-medium hover:underline break-words whitespace-normal">
-                      {phone1}
-                    </a>
 
-                    <a href={waLink1} target="_blank" rel="noopener noreferrer" className="text-sm text-green-600 hover:underline flex items-center gap-2 break-words whitespace-normal">
-                      WhatsApp
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
+                  {/* Contenedor ahora permite wrap en espacios pequeños y en desktop se mantienen en línea si hay espacio */}
+                  <div className="mt-1 flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 gap-2">
+                    {/* Primer par */}
+                    <div className="flex items-center gap-2 w-full sm:w-auto min-w-0">
+                      <a
+                        href={telLink1}
+                        className="text-sm font-medium hover:underline break-words"
+                      >
+                        {phone1}
+                      </a>
 
-                    <span className="hidden sm:inline">•</span>
+                      <a
+                        href={waLink1}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-green-600 hover:underline flex items-center gap-2 whitespace-nowrap flex-shrink-0"
+                      >
+                        WhatsApp
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </div>
 
-                    <a href={telLink2} className="text-sm font-medium hover:underline break-words whitespace-normal">
-                      {phone2}
-                    </a>
+                   
 
-                    <a href={waLink2} target="_blank" rel="noopener noreferrer" className="text-sm text-green-600 hover:underline flex items-center gap-2 break-words whitespace-normal">
-                      WhatsApp
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
+                    {/* Segundo par */}
+                    <div className="flex items-center gap-2 w-full sm:w-auto min-w-0">
+                      <a
+                        href={telLink2}
+                        className="text-sm font-medium hover:underline break-words"
+                      >
+                        {phone2}
+                      </a>
+
+                      <a
+                        href={waLink2}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-green-600 hover:underline flex items-center gap-2 whitespace-nowrap flex-shrink-0"
+                      >
+                        WhatsApp
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </div>
                   </div>
+
                 </div>
               </div>
 
@@ -177,6 +184,7 @@ export default function ContactBubble() {
               </div>
             </div>
 
+            {/* Footer: se centra en móvil y en desktop se alinea a la derecha */}
             <DialogFooter className="mt-4 flex justify-center sm:justify-end">
               <Button asChild className="w-full sm:w-auto">
                 <Link href={mapsLink} target="_blank" rel="noopener noreferrer">
