@@ -76,7 +76,6 @@ export default function SortByName({ onActiveChange }: Props) {
     checkOverlap()
     window.addEventListener("resize", checkOverlap)
     window.addEventListener("orientationchange", checkOverlap)
-    // También comprobamos tras un pequeño timeout por si fonts o render tardan
     const t = setTimeout(checkOverlap, 300)
 
     return () => {
@@ -88,24 +87,22 @@ export default function SortByName({ onActiveChange }: Props) {
 
   return (
     <div className="flex items-center gap-2">
-      {/* Etiqueta para escritorio */}
+      {/* Etiqueta para escritorio (igual que antes) */}
       <div className="hidden sm:flex flex-col">
         <span className="text-sm text-muted-foreground">Ordenar</span>
         <span className="text-xs text-muted-foreground/70">por nombre</span>
       </div>
 
-      {/* En mobile: label ocupa todo el ancho y está centrada; se oculta si detecta overlap */}
+      {/* Mobile: ahora inline a la izquierda y centrada verticalmente con los botones */}
       {!hideLabel && (
-        <div ref={labelRef} className="sm:hidden w-full text-center mb-2">
-          <div className="inline-block">
-            <span className="text-[10px] text-muted-foreground block">Ordenar</span>
-            <span className="text-[9px] text-muted-foreground/80 block">por nombre</span>
-          </div>
+        <div ref={labelRef} className="sm:hidden flex flex-col justify-center items-start">
+          <span className="text-[10px] text-muted-foreground">Ordenar</span>
+          <span className="text-[9px] text-muted-foreground/80">por nombre</span>
         </div>
       )}
 
-      {/* Botones: centrados en mobile usando mx-auto para que no empujen el search */}
-      <div className="flex items-center gap-1 bg-card/50 p-1 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform-gpu mx-auto">
+      {/* Botones: ya no tienen mx-auto para mantener alineación izquierda junto al label */}
+      <div className="flex items-center gap-1 bg-card/50 p-1 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform-gpu">
         <Button
           variant={direction === "asc" ? "default" : "ghost"}
           size="sm"

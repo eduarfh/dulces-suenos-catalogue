@@ -86,17 +86,15 @@ export default function SortByPrice({ onActiveChange }: Props) {
         <span className="text-xs text-muted-foreground/70">por precio</span>
       </div>
 
-      {/* Mobile: label encima (centro); se oculta si overlap detectado */}
+      {/* Mobile: inline a la izquierda y centrada verticalmente */}
       {!hideLabel && (
-        <div ref={labelRef} className="sm:hidden w-full text-center mb-2">
-          <div className="inline-block">
-            <span className="text-[10px] text-muted-foreground block">Ordenar</span>
-            <span className="text-[9px] text-muted-foreground/80 block">por precio</span>
-          </div>
+        <div ref={labelRef} className="sm:hidden flex flex-col justify-center items-start">
+          <span className="text-[10px] text-muted-foreground">Ordenar</span>
+          <span className="text-[9px] text-muted-foreground/80">por precio</span>
         </div>
       )}
 
-      <div className="flex items-center gap-1 bg-card/50 p-1 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform-gpu mx-auto">
+      <div className="flex items-center gap-1 bg-card/50 p-1 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform-gpu">
         <Button
           variant={direction === "asc" ? "default" : "ghost"}
           size="sm"
