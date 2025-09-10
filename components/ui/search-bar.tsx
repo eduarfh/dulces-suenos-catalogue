@@ -15,6 +15,8 @@ type SearchBarProps = {
   onEnter?: () => void
   onFocusChange?: (focused: boolean) => void
   enlarged?: boolean
+  // nueva prop: si está false, el foco NO hará que la barra se expanda
+  expandOnFocus?: boolean
 }
 
 export default function SearchBar({
@@ -27,6 +29,7 @@ export default function SearchBar({
   onEnter,
   onFocusChange,
   enlarged = false,
+  expandOnFocus = true, // por defecto mantenemos el comportamiento anterior
 }: SearchBarProps) {
   const [focused, setFocused] = useState(false)
 
@@ -43,8 +46,9 @@ export default function SearchBar({
     onFocusChange?.(false)
   }
 
-  // En lugar de usar transform:scale, controlamos el ancho (layout real)
-  const expandedClass = focused || enlarged ? "max-w-full mb-2" : "max-w-sm mb-0"
+  // Ahora solo nos expandimos por foco si expandOnFocus === true
+  const shouldExpand = enlarged || (focused && expandOnFocus)
+  const expandedClass = shouldExpand ? "max-w-full mb-2" : "max-w-sm mb-0"
 
   return (
     <div

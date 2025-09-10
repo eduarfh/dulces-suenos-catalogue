@@ -39,6 +39,9 @@ export default function HomePage() {
     return () => window.removeEventListener("resize", check)
   }, [])
 
+  // nuevo: si hay texto escrito en la búsqueda
+  const hasSearchText = busqueda.trim().length > 0
+
   const electrodomesticosFiltrados = electrodomesticos.filter(
     (electrodomestico) =>
       electrodomestico.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -63,11 +66,11 @@ export default function HomePage() {
   const animKey = `${busqueda}-${nameSortActive}-${priceSortActive}`;
 
   // cuando focused o anySortActive en móvil, usamos column layout
-  // añadimos flex-wrap para permitir que los sorts bajen cuando falte espacio
-  const wrapperClass = `flex flex-wrap ${isMobile && (searchFocused || anySortActive) ? "flex-col items-stretch" : "flex-row items-center"} gap-3 sm:flex-row`
+  // ahora también cuando hay texto en la búsqueda (hasSearchText)
+  const wrapperClass = `flex flex-wrap ${isMobile && (searchFocused || anySortActive || hasSearchText) ? "flex-col items-stretch" : "flex-row items-center"} gap-3 sm:flex-row`
 
   // sortsClass: en mobile, si estamos en modo "enlarged" o hay sort activo, que ocupen w-full y se centren
-  const sortsClass = `flex items-center gap-2 ${isMobile ? (searchFocused || anySortActive ? "w-full justify-center" : "flex-none") : (anySortActive ? "w-auto justify-end" : "flex-none")}`
+  const sortsClass = `flex items-center gap-2 ${isMobile ? (searchFocused || anySortActive || hasSearchText ? "w-full justify-center" : "flex-none") : (anySortActive ? "w-auto justify-end" : "flex-none")}`
 
   return (
     <div className="min-h-screen bg-background">
@@ -102,7 +105,10 @@ export default function HomePage() {
                 onChange={(v) => setBusqueda(v)}
                 placeholder="Buscar productos"
                 onFocusChange={handleSearchFocusChange}
-                enlarged={isMobile && (searchFocused || anySortActive)}
+                // ahora ampliamos también cuando hay texto en la búsqueda en móvil
+                enlarged={isMobile && (searchFocused || anySortActive || hasSearchText)}
+                // permitimos expandirse por foco únicamente en mobile
+                expandOnFocus={isMobile}
               />
 
             </div>
