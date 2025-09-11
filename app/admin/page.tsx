@@ -1,3 +1,5 @@
+/* app/admin/page.tsx */
+
 "use client"
 
 import { useEffect } from "react"

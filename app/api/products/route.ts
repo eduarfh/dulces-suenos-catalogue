@@ -1,4 +1,4 @@
-// app/api/products/route.ts  (o donde tengas tu route handler)
+// app/api/products/route.ts
 import { supabase } from "@/lib/supabase"
 import { NextResponse } from "next/server"
 

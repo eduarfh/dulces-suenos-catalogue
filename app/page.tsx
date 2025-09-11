@@ -16,6 +16,7 @@ import SortByName from "@/components/ui/sort-by-name"
 import SearchBar from "@/components/ui/search-bar"
 import SortByPrice from "@/components/ui/sort-by-price"
 import { AnimatePresence, motion } from "framer-motion"
+import AvailableFilter from "@/components/available-filter"
 
 export default function HomePage() {
   const { electrodomesticos } = useProducts()
@@ -24,10 +25,13 @@ export default function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [searchFocused, setSearchFocused] = useState(false)
 
+  // filtro por disponibles (marcado por defecto)
+  const [availableOnly, setAvailableOnly] = useState(true)
   // estados para saber si hay algun sort activo
   const [nameSortActive, setNameSortActive] = useState(false)
   const [priceSortActive, setPriceSortActive] = useState(false)
-  const anySortActive = nameSortActive || priceSortActive
+  // incluir el filtro de "solo disponibles" como sort activo
+  const anySortActive = nameSortActive || priceSortActive || availableOnly
 
   // estado para detectar si estamos en mobile (breakpoint sm = 640px)
   const [isMobile, setIsMobile] = useState<boolean>(false)
@@ -42,12 +46,18 @@ export default function HomePage() {
   // nuevo: si hay texto escrito en la búsqueda
   const hasSearchText = busqueda.trim().length > 0
 
-  const electrodomesticosFiltrados = electrodomesticos.filter(
-    (electrodomestico) =>
-      electrodomestico.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-      electrodomestico.marca.toLowerCase().includes(busqueda.toLowerCase()) ||
-      electrodomestico.categoria.toLowerCase().includes(busqueda.toLowerCase()),
-  )
+  const electrodomesticosFiltrados = electrodomesticos
+    .filter((electrodomestico) => {
+      if (availableOnly && !electrodomestico.disponible) return false
+      const q = busqueda.toLowerCase().trim()
+      if (!q) return true
+      return (
+        electrodomestico.nombre.toLowerCase().includes(q) ||
+        electrodomestico.marca.toLowerCase().includes(q) ||
+        electrodomestico.categoria.toLowerCase().includes(q)
+      )
+    })
+
 
   const handleProductClick = (product: Electrodomestico) => {
     setSelectedProduct(product)
@@ -62,8 +72,7 @@ export default function HomePage() {
     }
   }
 
-  // clave que cambia cuando cambia búsqueda o sorts
-  const animKey = `${busqueda}-${nameSortActive}-${priceSortActive}`;
+  const animKey = `${busqueda}-${nameSortActive}-${priceSortActive}-${availableOnly}`;
 
   // cuando focused o anySortActive en móvil, usamos column layout
   // ahora también cuando hay texto en la búsqueda (hasSearchText)
@@ -114,11 +123,15 @@ export default function HomePage() {
             </div>
 
             <div className={sortsClass}>
-              <div className={`flex items-center gap-2`}>
+              <div className="flex items-center gap-2">
+                {/* Available filter: compacto y en la misma fila que los sorts */}
+                <AvailableFilter active={availableOnly} onChange={setAvailableOnly} />
+
                 <SortByName onActiveChange={(active) => setNameSortActive(active)} />
                 <SortByPrice onActiveChange={(active) => setPriceSortActive(active)} />
               </div>
             </div>
+
           </div>
         </div>
 

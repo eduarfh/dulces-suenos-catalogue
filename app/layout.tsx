@@ -1,23 +1,16 @@
 // app/layout.tsx
 import type React from "react"
 import type { Metadata } from "next"
+import { cookies } from "next/headers"
 import { Space_Grotesk, DM_Sans } from "next/font/google"
 import "./globals.css"
 import { AuthProvider } from "@/contexts/auth-context"
 import { ProductsProvider } from "@/contexts/products-context"
 import { ThemeProvider } from "@/components/theme-provider"
 
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-space-grotesk",
-})
+const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], display: "swap", variable: "--font-space-grotesk" })
+const dmSans = DM_Sans({ subsets: ["latin"], display: "swap", variable: "--font-dm-sans" })
 
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-dm-sans",
-})
 
 const SITE_URL = "https://v0-electrodomesticoscatalogue.vercel.app/"
 const OG_IMAGE =
@@ -51,15 +44,24 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const cookieStore = await cookies()
+  const themeCookie = cookieStore.get("theme")?.value // 'light' | 'dark' | undefined
+
+  // Forzamos la clase del html para que SSR y cliente coincidan
+  const htmlThemeClass = themeCookie === "dark" ? "dark" : themeCookie === "light" ? "light" : ""
+
+  // También inyectamos inline style color-scheme en el servidor para evitar mismatch con la prop CSS
+  const colorSchemeStyle = themeCookie === "dark" ? { colorScheme: "dark" } : themeCookie === "light" ? { colorScheme: "light" } : undefined
+
+  // Default theme que pasamos al client; si hay cookie, la fijamos y deshabilitamos enableSystem
+  const defaultTheme = themeCookie === "dark" || themeCookie === "light" ? themeCookie : "system"
+  const enableSystem = themeCookie ? false : true
+
   return (
-    <html lang="es" className={`${spaceGrotesk.variable} ${dmSans.variable} antialiased`}>
+    <html lang="es" className={`${spaceGrotesk.variable} ${dmSans.variable} antialiased ${htmlThemeClass}`} style={colorSchemeStyle}>
       <body className="font-mono">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme={defaultTheme} enableSystem={enableSystem} disableTransitionOnChange>
           <AuthProvider>
             <ProductsProvider>{children}</ProductsProvider>
           </AuthProvider>
