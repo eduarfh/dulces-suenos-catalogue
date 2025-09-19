@@ -109,13 +109,23 @@ export async function POST(request: Request) {
       toInsert.push(clean);
     }
 
-    const { data, error } = await supabase.from("Producto").insert(toInsert).select(ALLOWED_COLUMNS.join(","));
+    const { data, error } = await supabase
+      .from("Producto")
+      .insert(toInsert)
+      .select(ALLOWED_COLUMNS.join(","));
 
     if (error) {
       console.error("Error saving product(s) to Supabase:", error);
       return NextResponse.json({ error: error.message || "Supabase insert failed" }, { status: 500 });
     }
 
+    // Si se insertó un solo producto, devolvemos `product` (objeto).
+    if (Array.isArray(data) && data.length === 1) {
+      // opcional: añadir header Location
+      return NextResponse.json({ success: true, product: data[0] }, { status: 201 });
+    }
+
+    // Si se insertaron varios, devolvemos `products` (array).
     return NextResponse.json({ success: true, products: data }, { status: 201 });
   } catch (error) {
     console.error("Unexpected error saving product:", error);
