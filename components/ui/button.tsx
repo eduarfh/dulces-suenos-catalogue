@@ -1,3 +1,6 @@
+// components/ui/button.tsx
+"use client"
+
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -35,25 +38,29 @@ const buttonVariants = cva(
   }
 )
 
-function Button({
-  className,
-  variant,
-  size,
-  asChild = false,
-  ...props
-}: React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
-  }) {
-  const Comp = asChild ? Slot : "button"
+type Props = React.ComponentProps<"button"> & VariantProps<typeof buttonVariants> & {
+  asChild?: boolean
+}
+
+const Button = React.forwardRef<HTMLButtonElement, Props>(function Button(
+  { className, variant, size, asChild = false, ...props },
+  ref
+) {
+  const Comp: any = asChild ? Slot : "button"
 
   return (
+    // Pasamos el ref al componente usado (Slot forwardea el ref al hijo)
     <Comp
+      // si quieres identificar el botón desde el exterior (ej: CategoryDropdown), añade `data-category-dropdown-button` cuando lo uses
       data-slot="button"
+      ref={ref}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
   )
-}
+})
+
+Button.displayName = "Button"
 
 export { Button, buttonVariants }
+export type { Props as ButtonProps }

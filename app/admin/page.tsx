@@ -61,6 +61,8 @@ export default function AdminPanel() {
   const [availableOnly, setAvailableOnly] = useState(true)
   const [nameSortActive, setNameSortActive] = useState(false)
   const [priceSortActive, setPriceSortActive] = useState(false)
+  const [categorySelected, setCategorySelected] = useState<string | null>(null)
+  const [brandSelected, setBrandSelected] = useState<string | null>(null)
 
   const [isMobile, setIsMobile] = useState<boolean>(false)
   useEffect(() => {
@@ -79,6 +81,8 @@ export default function AdminPanel() {
   const electrodomesticosFiltrados = electrodomesticos
     .filter((e) => {
       if (availableOnly && !e.disponible) return false
+      if (categorySelected && e.categoria !== categorySelected) return false
+      if (brandSelected && e.marca !== brandSelected) return false
       const q = busqueda.toLowerCase().trim()
       if (!q) return true
       return (
@@ -120,7 +124,7 @@ export default function AdminPanel() {
             : Number(nuevoElectrodomestico.precioMayorista),
         cantidadMinimaMayorista:
           nuevoElectrodomestico.cantidadMinimaMayorista === "" ||
-          nuevoElectrodomestico.cantidadMinimaMayorista === undefined
+            nuevoElectrodomestico.cantidadMinimaMayorista === undefined
             ? 0
             : Number(nuevoElectrodomestico.cantidadMinimaMayorista),
         disponible: nuevoElectrodomestico.disponible ?? true,
@@ -165,7 +169,7 @@ export default function AdminPanel() {
             : Number(nuevoElectrodomestico.precioMayorista),
         cantidadMinimaMayorista:
           nuevoElectrodomestico.cantidadMinimaMayorista === "" ||
-          nuevoElectrodomestico.cantidadMinimaMayorista === undefined
+            nuevoElectrodomestico.cantidadMinimaMayorista === undefined
             ? 0
             : Number(nuevoElectrodomestico.cantidadMinimaMayorista),
         disponible: nuevoElectrodomestico.disponible ?? true,
@@ -228,7 +232,7 @@ export default function AdminPanel() {
           value={busqueda}
           onChange={setBusqueda}
           placeholder="Buscar por nombre, marca o categoría..."
-          onFocusChange={() => {}}
+          onFocusChange={() => { }}
           enlarged={true}
           expandOnFocus={true}
           availableOnly={availableOnly}
@@ -253,6 +257,8 @@ export default function AdminPanel() {
             })
             setDialogAbierto(true)
           }}
+          brandSelected={brandSelected}
+          setBrand={setBrandSelected}
         />
 
         <ProductGrid

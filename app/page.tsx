@@ -22,6 +22,8 @@ export default function HomePage() {
   const [availableOnly, setAvailableOnly] = useState(true)
   const [nameSortActive, setNameSortActive] = useState(false)
   const [priceSortActive, setPriceSortActive] = useState(false)
+  const [categorySelected, setCategorySelected] = useState<string | null>(null)
+  const [brandSelected, setBrandSelected] = useState<string | null>(null)
 
   const [isMobile, setIsMobile] = useState(false)
   useEffect(() => {
@@ -38,6 +40,8 @@ export default function HomePage() {
   const electrodomesticosFiltrados = electrodomesticos
     .filter((e) => {
       if (availableOnly && !e.disponible) return false
+      if (categorySelected && e.categoria !== categorySelected) return false
+      if (brandSelected && e.marca !== brandSelected) return false
       const q = busqueda.toLowerCase().trim()
       if (!q) return true
       return (
@@ -85,7 +89,12 @@ export default function HomePage() {
           onPriceActiveChange={(a) => setPriceSortActive(a)}
           isMobile={isMobile}
           showAddButton={false}
+          categorySelected={categorySelected}
+          setCategory={setCategorySelected}
+          brandSelected={brandSelected}
+          setBrand={setBrandSelected}
         />
+
 
         <ProductGrid items={electrodomesticosFiltrados} onItemClick={handleProductClick} animKey={animKey} />
 

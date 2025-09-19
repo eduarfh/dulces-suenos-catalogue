@@ -1,10 +1,12 @@
-// components/shared/FiltersBar.tsx
+// components/shared/filtersBar.tsx
 "use client"
 import React from "react"
 import SearchBar from "@/components/ui/search-bar"
 import AvailableFilter from "@/components/ui/available-filter"
 import SortByName from "@/components/ui/sort-by-name"
 import SortByPrice from "@/components/ui/sort-by-price"
+import CategoryFilter from "@/components/ui/category-filter"
+import BrandFilter from "@/components/ui/brand-filter"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 
@@ -23,6 +25,11 @@ type Props = {
     isMobile?: boolean
     showAddButton?: boolean
     onAddClick?: () => void
+    // categorías y marcas
+    categorySelected?: string | null
+    setCategory?: (c: string | null) => void
+    brandSelected?: string | null
+    setBrand?: (b: string | null) => void
 }
 
 export default function FiltersBar({
@@ -40,6 +47,10 @@ export default function FiltersBar({
     isMobile = false,
     showAddButton = false,
     onAddClick,
+    categorySelected = null,
+    setCategory,
+    brandSelected = null,
+    setBrand,
 }: Props) {
     const wrapperClass = `flex flex-col items-stretch gap-3`
     const sortsClass = `w-full`
@@ -64,9 +75,29 @@ export default function FiltersBar({
                         <div className="flex-shrink-0">
                             <AvailableFilter active={availableOnly} onChange={setAvailableOnly} />
                         </div>
+
+                        <div className="flex-shrink-0">
+                            <BrandFilter
+                                selected={brandSelected}
+                                onChange={(b) => setBrand?.(b ?? null)}
+                                searchId={id}
+                                isMobile={isMobile}
+                            />
+                        </div>
+
+                        <div className="flex-shrink-0">
+                            <CategoryFilter
+                                selected={categorySelected}
+                                onChange={(c) => setCategory?.(c ?? null)}
+                                searchId={id}
+                                isMobile={isMobile}
+                            />
+                        </div>
+
                         <div className="flex-shrink-0">
                             <SortByName onActiveChange={(a) => onNameActiveChange?.(a)} />
                         </div>
+
                         <div className="flex-shrink-0">
                             <SortByPrice onActiveChange={(a) => onPriceActiveChange?.(a)} />
                         </div>
