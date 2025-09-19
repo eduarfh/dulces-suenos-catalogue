@@ -259,6 +259,8 @@ export default function AdminPanel() {
           }}
           brandSelected={brandSelected}
           setBrand={setBrandSelected}
+          categorySelected={categorySelected}
+          setCategory={setCategorySelected}
         />
 
         <ProductGrid
@@ -351,9 +353,21 @@ export default function AdminPanel() {
             </div>
 
             <DialogFooter>
-              <Button onClick={editandoId ? handleEditarElectrodomestico : handleAgregarElectrodomestico} className="h-8 px-3 rounded-md text-muted-foreground text-white" disabled={isSubmitting}>
+              <Button
+                onClick={editandoId ? handleEditarElectrodomestico : handleAgregarElectrodomestico}
+                disabled={isSubmitting}
+                className={`
+    h-8 px-3 rounded-md
+    text-white
+    bg-red-600 hover:bg-red-700 focus-visible:ring-2 focus-visible:ring-red-500
+    dark:bg-red-900 dark:hover:bg-red-600 dark:focus-visible:ring-red-400
+    transition-colors duration-150
+    ${isSubmitting ? "opacity-60 cursor-not-allowed" : "shadow-sm hover:shadow-md"}
+  `}
+              >
                 {isSubmitting ? "Enviando..." : editandoId ? "Guardar Cambios" : "Agregar Producto"}
               </Button>
+
             </DialogFooter>
           </DialogContent>
         </Dialog>

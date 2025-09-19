@@ -128,10 +128,10 @@ export default function CategoryFilter({ selected = null, onChange, searchId }: 
   return (
     <div id={searchId ? `${searchId}-category` : undefined} className="relative inline-block">
       <div className="flex items-center gap-3">
-        <div className="flex flex-col leading-tight select-none mr-2">
-          <span className="text-xs text-muted-foreground">Filtrar por</span>
-          <span className="text-sm font-medium text-foreground -mt-0.5">Categoría</span>
-        </div>
+        <div className="hidden sm:flex flex-col">
+        <span className="text-sm text-muted-foreground">Filtrar por</span>
+        <span className="text-xs text-muted-foreground/70">categoría</span>
+      </div>
 
         <div className="flex items-center gap-1 bg-card/50 p-1 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform-gpu">
           <Button
