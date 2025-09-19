@@ -79,66 +79,63 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
     guardarProductos(productos)
   }
 
-  // contexts/products-context.tsx -> en agregarElectrodomestico
   const agregarElectrodomestico = async (producto: Omit<Electrodomestico, "id">) => {
     try {
       const response = await fetch("/api/products", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(producto),
-      });
+      })
 
-      const text = await response.text();
-      let data: any = null;
+      const text = await response.text()
+      let data: any = null
       try {
-        data = text ? JSON.parse(text) : null;
+        data = text ? JSON.parse(text) : null
       } catch (err) {
-        console.error("Respuesta del servidor no es JSON:", text);
-        throw new Error("Respuesta inválida del servidor");
+        console.error("Respuesta del servidor no es JSON:", text)
+        throw new Error("Respuesta inválida del servidor")
       }
 
       if (!response.ok) {
-        const msg = (data && (data.error || data.message)) || `HTTP ${response.status}`;
-        throw new Error(`Error al agregar el producto: ${msg}`);
+        // intentar leer mensaje de error del body si existe
+        const msg = (data && (data.error || data.message)) || `HTTP ${response.status}`
+        throw new Error(`Error al agregar el producto: ${msg}`)
       }
+
+      // Manejo robusto: la API puede devolver { product: {...} } o un array o data[0]
+      let nuevoProducto: Electrodomestico | undefined
 
       if (data === null) {
-        throw new Error("Respuesta vacía del servidor");
+        throw new Error("Respuesta vacía del servidor")
       }
 
-      // Buscar el nuevo producto en varias formas posibles
-      let nuevoProducto: Electrodomestico | undefined;
-
       if (data.product) {
-        nuevoProducto = Array.isArray(data.product) ? data.product[0] : data.product;
-      } else if (data.products) {
-        nuevoProducto = Array.isArray(data.products) ? data.products[0] : data.products;
+        nuevoProducto = Array.isArray(data.product) ? data.product[0] : data.product
       } else if (Array.isArray(data)) {
-        nuevoProducto = data[0];
+        nuevoProducto = data[0]
       } else if (data[0]) {
-        nuevoProducto = data[0];
+        nuevoProducto = data[0]
       } else if (typeof data === "object") {
-        // fallback: si el objeto parece producto
-        // ej. { id: ..., nombre: ... }
-        if (data.id) nuevoProducto = data as Electrodomestico;
+        // fallback: si es un objeto que parece producto
+        nuevoProducto = data as Electrodomestico
       }
 
       if (!nuevoProducto || !nuevoProducto.id) {
-        console.error("Respuesta inválida al crear producto:", data);
-        throw new Error("No se obtuvo el producto creado del servidor");
+        console.error("Respuesta inválida al crear producto:", data)
+        throw new Error("No se obtuvo el producto creado del servidor")
       }
 
-      const nuevosProductos = [...electrodomesticos, nuevoProducto];
-      setElectrodomesticos(nuevosProductos);
+      const nuevosProductos = [...electrodomesticos, nuevoProducto]
+      setElectrodomesticos(nuevosProductos)
     } catch (error) {
-      console.error("Error agregando producto:", error);
-      // Aquí podrías re-lanzar para que el caller muestre el error,
-      // o retornar un booleano para indicar fallo. Ahora solo lo logueamos.
+      console.error("Error agregando producto:", error)
+      // opcional: re-lanzar o mostrar toast al usuario
     }
-  };
+  }
 
-
-  const editarElectrodomestico = async (id: number, producto: Partial<Electrodomestico>) => {
+    const editarElectrodomestico = async (id: number, producto: Partial<Electrodomestico>) => {
     try {
       // Llamada al backend
       const response = await fetch("/api/products", {
@@ -247,11 +244,11 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
       <ProductsContext.Provider
         value={{
           electrodomesticos: [],
-          setElectrodomesticos: () => { },
-          agregarElectrodomestico: () => { },
-          editarElectrodomestico: () => { },
-          eliminarElectrodomestico: () => { },
-          toggleDisponibilidad: () => { },
+          setElectrodomesticos: () => {},
+          agregarElectrodomestico: () => {},
+          editarElectrodomestico: () => {},
+          eliminarElectrodomestico: () => {},
+          toggleDisponibilidad: () => {},
           isLoading: true,
         }}
       >
