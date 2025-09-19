@@ -23,7 +23,7 @@ export default function SearchBar({
   id,
   value,
   onChange,
-  placeholder = "  Buscar productos  ",
+  placeholder = " Buscar producto ",
   className = "",
   autoFocus = false,
   onEnter,

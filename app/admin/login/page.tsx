@@ -1,42 +1,54 @@
-/* app/admin/login/page.tsx */
-"use client"
+// app/admin/login/page.tsx
+"use client";
 
-import type React from "react"
-
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useAuth } from "@/contexts/auth-context"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Lock, ArrowLeft } from "lucide-react"
-import { ThemeToggle } from "@/components/theme-toggle"
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Lock, ArrowLeft } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
-  const { login } = useAuth()
-  const router = useRouter()
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // USAMOS exclusivamente el hook del provider (sin importar supabase aquí)
+  const { login } = useAuth();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-    const success = login(username, password)
+    try {
+      const email = username.trim().toLowerCase();
+      console.log("DEBUG - calling login from SupabaseAuthProvider with", { email });
 
-    if (success) {
-      router.push("/admin")
-    } else {
-      setError("Credenciales incorrectas. Por favor, intenta nuevamente.")
+      const ok = await login(email, password);
+
+      console.log("login returned:", ok);
+
+      if (!ok) {
+        setError("Usuario o contraseña incorrectos.");
+        return;
+      }
+
+      // Navegamos sabiendo que el provider actualizó el estado
+      router.push("/admin");
+    } catch (err: any) {
+      console.error("Unexpected:", err);
+      setError(String(err?.message ?? err));
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false)
-  }
+  };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4 relative">
@@ -75,7 +87,7 @@ export default function LoginPage() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Ingresa tu usuario"
+                placeholder="Ingresa tu usuario (email)"
                 required
                 className="w-full"
               />
@@ -106,5 +118,5 @@ export default function LoginPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

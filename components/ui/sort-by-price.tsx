@@ -126,6 +126,7 @@ export default function SortByPrice({ onActiveChange }: Props) {
           <div className="hidden sm:block ml-2">
             {direction === "asc" && <span className="text-sm text-muted-foreground">Min → Max</span>}
             {direction === "desc" && <span className="text-sm text-muted-foreground">Max → Min</span>}
+            {direction === "none" && <span className="text-sm text-muted-foreground">Original</span>}
           </div>
         </div>
 

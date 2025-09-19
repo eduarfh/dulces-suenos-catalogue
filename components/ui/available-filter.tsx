@@ -16,7 +16,7 @@ export default function AvailableFilter({ active, onChange, className = "" }: Pr
     <div className={`flex items-center gap-2 ${className}`}>
       {/* Desktop label (Orden/por) */}
       <div className="hidden sm:flex flex-col">
-        <span className="text-sm text-muted-foreground">Filtro</span>
+        <span className="text-sm text-muted-foreground">Filtrar por</span>
         <span className="text-xs text-muted-foreground/70">disponibles</span>
       </div>
 
