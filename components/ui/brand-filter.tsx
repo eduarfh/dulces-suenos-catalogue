@@ -168,8 +168,8 @@ export default function BrandFilter({ selected = null, onChange, searchId }: Pro
                 {/* Mobile label (nuevo) */}
                 {!hideLabel && (
                     <div ref={labelRef} className="sm:hidden flex flex-col justify-center items-start">
-                        <span className="text-[10px] text-muted-foreground">Filtrar por</span>
-                        <span className="text-[9px] text-muted-foreground/80">marca</span>
+                        <span className="text-[12px] text-muted-foreground/80">Filtrar por</span>
+                        <span className="text-[12px] text-muted-foreground">marca</span>
                     </div>
                 )}
 

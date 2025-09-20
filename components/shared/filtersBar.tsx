@@ -25,7 +25,6 @@ type Props = {
     isMobile?: boolean
     showAddButton?: boolean
     onAddClick?: () => void
-    // categorías y marcas
     categorySelected?: string | null
     setCategory?: (c: string | null) => void
     brandSelected?: string | null
@@ -71,20 +70,14 @@ export default function FiltersBar({
 
             <div className={sortsClass}>
                 <div className="w-full flex justify-center">
-                    <div className="flex gap-2 px-2 py-1 overflow-x-auto" style={{ WebkitOverflowScrolling: "touch" }}>
-
+                    {/* contenedor de filtros: una sola línea, altura fija de referencia y no recorta verticalmente */}
+                    <div
+                        className="flex gap-2 px-2 py-2 overflow-x-auto overflow-y-visible flex-nowrap items-center whitespace-nowrap min-h-[40px]"
+                        style={{ WebkitOverflowScrolling: "touch" }}
+                    >
                         <div className="flex-shrink-0">
                             <AvailableFilter active={availableOnly} onChange={setAvailableOnly} />
                         </div>
-
-                        <div className="flex-shrink-0">
-                            <SortByName onActiveChange={(a) => onNameActiveChange?.(a)} />
-                        </div>
-
-                        <div className="flex-shrink-0">
-                            <SortByPrice onActiveChange={(a) => onPriceActiveChange?.(a)} />
-                        </div>
-
                         <div className="flex-shrink-0">
                             <BrandFilter
                                 selected={brandSelected}
@@ -103,16 +96,18 @@ export default function FiltersBar({
                             />
                         </div>
 
+                        <div className="flex-shrink-0">
+                            <SortByName onActiveChange={(a) => onNameActiveChange?.(a)} />
+                        </div>
 
-                        {/* Desktop: botón Agregar dentro de un wrapper idéntico al de los sorts (bg + p-1 + rounded + shadow) */}
+                        <div className="flex-shrink-0">
+                            <SortByPrice onActiveChange={(a) => onPriceActiveChange?.(a)} />
+                        </div>
+
                         {!isMobile && showAddButton && (
                             <div className="flex-shrink-0">
                                 <div className="bg-card/50 p-1 rounded-lg">
-                                    <Button
-                                        onClick={onAddClick}
-                                        variant="outline"
-                                        className="h-8 px-3 rounded-md"
-                                    >
+                                    <Button onClick={onAddClick} variant="default" className="btn-add h-8 px-3 rounded-md">
                                         <Plus className="h-4 w-4 mr-2" />
                                         Agregar Producto
                                     </Button>
@@ -122,15 +117,11 @@ export default function FiltersBar({
                     </div>
                 </div>
 
-                {/* Mobile: botón Agregar debajo, también con el mismo envoltorio visual */}
                 {isMobile && showAddButton && (
                     <div className="w-full flex justify-center mt-2">
                         <div className="w-full px-4 sm:w-auto">
                             <div className="bg-card/50 p-1 rounded-lg">
-                                <Button
-                                    onClick={onAddClick}
-                                    className="w-full h-8 px-3 h-8 px-3 rounded-md text-muted-foreground text-white"
-                                >
+                                <Button onClick={onAddClick} className="btn-add w-full h-8 px-3 rounded-md">
                                     <Plus className="h-4 w-4 mr-2" />
                                     Agregar Producto
                                 </Button>

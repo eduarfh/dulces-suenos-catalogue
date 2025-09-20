@@ -135,3 +135,38 @@ html {
   scrollbar-gutter: stable both-edges;
 }
 
+.btn-add {
+  @apply inline-flex items-center justify-center gap-2 font-medium;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+  background: var(--color-primary);
+  color: var(--color-primary-foreground);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+/* micro-animación / hover */
+.btn-add:hover {
+  transform: translateY(-1px);
+  filter: brightness(.98);
+}
+.btn-add:active {
+  transform: translateY(0);
+}
+
+/* foco accesible */
+.btn-add:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(0,0,0,0.06);
+}
+
+/* modo oscuro: degradado y sombra más intensa */
+.dark .btn-add {
+  background: linear-gradient(90deg, var(--color-sidebar-primary), var(--color-sidebar-accent));
+  color: var(--color-sidebar-primary-foreground);
+  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.6);
+}
+.dark .btn-add:focus-visible {
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.06);
+}
+

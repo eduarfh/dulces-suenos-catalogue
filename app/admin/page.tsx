@@ -353,7 +353,11 @@ export default function AdminPanel() {
             </div>
 
             <DialogFooter>
-              <Button onClick={editandoId ? handleEditarElectrodomestico : handleAgregarElectrodomestico} className="h-8 px-3 rounded-md text-muted-foreground text-white" disabled={isSubmitting}>
+              <Button
+                onClick={editandoId ? handleEditarElectrodomestico : handleAgregarElectrodomestico}
+                className="btn-add h-8 px-3 rounded-md"
+                disabled={isSubmitting}
+              >
                 {isSubmitting ? "Enviando..." : editandoId ? "Guardar Cambios" : "Agregar Producto"}
               </Button>
             </DialogFooter>

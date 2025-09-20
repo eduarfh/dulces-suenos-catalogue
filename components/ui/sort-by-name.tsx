@@ -14,7 +14,6 @@ export default function SortByName({ onActiveChange }: Props) {
   const [direction, setDirection] = useState<"none" | "asc" | "desc">("none")
   const originalRef = useRef<typeof electrodomesticos | null>(null)
 
-  // estado para ocultar etiqueta si hay overlap
   const labelRef = useRef<HTMLDivElement | null>(null)
   const [hideLabel, setHideLabel] = useState(false)
 
@@ -85,62 +84,64 @@ export default function SortByName({ onActiveChange }: Props) {
   }, [])
 
   return (
-    <div className="flex items-center gap-2">
-      {/* Etiqueta para escritorio (Ordenar / por nombre) — centrada verticalmente */}
-      <div className="hidden sm:flex flex-col items-center text-center">
+    <div className="flex items-center gap-2 h-10">
+      {/* Desktop label */}
+      <div className="hidden sm:flex flex-col items-center text-center h-full">
         <span className="text-sm text-muted-foreground">Ordenar</span>
         <span className="text-xs text-muted-foreground/70">por nombre</span>
       </div>
 
-      {/* Mobile: label compacto (oculto si hideLabel) — centrado verticalmente */}
+      {/* Mobile label: izquierda del botón, centrada verticalmente (oculta si hideLabel) */}
       {!hideLabel && (
-        <div ref={labelRef} className="sm:hidden flex flex-col justify-center items-center text-center">
-          <span className="text-[10px] text-muted-foreground">Ordenar</span>
-          <span className="text-[9px] text-muted-foreground/80">por nombre</span>
+        <div ref={labelRef} className="sm:hidden flex flex-col justify-center items-start h-10">
+          <span className="text-[12px] text-muted-foreground/80">Ordenar por</span>
+          <span className="text-[12px] text-muted-foreground">nombre</span>
         </div>
       )}
 
-      {/* Botones + estado inline en desktop + estado debajo solo en móvil */}
-      <div className="flex flex-col items-center gap-1">
-        <div className="flex items-center gap-1">
-          <div className="flex items-center gap-1 bg-card/50 p-1 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform-gpu">
-            <Button
-              variant={direction === "asc" ? "default" : "ghost"}
-              size="sm"
-              onClick={handleAscClick}
-              aria-pressed={direction === "asc"}
-              title={direction === "asc" ? "Click para restablecer" : "Ordenar A → Z"}
-              className={`h-8 w-8 transition-transform duration-150 ${direction === "asc" ? "scale-105 shadow-md" : ""}`}
-            >
-              <SortAsc className="h-4 w-4" />
-            </Button>
+      {/* Botones + estado: wrapper relative para posicionar el estado móvil */}
+      <div className="relative h-full overflow-visible">
+        <div className="flex items-center gap-1 h-10">
+          <div className="flex items-center gap-1 bg-card/50 px-1 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform-gpu h-full">
+            <div className="h-full flex items-center">
+              <Button
+                variant={direction === "asc" ? "default" : "ghost"}
+                size="sm"
+                onClick={handleAscClick}
+                aria-pressed={direction === "asc"}
+                title={direction === "asc" ? "Click para restablecer" : "Ordenar A → Z"}
+                className={`h-8 w-8 transition-transform duration-150 ${direction === "asc" ? "scale-105 shadow-md" : ""}`}
+              >
+                <SortAsc className="h-4 w-4" />
+              </Button>
 
-            <Button
-              variant={direction === "desc" ? "default" : "ghost"}
-              size="sm"
-              onClick={handleDescClick}
-              aria-pressed={direction === "desc"}
-              title={direction === "desc" ? "Click para restablecer" : "Ordenar Z → A"}
-              className={`h-8 w-8 transition-transform duration-150 ${direction === "desc" ? "scale-105 shadow-md" : ""}`}
-            >
-              <SortDesc className="h-4 w-4" />
-            </Button>
+              <Button
+                variant={direction === "desc" ? "default" : "ghost"}
+                size="sm"
+                onClick={handleDescClick}
+                aria-pressed={direction === "desc"}
+                title={direction === "desc" ? "Click para restablecer" : "Ordenar Z → A"}
+                className={`h-8 w-8 transition-transform duration-150 ${direction === "desc" ? "scale-105 shadow-md" : ""}`}
+              >
+                <SortDesc className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
 
-          {/* Estado inline visible en desktop — centrado verticalmente */}
-          <div className="hidden sm:flex ml-2 flex-col justify-center">
+          {/* Estado inline desktop */}
+          <div className="hidden sm:flex ml-2 flex-col justify-center h-full">
             {direction === "asc" && <span className="text-sm text-muted-foreground">A → Z</span>}
             {direction === "desc" && <span className="text-sm text-muted-foreground">Z → A</span>}
-            {direction === "none" && <span className="text-sm text-muted-foreground">Original</span>}
+            {/* {direction === "none" && <span className="text-sm text-muted-foreground">Original</span>} */}
           </div>
         </div>
 
-        {/* Estado debajo solo en móvil */}
-        <div className="mt-1 text-center sm:hidden">
+        {/* Estado debajo solo en móvil: absolute centrado bajo el botón */}
+        {/* <div className="sm:hidden absolute left-1/2 transform -translate-x-1/2 top-full mt-1 w-max text-center">
           {direction === "asc" && <span className="text-sm text-muted-foreground">A → Z</span>}
           {direction === "desc" && <span className="text-sm text-muted-foreground">Z → A</span>}
           {direction === "none" && <span className="text-sm text-muted-foreground">Original</span>}
-        </div>
+        </div> */}
       </div>
     </div>
   )
