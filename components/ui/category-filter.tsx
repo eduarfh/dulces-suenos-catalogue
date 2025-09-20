@@ -28,7 +28,41 @@ export default function CategoryFilter({ selected = null, onChange, searchId }: 
   const menuRef = useRef<HTMLDivElement | null>(null)
   const [menuStyle, setMenuStyle] = useState<{ top: number; left: number; width: number } | null>(null)
 
-  // Calcula posición (se ejecuta al abrir y cuando cambian scroll/resize)
+  // Mobile label / overlap logic
+  const labelRef = useRef<HTMLDivElement | null>(null)
+  const [hideLabel, setHideLabel] = useState(false)
+  const effectiveSearchId = searchId ?? "site-search"
+
+  useEffect(() => {
+    const checkOverlap = () => {
+      try {
+        const searchEl = document.getElementById(effectiveSearchId)
+        const labelEl = labelRef.current
+        if (!searchEl || !labelEl) {
+          setHideLabel(false)
+          return
+        }
+        const r1 = searchEl.getBoundingClientRect()
+        const r2 = labelEl.getBoundingClientRect()
+        const overlap = !(r1.right < r2.left || r1.left > r2.right || r1.bottom < r2.top || r1.top > r2.bottom)
+        setHideLabel(overlap)
+      } catch {
+        setHideLabel(false)
+      }
+    }
+
+    checkOverlap()
+    window.addEventListener("resize", checkOverlap)
+    window.addEventListener("orientationchange", checkOverlap)
+    const t = setTimeout(checkOverlap, 300)
+    return () => {
+      window.removeEventListener("resize", checkOverlap)
+      window.removeEventListener("orientationchange", checkOverlap)
+      clearTimeout(t)
+    }
+  }, [effectiveSearchId])
+
+  // posicionamiento portal
   useLayoutEffect(() => {
     if (!open) return
     const compute = () => {
@@ -50,7 +84,7 @@ export default function CategoryFilter({ selected = null, onChange, searchId }: 
     }
   }, [open])
 
-  // cerrar al click fuera (detecta tanto el botón como el menú en portal)
+  // cerrar al click fuera
   useEffect(() => {
     function handleOutside(e: MouseEvent | TouchEvent) {
       const t = e.target as Node | null
@@ -84,7 +118,6 @@ export default function CategoryFilter({ selected = null, onChange, searchId }: 
     buttonRef.current?.focus()
   }
 
-  // Menu (siempre en portal para evitar clipping)
   const portalMenu = (
     <div
       ref={menuRef}
@@ -129,9 +162,17 @@ export default function CategoryFilter({ selected = null, onChange, searchId }: 
     <div id={searchId ? `${searchId}-category` : undefined} className="relative inline-block">
       <div className="flex items-center gap-3">
         <div className="hidden sm:flex flex-col">
-        <span className="text-sm text-muted-foreground">Filtrar por</span>
-        <span className="text-xs text-muted-foreground/70">categoría</span>
-      </div>
+          <span className="text-sm text-muted-foreground">Filtrar por</span>
+          <span className="text-xs text-muted-foreground/70">categoría</span>
+        </div>
+
+        {/* Mobile label */}
+        {!hideLabel && (
+          <div ref={labelRef} className="sm:hidden flex flex-col justify-center items-start">
+            <span className="text-[10px] text-muted-foreground">Filtrar por</span>
+            <span className="text-[9px] text-muted-foreground/80">categoría</span>
+          </div>
+        )}
 
         <div className="flex items-center gap-1 bg-card/50 p-1 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform-gpu">
           <Button
@@ -149,7 +190,6 @@ export default function CategoryFilter({ selected = null, onChange, searchId }: 
         </div>
       </div>
 
-      {/* Siempre portal (desktop + móvil) para evitar quedar detrás de otros contenedores */}
       {open && typeof document !== "undefined" && createPortal(portalMenu, document.body)}
     </div>
   )

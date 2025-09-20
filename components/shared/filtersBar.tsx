@@ -72,8 +72,17 @@ export default function FiltersBar({
             <div className={sortsClass}>
                 <div className="w-full flex justify-center">
                     <div className="flex gap-2 px-2 py-1 overflow-x-auto" style={{ WebkitOverflowScrolling: "touch" }}>
+
                         <div className="flex-shrink-0">
                             <AvailableFilter active={availableOnly} onChange={setAvailableOnly} />
+                        </div>
+
+                        <div className="flex-shrink-0">
+                            <SortByName onActiveChange={(a) => onNameActiveChange?.(a)} />
+                        </div>
+
+                        <div className="flex-shrink-0">
+                            <SortByPrice onActiveChange={(a) => onPriceActiveChange?.(a)} />
                         </div>
 
                         <div className="flex-shrink-0">
@@ -94,13 +103,6 @@ export default function FiltersBar({
                             />
                         </div>
 
-                        <div className="flex-shrink-0">
-                            <SortByName onActiveChange={(a) => onNameActiveChange?.(a)} />
-                        </div>
-
-                        <div className="flex-shrink-0">
-                            <SortByPrice onActiveChange={(a) => onPriceActiveChange?.(a)} />
-                        </div>
 
                         {/* Desktop: botón Agregar dentro de un wrapper idéntico al de los sorts (bg + p-1 + rounded + shadow) */}
                         {!isMobile && showAddButton && (
@@ -108,14 +110,9 @@ export default function FiltersBar({
                                 <div className="bg-card/50 p-1 rounded-lg">
                                     <Button
                                         onClick={onAddClick}
-                                        className={`
-    h-8 px-3 rounded-md
-    text-white
-    bg-red-600 hover:bg-red-700 focus-visible:ring-2 focus-visible:ring-red-500
-    dark:bg-red-900 dark:hover:bg-red-600 dark:focus-visible:ring-red-400
-    transition-colors duration-150
-    }
-  `}>
+                                        variant="outline"
+                                        className="h-8 px-3 rounded-md"
+                                    >
                                         <Plus className="h-4 w-4 mr-2" />
                                         Agregar Producto
                                     </Button>
@@ -132,14 +129,8 @@ export default function FiltersBar({
                             <div className="bg-card/50 p-1 rounded-lg">
                                 <Button
                                     onClick={onAddClick}
-                                    className={`
-    h-8 px-3 rounded-md
-    text-white
-    bg-red-600 hover:bg-red-700 focus-visible:ring-2 focus-visible:ring-red-500
-    dark:bg-red-900 dark:hover:bg-red-600 dark:focus-visible:ring-red-400
-    transition-colors duration-150
-    }
-  `}>
+                                    className="w-full h-8 px-3 h-8 px-3 rounded-md text-muted-foreground text-white"
+                                >
                                     <Plus className="h-4 w-4 mr-2" />
                                     Agregar Producto
                                 </Button>

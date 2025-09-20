@@ -13,52 +13,38 @@ type Props = {
 
 export default function AvailableFilter({ active, onChange, className = "" }: Props) {
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
-      {/* Desktop label (Orden/por) */}
-      <div className="hidden sm:flex flex-col">
+    // items-center => centra verticalmente todos los elementos (mobile y desktop)
+    <div className={`flex items-center gap-3 ${className}`}>
+      {/* Desktop label (oculto en móvil) - centrado verticalmente */}
+      <div className="hidden sm:flex flex-col items-center text-center">
         <span className="text-sm text-muted-foreground">Filtrar por</span>
         <span className="text-xs text-muted-foreground/70">disponibles</span>
       </div>
 
-      {/* Mobile small label (para identificar) */}
-      <div className="sm:hidden flex flex-col justify-center items-start">
+      {/* Mobile label (visible solo en móvil) - centrado verticalmente */}
+      <div className="sm:hidden flex flex-col items-center text-center">
         <span className="text-[10px] text-muted-foreground">Filtrar por</span>
         <span className="text-[9px] text-muted-foreground/80">disponibles</span>
       </div>
 
-      {/* Contenedor: botones + estado inline en desktop + estado debajo solo en móvil */}
-      <div className="flex flex-col items-center gap-1">
-        <div className="flex items-center gap-1">
-          <div className="flex items-center gap-1 bg-card/50 p-1 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform-gpu">
-            <Button
-              aria-pressed={active}
-              title={active ? "Mostrar solo disponibles (clic para quitar)" : "Mostrar todos (clic para activar filtro)"}
-              size="sm"
-              variant={active ? "default" : "ghost"}
-              onClick={() => onChange(!active)}
-              className={`h-8 w-8 transition-transform duration-150 ${active ? "scale-105 shadow-md" : ""}`}
-            >
-              {active ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-            </Button>
-          </div>
-
-          {/* Estado inline visible en desktop */}
-          <div className="hidden sm:block ml-2">
-            {active ? (
-              <span className="text-sm text-muted-foreground">Disponibles</span>
-            ) : (
-              <span className="text-sm text-muted-foreground">Todos</span>
-            )}
-          </div>
+      {/* Control: botón + estado; items-center asegura centrado vertical */}
+      <div className="flex flex-col sm:flex-row items-center gap-1">
+        <div className="flex items-center gap-1 bg-card/50 p-1 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform-gpu">
+          <Button
+            aria-pressed={active}
+            title={active ? "Mostrar solo disponibles (clic para quitar)" : "Mostrar todos (clic para activar filtro)"}
+            size="sm"
+            variant={active ? "default" : "ghost"}
+            onClick={() => onChange(!active)}
+            className={`h-8 w-8 transition-transform duration-150 ${active ? "scale-105 shadow-md" : ""}`}
+          >
+            {active ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+          </Button>
         </div>
 
-        {/* Estado debajo solo en móvil */}
-        <div className="mt-1 text-center sm:hidden">
-          {active ? (
-            <span className="text-sm text-muted-foreground">Disponibles</span>
-          ) : (
-            <span className="text-sm text-muted-foreground">Todos</span>
-          )}
+        {/* Estado — centrado verticalmente respecto al botón */}
+        <div className="text-sm text-muted-foreground sm:ml-2">
+          {active ? "Disponibles" : "Todos"}
         </div>
       </div>
     </div>

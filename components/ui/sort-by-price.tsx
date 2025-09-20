@@ -1,4 +1,3 @@
-// components/ui/sort-by-price.tsx
 "use client"
 
 import React, { useEffect, useRef, useState } from "react"
@@ -81,15 +80,15 @@ export default function SortByPrice({ onActiveChange }: Props) {
 
   return (
     <div className="flex items-center gap-2">
-      {/* Etiqueta para escritorio */}
-      <div className="hidden sm:flex flex-col">
+      {/* Etiqueta para escritorio — centrada verticalmente */}
+      <div className="hidden sm:flex flex-col items-center text-center">
         <span className="text-sm text-muted-foreground">Ordenar</span>
         <span className="text-xs text-muted-foreground/70">por precio</span>
       </div>
 
       {/* Mobile: inline a la izquierda y centrada verticalmente (oculto si hideLabel) */}
       {!hideLabel && (
-        <div ref={labelRef} className="sm:hidden flex flex-col justify-center items-start">
+        <div ref={labelRef} className="sm:hidden flex flex-col justify-center items-center text-center">
           <span className="text-[10px] text-muted-foreground">Ordenar</span>
           <span className="text-[9px] text-muted-foreground/80">por precio</span>
         </div>
@@ -122,8 +121,8 @@ export default function SortByPrice({ onActiveChange }: Props) {
             </Button>
           </div>
 
-          {/* Estado inline visible en desktop */}
-          <div className="hidden sm:block ml-2">
+          {/* Estado inline visible en desktop — centrado verticalmente */}
+          <div className="hidden sm:flex ml-2 flex-col justify-center">
             {direction === "asc" && <span className="text-sm text-muted-foreground">Min → Max</span>}
             {direction === "desc" && <span className="text-sm text-muted-foreground">Max → Min</span>}
             {direction === "none" && <span className="text-sm text-muted-foreground">Original</span>}

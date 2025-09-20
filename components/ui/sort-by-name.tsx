@@ -1,4 +1,3 @@
-// components/ui/sort-by-name.tsx
 "use client"
 
 import React, { useEffect, useRef, useState } from "react"
@@ -87,15 +86,15 @@ export default function SortByName({ onActiveChange }: Props) {
 
   return (
     <div className="flex items-center gap-2">
-      {/* Etiqueta para escritorio (Ordenar / por nombre) */}
-      <div className="hidden sm:flex flex-col">
+      {/* Etiqueta para escritorio (Ordenar / por nombre) — centrada verticalmente */}
+      <div className="hidden sm:flex flex-col items-center text-center">
         <span className="text-sm text-muted-foreground">Ordenar</span>
         <span className="text-xs text-muted-foreground/70">por nombre</span>
       </div>
 
-      {/* Mobile: label compacto (oculto si hideLabel) */}
+      {/* Mobile: label compacto (oculto si hideLabel) — centrado verticalmente */}
       {!hideLabel && (
-        <div ref={labelRef} className="sm:hidden flex flex-col justify-center items-start">
+        <div ref={labelRef} className="sm:hidden flex flex-col justify-center items-center text-center">
           <span className="text-[10px] text-muted-foreground">Ordenar</span>
           <span className="text-[9px] text-muted-foreground/80">por nombre</span>
         </div>
@@ -128,8 +127,8 @@ export default function SortByName({ onActiveChange }: Props) {
             </Button>
           </div>
 
-          {/* Estado inline visible en desktop */}
-          <div className="hidden sm:block ml-2">
+          {/* Estado inline visible en desktop — centrado verticalmente */}
+          <div className="hidden sm:flex ml-2 flex-col justify-center">
             {direction === "asc" && <span className="text-sm text-muted-foreground">A → Z</span>}
             {direction === "desc" && <span className="text-sm text-muted-foreground">Z → A</span>}
             {direction === "none" && <span className="text-sm text-muted-foreground">Original</span>}
