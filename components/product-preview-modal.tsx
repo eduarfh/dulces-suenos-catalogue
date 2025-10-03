@@ -4,6 +4,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge"
 import type { Electrodomestico } from "@/contexts/products-context"
 import Image from "next/image"
+import { ShareButton } from "@/components/ui/card" // import del ShareButton creado arriba
+import { Fragment } from "react"
 
 interface ProductPreviewModalProps {
   product: Electrodomestico | null
@@ -18,7 +20,11 @@ export function ProductPreviewModal({ product, isOpen, onClose }: ProductPreview
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">{product.nombre}</DialogTitle>
+          <div className="flex items-start justify-between gap-4">
+            <div className="pr-4">
+              <DialogTitle className="text-2xl font-bold">{product.nombre}</DialogTitle>
+            </div>
+          </div>
         </DialogHeader>
 
         <div className="grid md:grid-cols-2 gap-6">

@@ -4,20 +4,26 @@ import React from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Edit, Trash2, LogOut } from "lucide-react"
+import { Edit, Trash2 } from "lucide-react"
 import type { Electrodomestico } from "@/contexts/products-context"
 
 type Props = {
   product: Electrodomestico
   onClick?: (p: Electrodomestico) => void
-  // admin mode: show edit/toggle/delete buttons
   admin?: boolean
   onEdit?: (p: Electrodomestico) => void
   onToggleDisponibilidad?: (id: number) => void
   onDelete?: (id: number) => void
 }
 
-export default function ProductCard({ product, onClick, admin = false, onEdit, onToggleDisponibilidad, onDelete }: Props) {
+export default function ProductCard({
+  product,
+  onClick,
+  admin = false,
+  onEdit,
+  onToggleDisponibilidad,
+  onDelete,
+}: Props) {
   return (
     <Card
       className="overflow-hidden border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
@@ -48,7 +54,9 @@ export default function ProductCard({ product, onClick, admin = false, onEdit, o
 
       <CardContent className="pb-2">
         <div className="space-y-1">
+          <div className="text-sm text-muted-foreground">Precio Minorista</div>
           <p className="text-xl font-semibold text-foreground">${product.precioMinorista}</p>
+          <div className="text-sm text-muted-foreground">Precio Mayorista</div>
           <p className="text-lg font-medium text-green-600">
             ${product.precioMayorista}
             <span className="text-sm text-muted-foreground ml-1">
@@ -58,32 +66,36 @@ export default function ProductCard({ product, onClick, admin = false, onEdit, o
         </div>
       </CardContent>
 
-      {admin && (
-        <CardFooter className="flex gap-2 pt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation()
-              onEdit?.(product)
-            }}
-            className="flex-1 border-gray-200 text-gray-700 hover:bg-gray-50"
-          >
-            <Edit className="h-4 w-4 mr-1" />
-            Editar
-          </Button>
+      {/** FOOTER: para admin mostramos botones + share + view; para usuario normal mostramos precio + share + view */}
+      {admin ? (
+        <CardFooter shareProductId={product.id} viewProductId={product.id} className="flex items-center gap-2 pt-2">
+          {/* los botones de admin van a la izquierda; el ViewButton y ShareButton se ubicarán automáticamente */}
+          <div className="flex-1 flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation()
+                onEdit?.(product)
+              }}
+              className="flex-1 border-gray-200 text-gray-700 hover:bg-gray-50"
+            >
+              <Edit className="h-4 w-4 mr-1" />
+              Editar
+            </Button>
 
-          <Button
-            variant="default"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation()
-              onToggleDisponibilidad?.(product.id)
-            }}
-            className={`flex-1 ${product.disponible ? "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200" : "bg-green-100 text-green-800 hover:bg-green-300 border border-green-400"}`}
-          >
-            {product.disponible ? "Marcar Agotado" : "Marcar Disponible"}
-          </Button>
+            <Button
+              variant="default"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation()
+                onToggleDisponibilidad?.(product.id)
+              }}
+              className={`flex-1 ${product.disponible ? "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200" : "bg-green-100 text-green-800 hover:bg-green-300 border border-green-400"}`}
+            >
+              {product.disponible ? "Marcar Agotado" : "Marcar Disponible"}
+            </Button>
+          </div>
 
           <Button
             variant="destructive"
@@ -96,6 +108,9 @@ export default function ProductCard({ product, onClick, admin = false, onEdit, o
           >
             <Trash2 className="h-4 w-4" />
           </Button>
+        </CardFooter>
+      ) : (
+        <CardFooter shareProductId={product.id} viewProductId={product.id} className="pt-2">
         </CardFooter>
       )}
     </Card>
