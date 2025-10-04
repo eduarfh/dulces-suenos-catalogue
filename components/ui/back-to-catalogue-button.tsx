@@ -46,39 +46,27 @@ export default function BackToCatalogButton({
           inline-flex items-center gap-2
           px-3 py-2
           font-medium
-          text-[var(--color-primary-foreground)]
+        text-[var(--color-primary-foreground)] dark:text-white
           /* gradient que usa las variables de tu tema (funciona en light & dark) */
           bg-[linear-gradient(90deg,var(--color-sidebar-primary),var(--color-sidebar-accent))]
-          /* fallback: usar el primary si por alguna razón la variable no pinta el gradiente */
           bg-[var(--color-primary)]
           rounded-lg
           relative
         `}
       >
-        <span
-          className="inline-flex items-center justify-center w-7 h-7 rounded-md shrink-0"
-          aria-hidden
-          style={{
-            background: "rgba(255,255,255,0.08)",
-            boxShadow: "inset 0 -1px 0 rgba(255,255,255,0.03)",
-            backdropFilter: "blur(2px)",
-          }}
-        >
-          <ArrowLeft className="w-4 h-4" />
-        </span>
 
-        <span className="leading-none">{label}</span>
+        <span className="leading-none color-white">{label}</span>
 
         {/* brillo sutil encima (solo visual) */}
-        <span
+        {/* <span
           aria-hidden
           className="pointer-events-none absolute inset-0 rounded-lg opacity-0 hover:opacity-30 transition-opacity duration-200"
           style={{
             background:
-              "linear-gradient(90deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.12) 45%, rgba(255,255,255,0.02) 100%)",
+              "linear-gradient(90deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.12) 45%, rgba(247, 219, 219, 0.02) 100%)",
             mixBlendMode: "overlay",
           }}
-        />
+        /> */}
       </Link>
     </Button>
   );

@@ -40,6 +40,7 @@
   --sidebar-accent-foreground: oklch(0.3 0 0); /* dark gray */
   --sidebar-border: oklch(0.9 0 0); /* light gray */
   --sidebar-ring: oklch(0.55 0.22 25); /* red */
+  --card-buttons: oklch(0.3 0 0);
 }
 
 .dark {
