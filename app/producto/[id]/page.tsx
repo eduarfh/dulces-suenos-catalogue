@@ -6,7 +6,8 @@ import React from "react";
 import BackToCatalogButton from "@/components/ui/back-to-catalogue-button";
 import { supabase } from "@/lib/supabase";
 import { Badge } from "@/components/ui/badge";
-import { ShareButton, WhatsAppContactButton } from "@/components/ui/card"; // ahora importamos WhatsAppContactButton
+import { ShareButton, WhatsAppContactButton } from "@/components/ui/card";
+import { ArrowLeft } from "lucide-react";
 
 type Params = { params: { id: string } };
 
@@ -113,15 +114,15 @@ export default async function ProductoPage({ params }: { params: { id: string } 
     <main className="min-h-screen bg-background py-12">
       {/* Mobile fixed back button: fixed top-left of viewport, visible only on mobile (sm:hidden).
           We place it directly under <main> so it's as high/left as possible. */}
-      <div className="sm:hidden">
-        <div className="fixed top-3 left-3 z-50">
+      
+        <div className="fixed top-6 left-5 z-20">
           <BackToCatalogButton />
         </div>
-      </div>
+      
 
       {/* Container: add top padding on mobile so content appears below the fixed back button.
           sm:pt-0 restores normal spacing in larger screens. */}
-      <div className="container mx-auto px-6 pt-12 sm:pt-0">
+      <div className="container mx-auto px-6 pt-10 sm:pt-0">
         <div className="mb-6">
           <div className="flex items-center justify-between gap-4">
             <div>
@@ -133,11 +134,7 @@ export default async function ProductoPage({ params }: { params: { id: string } 
 
             <div className="flex items-center gap-3">
               <ShareButton productId={String(producto.id)} title={producto.nombre} text={producto.marca} />
-              <WhatsAppContactButton productId={String(producto.id)} title={producto.nombre} text={producto.marca} />
-              {/* Desktop/Tablet BackToCatalogButton: hidden on mobile */}
-              <div className="hidden sm:inline-flex">
-                <BackToCatalogButton />
-              </div>
+              <WhatsAppContactButton productId={String(producto.id)} title={producto.nombre} text={producto.marca} />              
             </div>
           </div>
         </div>

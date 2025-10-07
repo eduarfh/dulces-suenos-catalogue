@@ -64,7 +64,8 @@ export default function HomePage() {
             <h1 className="text-2xl font-medium text-foreground">Electrodomésticos</h1>
             <p className="text-muted-foreground text-sm mt-1">Todos los productos vienen con factura y 3 meses de garantía</p>
           </div>
-          <div className="flex items-center gap-2"> <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Link href="/admin/login">
               <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                 <Settings className="h-4 w-4" />
@@ -100,7 +101,7 @@ export default function HomePage() {
 
         {electrodomesticosFiltrados.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-muted-foreground">No se encontraron productos 😪</p>
+            <p className="text-muted-foreground">No se encontraron productos</p>
           </div>
         )}
       </div>

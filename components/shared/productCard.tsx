@@ -26,7 +26,7 @@ export default function ProductCard({
 }: Props) {
   return (
     <Card
-      className="overflow-hidden border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+      className={`overflow-hidden border-gray-200 shadow-sm hover:shadow-md transition-shadow ${admin ? "" : "cursor-pointer"}`}
       onClick={() => !admin && onClick?.(product)}
     >
       <div className="aspect-square relative bg-gray-50">
@@ -66,11 +66,9 @@ export default function ProductCard({
         </div>
       </CardContent>
 
-      {/** FOOTER: para admin mostramos botones + share + view; para usuario normal mostramos precio + share + view */}
       {admin ? (
-        <CardFooter shareProductId={product.id} viewProductId={product.id} className="flex items-center gap-2 pt-2">
-          {/* los botones de admin van a la izquierda; el ViewButton y ShareButton se ubicarán automáticamente */}
-          <div className="flex-1 flex gap-2">
+        <CardFooter className="flex items-center justify-evenly gap-2 pt-2 px-6">
+          <div className="flex gap-2 items-center">
             <Button
               variant="outline"
               size="sm"
@@ -78,41 +76,46 @@ export default function ProductCard({
                 e.stopPropagation()
                 onEdit?.(product)
               }}
-              className="flex-1 border-gray-200 text-gray-700 hover:bg-gray-50"
+              className="border-gray-200 text-gray-700 hover:bg-gray-50 
+                 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700 dark:hover:text-gray-100"
             >
               <Edit className="h-4 w-4 mr-1" />
-              Editar
             </Button>
 
             <Button
-              variant="default"
+              variant={product.disponible ? "destructive" : "default"}
               size="sm"
               onClick={(e) => {
                 e.stopPropagation()
                 onToggleDisponibilidad?.(product.id)
               }}
-              className={`flex-1 ${product.disponible ? "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200" : "bg-green-100 text-green-800 hover:bg-green-300 border border-green-400"}`}
+              className={`px-3 py-1 text-sm ${product.disponible ? "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200" : "bg-green-50 text-green-600 hover:bg-green-100 border border-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800 dark:border-green-200"}`}
             >
               {product.disponible ? "Marcar Agotado" : "Marcar Disponible"}
             </Button>
           </div>
 
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation()
-              onDelete?.(product.id)
-            }}
-            className="bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          <div className="flex-shrink-0">
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation()
+                onDelete?.(product.id)
+              }}
+              className="bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
         </CardFooter>
+
+
       ) : (
         <CardFooter shareProductId={product.id} viewProductId={product.id} className="pt-2">
         </CardFooter>
-      )}
-    </Card>
+      )
+      }
+    </Card >
   )
 }
