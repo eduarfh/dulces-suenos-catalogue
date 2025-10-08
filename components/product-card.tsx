@@ -52,9 +52,26 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
 
   const handleWhatsApp = (e: React.MouseEvent) => {
     e.preventDefault()
-    const phoneNumber = "5355550301"
-    const message = `Hola, estoy interesado/a en ${product.name}`
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
+
+    // número objetivo (sin espacios ni símbolos) — ajusta según necesites
+    const rawPhone = "5355550301"
+    const phone = rawPhone.replace(/[^\d]/g, "")
+
+    // construir URL absoluto al producto si es posible (fallback relativo)
+    let productUrl = `/product/${encodeURIComponent(product.id)}`
+    try {
+      if (typeof window !== "undefined" && window.location?.origin) {
+        productUrl = `${window.location.origin}/product/${encodeURIComponent(product.id)}`
+      }
+    } catch {
+      // keep fallback
+    }
+
+    // mensaje con el nombre del producto y el enlace al final
+    const productLabel = product.name ?? product.id
+    const message = `Hola, estoy interesad@ en ${productLabel}. ${productUrl}`
+
+    const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, "_blank")
   }
 

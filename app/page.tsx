@@ -57,29 +57,7 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFD4E5]/10 via-[#BEE4E7]/10 to-[#F7CCAD]/10 dark:from-[#FFD4E5]/5 dark:via-[#BEE4E7]/5 dark:to-[#F7CCAD]/5">
       <CatalogHeader />
-      {errorMessage && errorMessage.includes("Could not find the table") ? (
-        <div className="container mx-auto px-4 py-12">
-          <div className="max-w-2xl mx-auto bg-[#F49F51]/10 dark:bg-[#F49F51]/20 border-2 border-[#F49F51] rounded-lg p-8 text-center">
-            <h2 className="text-2xl font-bold text-[#F49F51] mb-4">Base de datos no configurada</h2>
-            <p className="text-foreground/80 mb-6">
-              La tabla de productos aún no existe en Supabase. Por favor, ejecuta los scripts SQL desde el panel
-              lateral:
-            </p>
-            <ol className="text-left space-y-2 mb-6 text-foreground/70">
-              <li>1. Haz clic en el botón de scripts en la barra lateral</li>
-              <li>
-                2. Ejecuta <code className="bg-background/50 px-2 py-1 rounded">001_create_products_table.sql</code>
-              </li>
-              <li>
-                3. Ejecuta <code className="bg-background/50 px-2 py-1 rounded">002_seed_products.sql</code>
-              </li>
-              <li>4. Recarga esta página</li>
-            </ol>
-          </div>
-        </div>
-      ) : (
-        <CatalogClient products={products} />
-      )}
+      <CatalogClient products={products} />
     </div>
   )
 }

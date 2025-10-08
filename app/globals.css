@@ -81,6 +81,14 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
+  --cat-ropa: #163c3d;         /* versión oscura de #BEE4E7 */
+  --cat-juguetes: #5a3817;     /* versión oscura de #F49F51 */
+  --cat-alimentacion: #4b2a31; /* versión oscura de #FFD4E5 */
+  --cat-higiene: #1f4946;      /* versión oscura de #95C7C3 */
+  --cat-accesorios: #4b2030;   /* versión oscura de #F490B9 */
+  --cat-muebles: #3e2c20;      /* versión oscura de #F7CCAD */
+  --cat-default: #2b2b2b;
+  --cat-selected-foreground: #f8fafc; /* texto en seleccionado dark */
 }
 
 @theme inline {
