@@ -1,4 +1,4 @@
-//app/product/[id]/page.tsx
+// app/product/[id]/page.tsx
 import { createClient } from "@/lib/supabase/server"
 import type { Product, DbProduct, DbProductImage } from "@/lib/products"
 import { CatalogHeader } from "@/components/catalog-header"
@@ -10,8 +10,62 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ImageCarousel } from "@/components/image-carousel"
 import { ShareButton } from "@/components/share-button"
+import WhatsAppChooser from "@/components/WhatsAppChooser"
 
 export const dynamic = "force-dynamic"
+
+// Asegúrate de definir NEXT_PUBLIC_SITE_URL en el entorno de producción
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || "https://your-site.com"
+
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const { id } = params
+  const supabase = await createClient()
+
+  const { data: dbProduct } = await supabase
+    .from("products")
+    .select("id, name, description")
+    .eq("id", id)
+    .single()
+
+  if (!dbProduct) {
+    return { title: "Producto no encontrado" }
+  }
+
+  const { data: dbImages } = await supabase
+    .from("product_images")
+    .select("image_url")
+    .eq("product_id", id)
+    .order("display_order", { ascending: true })
+    .limit(1)
+
+  const firstImage = dbImages && dbImages.length > 0 ? dbImages[0].image_url : "/placeholder.svg"
+
+  const absoluteImage =
+    firstImage?.startsWith("http") || firstImage?.startsWith("https")
+      ? firstImage
+      : `${SITE_URL}${firstImage.startsWith("/") ? "" : "/"}${firstImage}`
+
+  const productUrl = `${SITE_URL}/product/${encodeURIComponent(id)}`
+
+  return {
+    title: dbProduct.name,
+    description: dbProduct.description ?? "",
+    openGraph: {
+      title: dbProduct.name,
+      description: dbProduct.description ?? "",
+      url: productUrl,
+      images: [absoluteImage],
+      siteName: "Catálogo Baby",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: dbProduct.name,
+      description: dbProduct.description ?? "",
+      images: [absoluteImage],
+    },
+  }
+}
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -81,11 +135,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     }),
   )
 
-  const handleWhatsApp = () => {
-    const phoneNumber = "5355550301"
-    const message = `Hola, estoy interesado/a en ${product.name}`
-    return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
-  }
+  const formatPrice = (price: number) =>
+    price.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+  // Reutilizable: tamaño de texto responsivo (mismo para precio y stock para mantener consistencia)
+  const responsiveNumberStyle: React.CSSProperties = { fontSize: "clamp(1.25rem, 3.2vw, 2.25rem)" }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFD4E5]/10 via-[#BEE4E7]/10 to-[#F7CCAD]/10 dark:from-[#FFD4E5]/5 dark:via-[#BEE4E7]/5 dark:to-[#F7CCAD]/5">
@@ -122,39 +176,78 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
             <p className="text-lg text-muted-foreground mb-6 leading-relaxed">{product.description}</p>
 
-            <div className="grid grid-cols-2 gap-4 mb-8">
+            {/* Responsive: stack on xs, two columns from sm upwards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+              {/* PRICE CARD */}
               <Card className="border-2">
                 <CardContent className="p-4 flex items-center gap-3">
-                  <div className="bg-[#95C7C3]/20 p-3 rounded-lg">
+                  <div className="bg-[#95C7C3]/20 p-3 rounded-lg shrink-0">
                     <DollarSign className="h-6 w-6 text-[#95C7C3]" />
                   </div>
-                  <div>
+
+                  {/* min-w-0 permite truncado dentro de flex */}
+                  <div className="min-w-0 w-full">
                     <p className="text-sm text-muted-foreground">Precio</p>
-                    <p className="text-3xl font-bold text-[#95C7C3]">${product.price.toFixed(2)}</p>
+
+                    {/* ahora el signo $ forma parte del número grande (se eliminó el símbolo mini) */}
+                    <div className="flex items-baseline gap-2">
+                      <p
+                        className="font-extrabold text-[#95C7C3] leading-tight min-w-0"
+                        style={responsiveNumberStyle}
+                        aria-label={`Precio ${formatPrice(product.price)}`}
+                        title={`${formatPrice(product.price)}`}
+                      >
+                        <span className="inline-block max-w-[14ch] truncate">
+                          {"$" + formatPrice(product.price)}
+                        </span>
+                      </p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
+              {/* STOCK CARD (mismo diseño/responsividad que precio) */}
               <Card className="border-2">
                 <CardContent className="p-4 flex items-center gap-3">
-                  <div className="bg-[#F490B9]/20 p-3 rounded-lg">
+                  <div className="bg-[#F490B9]/20 p-3 rounded-lg shrink-0">
                     <Package className="h-6 w-6 text-[#F490B9]" />
                   </div>
-                  <div>
+
+                  <div className="min-w-0 w-full">
                     <p className="text-sm text-muted-foreground">Stock</p>
-                    <p className="text-3xl font-bold text-[#F490B9]">{product.stock}</p>
+
+                    <div className="flex items-baseline gap-2">
+                      <p
+                        className="font-extrabold text-[#F490B9] leading-tight min-w-0"
+                        style={responsiveNumberStyle}
+                        aria-label={`Stock ${product.stock}`}
+                        title={`${product.stock}`}
+                      >
+                        <span className="inline-block max-w-[14ch] truncate">{product.stock}</span>
+                      </p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
             <div className="flex gap-3">
-              <a href={handleWhatsApp()} target="_blank" rel="noopener noreferrer" className="flex-1">
+              <WhatsAppChooser
+                product={product}
+                phoneList={[
+                  { label: "Principal", number: "+53 59158599" },
+                  { label: "Ventas", number: "+53 58561582" },
+                  { label: "Soporte", number: "+53 55550301" },
+                ]}
+                defaultIndex={0}
+                openOnSingle={true}
+              >
                 <Button size="lg" className="w-full bg-[#F49F51] hover:bg-[#F49F51]/90 text-white text-lg h-14">
                   <MessageCircle className="h-5 w-5 mr-2" />
                   Consultar por WhatsApp
                 </Button>
-              </a>
+              </WhatsAppChooser>
+
               <ShareButton product={product} />
             </div>
           </div>

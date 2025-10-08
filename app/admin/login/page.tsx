@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Baby, Lock } from "lucide-react"
 import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
+import Image from "next/image"
 
 export default function LoginPage() {
   const [username, setUsername] = useState("")
@@ -39,8 +40,15 @@ export default function LoginPage() {
 
       <Card className="w-full max-w-md border-2">
         <CardHeader className="text-center space-y-4">
-          <div className="mx-auto bg-gradient-to-br from-[#F490B9] to-[#95C7C3] p-4 rounded-2xl w-fit">
-            <Baby className="h-12 w-12 text-white" />
+          <div className="mx-auto to-[#95C7C3] p-4 rounded-2xl w-fit">
+            <Image
+              // pon aquí tu archivo (recomiendo renombrar sin espacios)
+              src="/logo%20recortado.jpg" // o "/logo%20recortado.jpg"
+              alt="Logo Dulces Sueños"
+              width={32}    // tamaño base (coincide con h-8)
+              height={32}
+              className="h-30 w-80 sm:h-40 sm:w-40 object-contain block"
+            />
           </div>
           <div>
             <CardTitle className="text-2xl font-bold text-foreground">Panel de Administración</CardTitle>
