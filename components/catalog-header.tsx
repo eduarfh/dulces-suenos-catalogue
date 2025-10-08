@@ -14,7 +14,7 @@ export function CatalogHeader() {
               <Baby className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground">Baby Store</h1>
+              <h1 className="text-xl font-bold text-foreground">Dulces Sueños • Store</h1>
               <p className="text-xs text-muted-foreground">Todo para tu bebé</p>
             </div>
           </Link>

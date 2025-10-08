@@ -9,7 +9,7 @@ import { Suspense } from "react"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Baby Store - Catálogo de Productos para Bebés",
+  title: "Dulces Sueños - Catálogo de Productos para Bebés",
   description: "Los mejores productos para el cuidado de tu bebé",
   generator: "v0.app",
 }
