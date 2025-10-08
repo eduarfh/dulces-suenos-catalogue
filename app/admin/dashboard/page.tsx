@@ -149,10 +149,25 @@ export default function AdminDashboard() {
         body: formData,
       })
 
-      if (response.ok) {
-        const data = await response.json()
-        uploadedUrls.push(data.url)
+      if (!response.ok) {
+        // intenta leer JSON con mensaje de error; si no es JSON, lee el texto
+        const contentType = response.headers.get("content-type") || ""
+        const text = await response.text()
+        let serverMsg = text
+        try {
+          if (contentType.includes("application/json")) {
+            const json = JSON.parse(text)
+            serverMsg = json.error || JSON.stringify(json)
+          }
+        } catch (e) {
+          // keep text
+        }
+        throw new Error(`Upload failed (${response.status}): ${serverMsg}`)
       }
+
+      const data = await response.json()
+      if (!data?.url) throw new Error("Upload response did not include url")
+      uploadedUrls.push(data.url)
     }
 
     return uploadedUrls
@@ -164,69 +179,44 @@ export default function AdminDashboard() {
     setUploadingImages(true)
 
     try {
-      const supabase = createClient()
-
-      // Upload new images
+      // 1) Upload images to Vercel Blob (existing /api/upload)
       const newImageUrls = await uploadImages(selectedImages)
       const allImageUrls = [...existingImages, ...newImageUrls]
 
-      if (editingProduct) {
-        // Update existing product
-        const { error: productError } = await supabase
-          .from("products")
-          .update({
-            name: formData.name,
-            category: formData.category,
-            price: Number.parseFloat(formData.price),
-            description: formData.description,
-            stock: Number.parseInt(formData.stock),
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", editingProduct.id)
-
-        if (productError) throw productError
-
-        // Delete all existing images
-        await supabase.from("product_images").delete().eq("product_id", editingProduct.id)
-
-        // Insert new images
-        if (allImageUrls.length > 0) {
-          const imageRecords = allImageUrls.map((url, index) => ({
-            product_id: editingProduct.id,
-            image_url: url,
-            display_order: index,
-          }))
-
-          await supabase.from("product_images").insert(imageRecords)
-        }
-      } else {
-        // Create new product
-        const { data: newProduct, error: productError } = await supabase
-          .from("products")
-          .insert({
-            name: formData.name,
-            category: formData.category,
-            price: Number.parseFloat(formData.price),
-            description: formData.description,
-            stock: Number.parseInt(formData.stock),
-          })
-          .select()
-          .single()
-
-        if (productError) throw productError
-
-        // Insert images
-        if (allImageUrls.length > 0) {
-          const imageRecords = allImageUrls.map((url, index) => ({
-            product_id: newProduct.id,
-            image_url: url,
-            display_order: index,
-          }))
-
-          await supabase.from("product_images").insert(imageRecords)
-        }
+      // Prepare product payload
+      const payload = {
+        product: {
+          id: editingProduct?.id ?? null,
+          name: formData.name,
+          category: formData.category,
+          price: Number.parseFloat(formData.price),
+          description: formData.description,
+          stock: Number.parseInt(formData.stock),
+        },
+        imageUrls: allImageUrls,
       }
 
+      const res = await fetch("/api/products", { // <- ruta correcta
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+
+      const json = await res.text()
+      let parsed
+      try {
+        parsed = JSON.parse(json)
+      } catch (e) {
+        console.error("Non-JSON response from /api/admin/products:", json)
+        throw new Error("Server returned non-JSON response for product save")
+      }
+
+      if (!res.ok) {
+        console.error("Server-side save failed:", parsed)
+        throw new Error(parsed.error || "Failed to save product on server")
+      }
+
+      // reload products and close dialog
       await loadProducts()
       setIsDialogOpen(false)
       setIsCustomCategory(false)
@@ -238,6 +228,7 @@ export default function AdminDashboard() {
       setUploadingImages(false)
     }
   }
+
 
   const handleDelete = async (id: string) => {
     if (!confirm("¿Estás seguro de eliminar este producto?")) return
