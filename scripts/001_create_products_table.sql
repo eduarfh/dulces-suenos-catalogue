@@ -1,3 +1,4 @@
+--//scripts/001_create_products_table.sql
 -- Create products table
 create table if not exists public.products (
   id uuid primary key default gen_random_uuid(),

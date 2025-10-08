@@ -1,3 +1,4 @@
+//components/product-card.tsx
 "use client"
 
 import type React from "react"
@@ -59,14 +60,12 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
 
   return (
     <Card
-      className={`overflow-hidden hover:shadow-lg transition-all duration-300 border-2 hover:scale-[1.02] bg-card ${
-        compact ? "h-full" : ""
-      }`}
+      className={`overflow-hidden hover:shadow-lg transition-all duration-300 border-2 hover:scale-[1.02] bg-card ${compact ? "h-full" : ""
+        }`}
     >
       <div
-        className={`relative overflow-hidden bg-gradient-to-br from-[#FFD4E5]/20 to-[#BEE4E7]/20 dark:from-[#FFD4E5]/10 dark:to-[#BEE4E7]/10 ${
-          compact ? "aspect-square" : "aspect-square"
-        }`}
+        className={`relative overflow-hidden bg-gradient-to-br from-[#FFD4E5]/20 to-[#BEE4E7]/20 dark:from-[#FFD4E5]/10 dark:to-[#BEE4E7]/10 ${compact ? "aspect-square" : "aspect-square"
+          }`}
       >
         <ImageCarousel
           images={product.images}
@@ -96,31 +95,46 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
           </span>
           <span className="text-xs text-muted-foreground">Stock: {product.stock}</span>
         </div>
-        <div className={`flex ${compact ? "flex-col gap-1.5" : "gap-2"}`}>
-          <Link href={`/product/${product.id}`} className="flex-1">
-            <Button className={`w-full bg-[#95C7C3] hover:bg-[#95C7C3]/90 text-white ${compact ? "h-8 text-xs" : ""}`}>
-              <Eye className={`${compact ? "h-3 w-3 mr-1" : "h-4 w-4 mr-2"}`} />
-              Ver Detalles
+        {/* --- BLOQUE DE BOTONES: Ver Detalles ARRIBA, WhatsApp + Compartir debajo --- */}
+        <div className={`flex flex-col ${compact ? "gap-1.5" : "gap-2"} items-stretch`}>
+          {/* Ver Detalles - arriba, ancho completo */}
+          <Link href={`/product/${product.id}`} className="w-full">
+            <Button
+              className={`w-full bg-[#95C7C3] hover:bg-[#95C7C3]/90 text-white ${compact ? "h-8 text-xs" : ""} py-2 md:py-1 md:text-sm`}
+              size={compact ? "sm" : "default"}
+              aria-label={`Ver detalles de ${product.name}`}
+            >
+              <Eye className={`${compact ? "h-3 w-3 mr-1" : "h-4 w-4 mr-2"} md:h-3 md:w-3 md:mr-1`} />
+              <span className={`${compact ? "text-xs" : "text-sm"} md:text-xs`}>Ver Detalles</span>
             </Button>
           </Link>
-          <div className="flex gap-1.5">
-            <Button
-              variant="outline"
-              size={compact ? "sm" : "default"}
-              onClick={handleWhatsApp}
-              className="flex-1 border-[#F49F51] text-[#F49F51] hover:bg-[#F49F51] hover:text-white bg-transparent"
-            >
-              <MessageCircle className={`${compact ? "h-3 w-3 mr-1" : "h-4 w-4 mr-2"}`} />
-              {!compact && <span className="hidden sm:inline">WhatsApp</span>}
-            </Button>
-            <Button
-              variant="outline"
-              size={compact ? "sm" : "icon"}
-              onClick={handleShare}
-              className="border-[#F490B9] text-[#F490B9] hover:bg-[#F490B9] hover:text-white bg-transparent"
-            >
-              <Share2 className={`${compact ? "h-3 w-3" : "h-4 w-4"}`} />
-            </Button>
+
+          {/* Row: WhatsApp + Compartir (centrados, con separación del borde) */}
+          <div className="mt-2 flex justify-center px-3">
+            {/* contenedor con ancho máximo para centrar los botones dentro del card */}
+            <div className="flex gap-3 w-full max-w-[420px] justify-center">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleWhatsApp}
+                className="flex items-center gap-2 border-[#F49F51] text-[#F49F51] hover:bg-[#F49F51] hover:text-white bg-transparent py-2 md:py-1 md:px-4 md:text-xs flex-1 max-w-[220px]"
+                aria-label={`Contactar por WhatsApp sobre ${product.name}`}
+              >
+                <MessageCircle className="h-4 w-4 md:h-3 md:w-3" />
+                <span className="text-sm md:text-xs whitespace-nowrap">WhatsApp</span>
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleShare}
+                className="flex items-center justify-center gap-2 border-[#F490B9] text-[#F490B9] hover:bg-[#F490B9] hover:text-white bg-transparent py-2 md:py-1 md:px-3 md:text-xs flex-1 max-w-[140px]"
+                aria-label={`Compartir ${product.name}`}
+              >
+                <Share2 className="h-4 w-4 md:h-3 md:w-3" />
+                <span className="hidden md:inline md:text-xs">Compartir</span>
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>

@@ -1,5 +1,5 @@
 "use client"
-
+//app/admin/dashboard/page.tsx
 import type React from "react"
 import { useEffect, useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
@@ -278,11 +278,11 @@ export default function AdminDashboard() {
             </div>
             <div className="flex items-center gap-2">
               <ThemeToggle />
-              <Link href="/">
+              {/* <Link href="/">
                 <Button variant="outline" size="sm">
                   Ver Catálogo
                 </Button>
-              </Link>
+              </Link> */}
               <Button
                 variant="outline"
                 size="sm"
@@ -297,9 +297,9 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 flex flex-col gap-8">
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 order-2 md:order-1 mt-6 md:mt-0">
           <Card className="border-2">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">Total Productos</CardTitle>
@@ -327,7 +327,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Products Table */}
-        <Card className="border-2">
+        <Card className="border-2 order-1 md:order-2">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-xl">Productos</CardTitle>

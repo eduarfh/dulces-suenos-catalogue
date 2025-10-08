@@ -1,5 +1,5 @@
 "use client"
-
+//components/catalog-client.tsx
 import { useState, useMemo } from "react"
 import type { Product } from "@/lib/products"
 import { ProductCard } from "@/components/product-card"

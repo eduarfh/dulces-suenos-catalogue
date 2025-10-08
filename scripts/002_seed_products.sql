@@ -1,3 +1,4 @@
+--//scripts/002_seed_products.sql
 -- Insert initial products
 insert into public.products (id, name, category, price, description, stock) values
   ('00000000-0000-0000-0000-000000000001', 'Body de Algodón', 'Ropa', 15.99, 'Body suave de algodón 100% para bebés de 0-12 meses', 25),

@@ -1,3 +1,4 @@
+//app/product/[id]/page.tsx
 import { createClient } from "@/lib/supabase/server"
 import type { Product, DbProduct, DbProductImage } from "@/lib/products"
 import { CatalogHeader } from "@/components/catalog-header"

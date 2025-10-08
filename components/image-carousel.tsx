@@ -1,3 +1,4 @@
+//components/image-carousel.tsx
 "use client"
 
 import { useState, useEffect } from "react"
