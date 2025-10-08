@@ -1,140 +1,84 @@
-"use client"
+import { createClient } from "@/lib/supabase/server"
+import type { Product, DbProduct, DbProductImage } from "@/lib/products"
+import { CatalogHeader } from "@/components/catalog-header"
+import { CatalogClient } from "@/components/catalog-client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Search, Settings } from "lucide-react"
-import Link from "next/link"
-import { useProducts } from "@/contexts/products-context"
-import { useState } from "react"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { ProductPreviewModal } from "@/components/product-preview-modal"
+export const dynamic = "force-dynamic"
 
-interface Electrodomestico {
-  id: number
-  nombre: string
-  marca: string
-  categoria: string
-  precio: number
-  precioMinorista: number
-  precioMayorista: number
-  cantidadMinimaMayorista: number
-  imagen: string
-  disponible: boolean
-}
+export default async function HomePage() {
+  const supabase = await createClient()
 
-export default function HomePage() {
-  const { electrodomesticos } = useProducts()
-  const [busqueda, setBusqueda] = useState("")
-  const [selectedProduct, setSelectedProduct] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  let products: Product[] = []
+  let errorMessage: string | null = null
 
-  const electrodomesticosFiltrados = electrodomesticos.filter(
-    (electrodomestico) =>
-      electrodomestico.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-      electrodomestico.marca.toLowerCase().includes(busqueda.toLowerCase()) ||
-      electrodomestico.categoria.toLowerCase().includes(busqueda.toLowerCase()),
-  )
+  try {
+    const { data: dbProducts, error: productsError } = await supabase
+      .from("products")
+      .select("*")
+      .order("created_at", { ascending: false })
 
-  const handleProductClick = (product) => {
-    setSelectedProduct(product)
-    setIsModalOpen(true)
+    if (productsError) {
+      console.error("[v0] Error fetching products:", productsError)
+      errorMessage = productsError.message
+      throw productsError
+    }
+
+    const { data: dbImages, error: imagesError } = await supabase
+      .from("product_images")
+      .select("*")
+      .order("display_order", { ascending: true })
+
+    if (imagesError) {
+      console.error("[v0] Error fetching images:", imagesError)
+    }
+
+    products = (dbProducts || []).map((product: DbProduct) => {
+      const productImages = (dbImages || [])
+        .filter((img: DbProductImage) => img.product_id === product.id)
+        .map((img: DbProductImage) => img.image_url)
+
+      return {
+        id: product.id,
+        name: product.name,
+        category: product.category,
+        price: product.price,
+        description: product.description,
+        stock: product.stock,
+        images: productImages.length > 0 ? productImages : ["/placeholder.svg?height=300&width=300"],
+        created_at: product.created_at,
+        updated_at: product.updated_at,
+      }
+    })
+  } catch (error) {
+    console.error("[v0] Failed to load products:", error)
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="bg-background border-b">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-medium text-foreground">Electrodomésticos</h1>
-              <p className="text-muted-foreground text-sm mt-1">
-                Todos los productos vienen con factura y 3 meses de garantía
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <ThemeToggle />
-              <Link href="/admin/login">
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#FFD4E5]/10 via-[#BEE4E7]/10 to-[#F7CCAD]/10 dark:from-[#FFD4E5]/5 dark:via-[#BEE4E7]/5 dark:to-[#F7CCAD]/5">
+      <CatalogHeader />
+      {errorMessage && errorMessage.includes("Could not find the table") ? (
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-2xl mx-auto bg-[#F49F51]/10 dark:bg-[#F49F51]/20 border-2 border-[#F49F51] rounded-lg p-8 text-center">
+            <h2 className="text-2xl font-bold text-[#F49F51] mb-4">Base de datos no configurada</h2>
+            <p className="text-foreground/80 mb-6">
+              La tabla de productos aún no existe en Supabase. Por favor, ejecuta los scripts SQL desde el panel
+              lateral:
+            </p>
+            <ol className="text-left space-y-2 mb-6 text-foreground/70">
+              <li>1. Haz clic en el botón de scripts en la barra lateral</li>
+              <li>
+                2. Ejecuta <code className="bg-background/50 px-2 py-1 rounded">001_create_products_table.sql</code>
+              </li>
+              <li>
+                3. Ejecuta <code className="bg-background/50 px-2 py-1 rounded">002_seed_products.sql</code>
+              </li>
+              <li>4. Recarga esta página</li>
+            </ol>
           </div>
         </div>
-      </header>
-
-      <div className="container mx-auto px-6 py-8">
-        <div className="mb-8">
-          <div className="relative max-w-sm">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Buscar productos..."
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-              className="pl-10 border-gray-200 focus:border-gray-300 focus:ring-0"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {electrodomesticosFiltrados.map((electrodomestico) => (
-            <Card
-              key={electrodomestico.id}
-              className="border-gray-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => handleProductClick(electrodomestico)}
-            >
-              <div className="aspect-square relative bg-gray-50">
-                <img
-                  src={electrodomestico.imagen || "/placeholder.svg"}
-                  alt={electrodomestico.nombre}
-                  className="w-full h-full object-cover rounded-t-lg"
-                />
-                <div className="absolute top-3 right-3">
-                  <Badge
-                    variant={electrodomestico.disponible ? "default" : "secondary"}
-                    className={
-                      electrodomestico.disponible
-                        ? "bg-green-100 text-green-800 border-green-200"
-                        : "bg-gray-100 text-gray-600"
-                    }
-                  >
-                    {electrodomestico.disponible ? "Disponible" : "Agotado"}
-                  </Badge>
-                </div>
-              </div>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium text-foreground">{electrodomestico.nombre}</CardTitle>
-                <CardDescription className="text-muted-foreground">
-                  {electrodomestico.marca} • {electrodomestico.categoria}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="space-y-1">
-                  <p className="text-xl font-semibold text-foreground">
-                    ${electrodomestico.precioMinorista || electrodomestico.precio}
-                  </p>
-                  <p className="text-lg font-medium text-green-600">
-                    ${electrodomestico.precioMayorista || electrodomestico.precio}
-                    <span className="text-sm text-muted-foreground ml-1">
-                      (min. {electrodomestico.cantidadMinimaMayorista || 1} unidades)
-                    </span>
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {electrodomesticosFiltrados.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-muted-foreground">No se encontraron productos.</p>
-          </div>
-        )}
-      </div>
-
-      <ProductPreviewModal product={selectedProduct} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      ) : (
+        <CatalogClient products={products} />
+      )}
     </div>
   )
 }

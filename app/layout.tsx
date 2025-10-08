@@ -1,26 +1,15 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Space_Grotesk, DM_Sans } from "next/font/google"
-import "./globals.css"
-import { AuthProvider } from "@/contexts/auth-context"
-import { ProductsProvider } from "@/contexts/products-context"
+import { GeistSans } from "geist/font/sans"
+import { GeistMono } from "geist/font/mono"
+import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-space-grotesk",
-})
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-dm-sans",
-})
+import { Suspense } from "react"
+import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Catálogo de Lavadoras",
-  description: "Gestiona tu inventario de lavadoras fácilmente",
+  title: "Baby Store - Catálogo de Productos para Bebés",
+  description: "Los mejores productos para el cuidado de tu bebé",
   generator: "v0.app",
 }
 
@@ -30,13 +19,14 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es" className={`${spaceGrotesk.variable} ${dmSans.variable} antialiased`}>
-      <body className="font-mono">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <AuthProvider>
-            <ProductsProvider>{children}</ProductsProvider>
-          </AuthProvider>
-        </ThemeProvider>
+    <html lang="es" suppressHydrationWarning>
+      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased`}>
+        <Suspense fallback={null}>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            {children}
+          </ThemeProvider>
+        </Suspense>
+        <Analytics />
       </body>
     </html>
   )
