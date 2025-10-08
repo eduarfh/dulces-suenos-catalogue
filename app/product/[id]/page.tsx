@@ -17,6 +17,10 @@ export const dynamic = "force-dynamic"
 // Asegúrate de definir NEXT_PUBLIC_SITE_URL en el entorno de producción
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || "https://your-site.com"
 
+// Logo público que quieres que aparezca como fallback en metadata (la URL que proporcionaste)
+const GLOBAL_SHARE_LOGO =
+  "https://bypjbkhezrokhksjxfri.supabase.co/storage/v1/object/public/catalogo/logo.jpg"
+
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const { id } = params
   const supabase = await createClient()
@@ -38,12 +42,20 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
     .order("display_order", { ascending: true })
     .limit(1)
 
-  const firstImage = dbImages && dbImages.length > 0 ? dbImages[0].image_url : "/placeholder.svg"
+  const firstImage = dbImages && dbImages.length > 0 ? dbImages[0].image_url : null
 
-  const absoluteImage =
-    firstImage?.startsWith("http") || firstImage?.startsWith("https")
+  // Construir URL absoluta para la primera imagen (si existe)
+  const absoluteProductImage =
+    firstImage && (firstImage.startsWith("http") || firstImage.startsWith("https"))
       ? firstImage
-      : `${SITE_URL}${firstImage.startsWith("/") ? "" : "/"}${firstImage}`
+      : firstImage
+      ? `${SITE_URL}${firstImage.startsWith("/") ? "" : "/"}${firstImage}`
+      : null
+
+  // Images array: priorizamos la imagen del producto, luego el logo global como fallback
+  const imagesForMeta = []
+  if (absoluteProductImage) imagesForMeta.push(absoluteProductImage)
+  imagesForMeta.push(GLOBAL_SHARE_LOGO)
 
   const productUrl = `${SITE_URL}/product/${encodeURIComponent(id)}`
 
@@ -54,7 +66,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
       title: dbProduct.name,
       description: dbProduct.description ?? "",
       url: productUrl,
-      images: [absoluteImage],
+      images: imagesForMeta,
       siteName: "Catálogo Baby",
       type: "website",
     },
@@ -62,7 +74,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
       card: "summary_large_image",
       title: dbProduct.name,
       description: dbProduct.description ?? "",
-      images: [absoluteImage],
+      images: imagesForMeta,
     },
   }
 }
@@ -237,7 +249,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 phoneList={[
                   { label: "Principal", number: "+53 59158599" },
                   { label: "Ventas", number: "+53 58561582" },
-                  { label: "Soporte", number: "+53 55550301" },
+                  { label: "Soporte Técnico", number: "+53 55550301" },
                 ]}
                 defaultIndex={0}
                 openOnSingle={true}

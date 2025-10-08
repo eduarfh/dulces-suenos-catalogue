@@ -262,7 +262,7 @@ export default function AdminDashboard() {
               <div className="mx-auto to-[#95C7C3] p-4 rounded-2xl w-fit overflow-hidden bg-transparent">
                 <Image
                   // pon aquí tu archivo (recomiendo renombrar sin espacios)
-                  src="/logo%20recortado.jpg" // o "/logo%20recortado.jpg"
+                  src="https://bypjbkhezrokhksjxfri.supabase.co/storage/v1/object/public/catalogo/logo%20recortado.jpg" // o "/logo%20recortado.jpg"
                   alt="Logo Dulces Sueños"
                   width={32}    // tamaño base (coincide con h-8)
                   height={32}
