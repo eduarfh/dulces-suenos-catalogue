@@ -8,15 +8,26 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Suspense } from "react"
 import "./globals.css"
 
-
 const SITE_URL = "https://sweet-dreams-catalogue.vercel.app"
-const OG_IMAGE_PATH = "/logo.jpg" // imagen en /public/logo.jpg
-const OG_IMAGE_ABSOLUTE = `${SITE_URL}${OG_IMAGE_PATH}`
+
+// Imagen que quieres que aparezca como miniatura cuando se comparta el catálogo (OpenGraph)
+const SHARED_OG_IMAGE =
+  "https://bypjbkhezrokhksjxfri.supabase.co/storage/v1/object/public/catalogo/logo.jpg"
+
+// Imagen que quieres usar como favicon (la versión recortada)
+const FAVICON_URL =
+  "https://bypjbkhezrokhksjxfri.supabase.co/storage/v1/object/public/catalogo/logo%20recortado.jpg"
 
 export const metadata: Metadata = {
   title: "Dulces Sueños - Catálogo de Productos para Bebés",
   description: "Los mejores productos para el cuidado de tu bebé",
   metadataBase: new URL(SITE_URL),
+  // favicon / icons (usa la imagen recortada como favicon)
+  icons: {
+    icon: FAVICON_URL,
+    shortcut: FAVICON_URL,
+    apple: FAVICON_URL,
+  },
   openGraph: {
     title: "Dulces Sueños - Catálogo de Productos para Bebés",
     description: "Los mejores productos para el cuidado de tu bebé",
@@ -24,10 +35,10 @@ export const metadata: Metadata = {
     siteName: "Dulces Sueños",
     images: [
       {
-        url: OG_IMAGE_ABSOLUTE,
+        url: SHARED_OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: "Dulces Sueños - Logo",
+        alt: "Dulces Sueños - Miniatura del catálogo",
         type: "image/jpeg",
       },
     ],
@@ -38,9 +49,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Dulces Sueños - Catálogo de Productos para Bebés",
     description: "Los mejores productos para el cuidado de tu bebé",
-    images: [OG_IMAGE_ABSOLUTE],
+    images: [SHARED_OG_IMAGE],
   },
-  // Puedes añadir más metadatos si lo deseas
 }
 
 export default function RootLayout({
