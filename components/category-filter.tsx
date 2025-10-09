@@ -45,7 +45,7 @@ export function CategoryFilter({ selectedCategory, onSelectCategory, products }:
               ? // "Todos" seleccionado: mismo look en light; en dark también usa bg #95C7C3
                 "bg-[#95C7C3] hover:bg-[#95C7C3]/90 text-white shadow-sm ring-1 ring-offset-1 ring-[#95C7C3]/40 dark:bg-[#95C7C3] dark:text-white rounded-lg px-4 py-2"
               : // "Todos" no seleccionado
-                "bg-transparent border border-[color:var(--color-border)] dark:border-[color:var(--color-border)] text-muted-foreground rounded-lg px-4 py-2"
+                "bg-transparent outline outline-[color:var(--color-border)] dark:outline-[color:var(--color-border)] text-muted-foreground rounded-lg px-4 py-2"
           }
         >
           Todos
