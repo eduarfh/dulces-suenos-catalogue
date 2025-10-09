@@ -7,26 +7,28 @@ import { ThemeToggle } from "@/components/theme-toggle"
 export function CatalogHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-2 py-2 md:py-3">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            {/* Contenedor del logo: sin degradado, sólo borde sutil y esquinas redondeadas */}
-            <div className="mx-auto to-[#95C7C3] p-4 rounded-2xl w-fit overflow-hidden bg-transparent">
-              <Image
-                // pon aquí tu archivo (recomiendo renombrar sin espacios)
-                src="https://bypjbkhezrokhksjxfri.supabase.co/storage/v1/object/public/catalogo/logo%20recortado.jpg" // o "/logo%20recortado.jpg"
-                alt="Logo Dulces Sueños"
-                width={32}    // tamaño base (coincide con h-8)
-                height={32}
-                className="h-30 w-30 sm:h-30 sm:w-30 object-contain block"
-              />
+          <div className="flex items-center gap-2">
+            {/* ajuste: menos padding externo y tamaño fijo del wrapper (responsive) */}
+            <div className="p-1 bg-transparent">
+              {/* contenedor relativo con w/h controladas; Image usará `fill` */}
+              <div className="relative flex-shrink-0 rounded-2xl overflow-hidden w-20 h-20 sm:w-20 sm:h-20 md:w-24 md:h-24">
+                <Image
+                  src="https://bypjbkhezrokhksjxfri.supabase.co/storage/v1/object/public/catalogo/logo%20recortado.jpg"
+                  alt="Logo Dulces Sueños"
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
             </div>
 
             <div>
               <h1 className="text-xl font-bold text-foreground">Dulces Sueños • Store</h1>
               <p className="text-xs text-muted-foreground">Todo para tu bebé</p>
             </div>
-          </Link>
+          </div>
 
           <div className="flex items-center gap-2">
             <ThemeToggle />

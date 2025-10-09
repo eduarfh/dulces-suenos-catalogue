@@ -256,19 +256,22 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gradient-to-br from-[#FFD4E5]/10 via-[#BEE4E7]/10 to-[#F7CCAD]/10 dark:from-[#FFD4E5]/5 dark:via-[#BEE4E7]/5 dark:to-[#F7CCAD]/5">
       {/* Header */}
       <header className="bg-background border-b sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-2 py-2 md:py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="mx-auto to-[#95C7C3] p-4 rounded-2xl w-fit overflow-hidden bg-transparent">
-                <Image
-                  // pon aquí tu archivo (recomiendo renombrar sin espacios)
-                  src="https://bypjbkhezrokhksjxfri.supabase.co/storage/v1/object/public/catalogo/logo%20recortado.jpg" // o "/logo%20recortado.jpg"
-                  alt="Logo Dulces Sueños"
-                  width={32}    // tamaño base (coincide con h-8)
-                  height={32}
-                  className="h-30 w-30 sm:h-30 sm:w-30 object-contain block"
-                />
+            <div className="flex items-center gap-2">
+              <div className="p-1 bg-transparent">
+                {/* contenedor relativo con w/h controladas; Image usará `fill` */}
+                <div className="relative flex-shrink-0 rounded-2xl overflow-hidden w-20 h-20 sm:w-20 sm:h-20 md:w-24 md:h-24">
+                  <Image
+                    src="https://bypjbkhezrokhksjxfri.supabase.co/storage/v1/object/public/catalogo/logo%20recortado.jpg"
+                    alt="Logo Dulces Sueños"
+                    fill
+                    className="object-contain"
+                    priority
+                  />
+                </div>
               </div>
+
               <div>
                 <h1 className="text-xl font-bold text-foreground">Panel de Administración</h1>
                 <p className="text-xs text-muted-foreground">Gestión de productos</p>
@@ -287,7 +290,7 @@ export default function AdminDashboard() {
                 onClick={handleLogout}
                 className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 bg-transparent"
               >
-                <LogOut className="h-4 w-4 mr-2" />
+                <LogOut className="h-4 w-4 mr-2 " />
                 Salir
               </Button>
             </div>

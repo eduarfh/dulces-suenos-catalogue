@@ -39,22 +39,26 @@ export default function LoginPage() {
       </div>
 
       <Card className="w-full max-w-md border-2">
-        <CardHeader className="text-center space-y-4">
-          <div className="mx-auto to-[#95C7C3] p-4 rounded-2xl w-fit">
-            <Image
-              // pon aquí tu archivo (recomiendo renombrar sin espacios)
-              src="https://bypjbkhezrokhksjxfri.supabase.co/storage/v1/object/public/catalogo/logo%20recortado.jpg" // o "/logo%20recortado.jpg"
-              alt="Logo Dulces Sueños"
-              width={32}    // tamaño base (coincide con h-8)
-              height={32}
-              className="h-30 w-80 sm:h-40 sm:w-40 object-contain block"
-            />
+        <CardHeader className="flex flex-col items-center text-center space-y-4">
+          <div className="bg-transparent">
+            {/* contenedor relativo con w/h controladas; Image usará `fill` */}
+            <div className="relative rounded-2xl overflow-hidden w-25 h-25 sm:w-20 sm:h-20 md:w-30 md:h-30 mx-auto">
+              <Image
+                src="https://bypjbkhezrokhksjxfri.supabase.co/storage/v1/object/public/catalogo/logo%20recortado.jpg"
+                alt="Logo Dulces Sueños"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
           </div>
+
           <div>
             <CardTitle className="text-2xl font-bold text-foreground">Panel de Administración</CardTitle>
             <CardDescription>Ingresa tus credenciales para acceder</CardDescription>
           </div>
         </CardHeader>
+
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">

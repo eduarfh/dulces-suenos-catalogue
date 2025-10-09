@@ -63,7 +63,7 @@ export function CategoryFilter({ selectedCategory, onSelectCategory, products }:
               className={
                 // Mantén color por categoría en light (base),
                 // si está seleccionado se agrega ring/shadow y forzamos el fondo en dark al mismo que "Todos"
-                `${base} border-2 rounded-lg px-4 py-2 transition-all duration-150 ${
+                `${base} outline-2 rounded-lg px-4 py-2 transition-all duration-150 ${
                   isSelected
                     ? `ring-2 ring-offset-2 ring-[#95C7C3] shadow-lg text-gray-800 ${darkSelected}`
                     : "opacity-95 hover:scale-[1.02]"
