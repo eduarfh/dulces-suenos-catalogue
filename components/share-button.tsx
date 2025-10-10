@@ -14,7 +14,7 @@ export function ShareButton({ product }: ShareButtonProps) {
     const origin = typeof window !== "undefined" ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL || ""
     const url = `${origin}/product/${encodeURIComponent(product.id)}`
     const shareTitle = product.name
-    const shareText = product.description ?? ""
+    const shareText = product.name ?? ""
 
     if (navigator.share) {
       try {

@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server"
 import type { Product, DbProduct, DbProductImage } from "@/lib/products"
 import { CatalogHeader } from "@/components/catalog-header"
 import { CatalogClient } from "@/components/catalog-client"
+import StoreInfo from "@/components/store-info"
 
 export const dynamic = "force-dynamic"
 
@@ -58,6 +59,10 @@ export default async function HomePage() {
     <div className="min-h-screen bg-gradient-to-br from-[#FFD4E5]/10 via-[#BEE4E7]/10 to-[#F7CCAD]/10 dark:from-[#FFD4E5]/5 dark:via-[#BEE4E7]/5 dark:to-[#F7CCAD]/5">
       <CatalogHeader />
       <CatalogClient products={products} />
+      {/* Footer: StoreInfo */}
+      <footer>
+        <StoreInfo />
+      </footer>
     </div>
   )
 }

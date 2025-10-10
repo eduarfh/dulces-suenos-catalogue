@@ -1,15 +1,14 @@
-// components/product-card.tsx
 "use client"
 
-import type React from "react"
+import React from "react"
 import type { Product } from "@/lib/products"
 import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Eye, Share2, MessageCircle } from "lucide-react"
 import Link from "next/link"
 import { ImageCarousel } from "@/components/image-carousel"
 import WhatsAppChooser from "@/components/WhatsAppChooser"
+import CategoryBadge from "@/components/category-badge"
 
 interface ProductCardProps {
   product: Product
@@ -17,36 +16,31 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, compact = false }: ProductCardProps) {
-  const getCategoryColor = (category: string) => {
-    const colors: Record<string, string> = {
-      Ropa: "bg-[#BEE4E7] text-gray-800",
-      Juguetes: "bg-[#F49F51] text-gray-800",
-      Alimentación: "bg-[#FFD4E5] text-gray-800",
-      Higiene: "bg-[#95C7C3] text-gray-800",
-      Accesorios: "bg-[#F490B9] text-gray-800",
-      Muebles: "bg-[#F7CCAD] text-gray-800",
-    }
-    return colors[category] || "bg-gray-200 text-gray-800"
-  }
-
   const handleShare = async (e: React.MouseEvent) => {
     e.preventDefault()
     const origin = typeof window !== "undefined" ? window.location.origin : ""
     const url = `${origin}/product/${encodeURIComponent(product.id)}`
 
-    if (navigator.share) {
+    if (typeof navigator !== "undefined" && (navigator as any).share) {
       try {
-        await navigator.share({
+        await (navigator as any).share({
           title: product.name,
           text: product.description,
-          url: url,
+          url,
         })
       } catch (err) {
-        // ignore
+        // ignore user cancel
+      }
+    } else if (typeof navigator !== "undefined" && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(url)
+        alert("¡Enlace copiado al portapapeles!")
+      } catch {
+        // fallback silent
       }
     } else {
-      await navigator.clipboard.writeText(url)
-      alert("¡Enlace copiado al portapapeles!")
+      // último recurso
+      alert(url)
     }
   }
 
@@ -54,11 +48,16 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
     <Card
       className={`overflow-hidden hover:shadow-lg transition-all duration-300 border-2 hover:scale-[1.02] bg-card ${compact ? "h-full" : ""}`}
     >
-      <div className={`relative overflow-hidden bg-gradient-to-br from-[#FFD4E5]/20 to-[#BEE4E7]/20 dark:from-[#FFD4E5]/10 dark:to-[#BEE4E7]/10 ${compact ? "aspect-square" : "aspect-square"}`}>
+      <div
+        className={`relative overflow-hidden bg-gradient-to-br from-[#FFD4E5]/20 to-[#BEE4E7]/20 dark:from-[#FFD4E5]/10 dark:to-[#BEE4E7]/10 ${compact ? "aspect-square" : "aspect-square"}`}
+      >
         <ImageCarousel images={product.images} alt={product.name} autoRotate={true} interval={3000} className="w-full h-full" />
-        <Badge className={`absolute ${compact ? "top-2 right-2 text-[10px] px-1.5 py-0.5" : "top-3 right-3"} ${getCategoryColor(product.category)} font-medium z-10`}>
-          {product.category}
-        </Badge>
+
+        {/* Centralized category badge */}
+        <CategoryBadge
+          category={product.category}
+          className={`${compact ? "top-2 right-2 text-[10px] px-1.5 py-0.5" : "top-3 right-3"} font-medium z-10`}
+        />
       </div>
 
       <CardContent className={compact ? "p-2 md:p-3" : "p-4"}>
@@ -79,7 +78,11 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
 
         <div className={`flex flex-col ${compact ? "gap-1.5" : "gap-2"} items-stretch`}>
           <Link href={`/product/${product.id}`} className="w-full">
-            <Button className={`w-full bg-[#95C7C3] hover:bg-[#95C7C3]/90 text-white ${compact ? "h-8 text-xs" : ""} py-2 md:py-1 md:text-sm`} size={compact ? "sm" : "default"} aria-label={`Ver detalles de ${product.name}`}>
+            <Button
+              className={`w-full bg-[#95C7C3] hover:bg-[#95C7C3]/90 text-white ${compact ? "h-8 text-xs" : ""} py-2 md:py-1 md:text-sm`}
+              size={compact ? "sm" : "default"}
+              aria-label={`Ver detalles de ${product.name}`}
+            >
               <Eye className={`${compact ? "h-3 w-3 mr-1" : "h-4 w-4 mr-2"} md:h-3 md:w-3 md:mr-1`} />
               <span className={`${compact ? "text-xs" : "text-sm"} md:text-xs`}>Ver Detalles</span>
             </Button>
@@ -91,19 +94,28 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
                 product={product}
                 phoneList={[
                   { label: "Principal", number: "+53 59158599" },
-                  { label: "Ventas", number: "+53 58561582" },
-                  { label: "Soporte Técnico", number: "+53 55550301" },
                 ]}
                 defaultIndex={0}
                 openOnSingle={true}
               >
-                <Button variant="outline" size="sm" className="flex items-center gap-2 border-[#F49F51] text-[#F49F51] hover:bg-[#F49F51] hover:text-white bg-transparent py-2 md:py-1 md:px-4 md:text-xs flex-1 max-w-[220px]" aria-label={`Contactar por WhatsApp sobre ${product.name}`}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2 border-[#F49F51] text-[#F49F51] hover:bg-[#F49F51] hover:text-white bg-transparent py-2 md:py-1 md:px-4 md:text-xs flex-1 max-w-[220px]"
+                  aria-label={`Contactar por WhatsApp sobre ${product.name}`}
+                >
                   <MessageCircle className="h-4 w-4 md:h-3 md:w-3" />
                   <span className="text-sm md:text-xs whitespace-nowrap">WhatsApp</span>
                 </Button>
               </WhatsAppChooser>
 
-              <Button variant="outline" size="sm" onClick={handleShare} className="flex items-center justify-center gap-2 border-[#F490B9] text-[#F490B9] hover:bg-[#F490B9] hover:text-white bg-transparent py-2 md:py-1 md:px-3 md:text-xs flex-1 max-w-[140px]" aria-label={`Compartir ${product.name}`}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleShare}
+                className="flex items-center justify-center gap-2 border-[#F490B9] text-[#F490B9] hover:bg-[#F490B9] hover:text-white bg-transparent py-2 md:py-1 md:px-3 md:text-xs flex-1 max-w-[140px]"
+                aria-label={`Compartir ${product.name}`}
+              >
                 <Share2 className="h-4 w-4 md:h-3 md:w-3" />
                 <span className="hidden md:inline md:text-xs">Compartir</span>
               </Button>
