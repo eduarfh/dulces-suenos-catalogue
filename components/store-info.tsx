@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Clock, Phone, MapPin, Map } from "lucide-react"
@@ -37,36 +37,35 @@ export default function StoreInfo() {
 
   const buildMapsLink = () => {
     const label = "Dulces Sueños"
-    const q = encodeURIComponent(`${lat},${lng} (${label})`) // helps show marker + label
-    // For Apple, the maps URL scheme supports `maps://?q=lat,lng` or https://maps.apple.com/?ll=
     if (platform === "ios") {
-      // Prefer maps:// scheme for native app; include q so it centers/marks
       return `maps://?q=${encodeURIComponent(`${lat},${lng}`)}`
     }
     if (platform === "android") {
-      // geo URI format with query should open Maps with marker on Android devices
-      return `geo:${lat},${lng}?q=${lat},${lng}(${encodeURIComponent("Dulces Sueños")})`
+      return `geo:${lat},${lng}?q=${lat},${lng}(${encodeURIComponent(label)})`
     }
-    // Desktop / fallback: Google Maps web with query -> shows a pin
     return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
   }
 
   const openMaps = () => {
-    const url = buildMapsLink()
-    // Algunos schemes (geo://, maps://) necesitan abrirse con window.location.href en móviles,
-    // pero window.open suele funcionar; hacemos open y además fallback:
-    try {
-      // Intentamos abrir en nueva ventana/pestaña (y para esquemas nativos el navegador lo manejará)
-      const newWindow = window.open(url, "_blank", "noopener,noreferrer")
-      // Si window.open fue bloqueado o devolvió null, redirigimos en la misma pestaña
-      if (!newWindow) {
-        window.location.href = url
-      }
-    } catch {
-      // último recurso
-      window.location.href = url
-    }
+  const url = buildMapsLink()
+
+  try {
+    // Creamos un <a> seguro para forzar que SOLO se abra en una nueva pestaña
+    const a = document.createElement("a")
+    a.href = url
+    a.target = "_blank"
+    a.rel = "noopener noreferrer"
+    // oculto y temporal en DOM para que click() funcione en todos los navegadores
+    a.style.display = "none"
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+  } catch {
+    // fallback: si algo falla, redirigimos la pestaña actual
+    window.location.href = url
   }
+}
+
 
   const copyToClipboard = async (text: string) => {
     try {
@@ -77,6 +76,30 @@ export default function StoreInfo() {
       alert("No se pudo copiar. Selecciona y copia manualmente.")
     }
   }
+
+  // --- Developer credit UI ---
+  const devName = "Eduardo Enrique Fonseca Heredia"
+  const devWhatsRaw = "5355550301"
+  const devWhatsDisplay = "+53 55550301"
+  const devWhatsLink = `https://wa.me/${devWhatsRaw}?text=${encodeURIComponent("Hola Eduardo, te contacto desde la web.")}`
+  const instagramLink = "https://instagram.com/eduar_fh"
+  const facebookLink = "http://localhost:3000/product/35868274-90b8-4fce-b2b4-609bbe8dc5b2"
+  const mailLink = "mailto:fonsecaeduar136@gmail.com"
+
+  const [showDevContact, setShowDevContact] = useState(false)
+  const devRef = useRef<HTMLDivElement | null>(null)
+
+  // Close popover on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (!devRef.current) return
+      if (!devRef.current.contains(e.target as Node)) {
+        setShowDevContact(false)
+      }
+    }
+    document.addEventListener("click", handler)
+    return () => document.removeEventListener("click", handler)
+  }, [])
 
   return (
     <section className="container mx-auto px-4 py-8">
@@ -94,7 +117,7 @@ export default function StoreInfo() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Horario</p>
-                <p className="font-semibold text-foreground">Lun - Sáb · 10:00 — 18:00</p>
+                <p className="font-semibold text-foreground">Lun → Sáb • 10:00 → 18:00</p>
               </div>
             </div>
           </div>
@@ -171,7 +194,6 @@ export default function StoreInfo() {
                 aria-label="Abrir en la app de mapas"
               >
                 <span className="inline-flex items-center justify-center w-5 h-5 flex-shrink-0">
-                  {/* icono condicional: Apple o mapa genérico */}
                   {platform === "ios" ? (
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -196,23 +218,95 @@ export default function StoreInfo() {
               </Button>
             </div>
 
-            {/* <div className="mt-2 rounded overflow-hidden border">
-              <iframe
-                title="Mapa de Dulces Sueños"
-                src={mapsEmbedSrc}
-                width="100%"
-                height="220"
-                loading="lazy"
-                className="block"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            </div> */}
+            {/* Small note removed iframe + copy button for compactness */}
+          </div>
 
-            {/* <div className="flex justify-end">
-              <Button variant="outline" size="sm" onClick={() => copyToClipboard(`${lat}, ${lng}`)}>
-                Copiar coordenadas
-              </Button>
-            </div> */}
+          {/* Footer / Créditos (single row spanning all columns) */}
+          <div className="col-span-full mt-6 pt-4 border-t border-muted/20">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0" ref={devRef}>
+                <div className="text-sm text-muted-foreground">Desarrollado por</div>
+
+                {/* Developer name toggles small popover with WhatsApp number */}
+                <button
+                  onClick={() => setShowDevContact((s) => !s)}
+                  aria-expanded={showDevContact}
+                  className="font-medium text-foreground hover:text-foreground/90 underline-offset-2 hover:underline text-left"
+                  title="Contactar al desarrollador"
+                >
+                  {devName}
+                </button>
+
+                {/* Popover: muestra número y link a chat */}
+                {showDevContact && (
+                  <div className="ml-3 mt-2 sm:mt-0 bg-background/90 dark:bg-background rounded-md shadow-lg border px-3 py-2 text-sm flex items-center gap-3">
+                    <span className="text-muted-foreground">WhatsApp:</span>
+                    <a
+                      href={devWhatsLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-medium text-foreground hover:text-foreground/90 underline"
+                    >
+                      {devWhatsDisplay}
+                    </a>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard?.writeText(devWhatsDisplay)
+                        alert("Número copiado")
+                      }}
+                      className="ml-2 text-xs px-2 py-1 rounded bg-muted/10 hover:bg-muted/20"
+                      aria-label="Copiar número del desarrollador"
+                    >
+                      Copiar
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center gap-3">
+                {/* Instagram */}
+                <a
+                  href={instagramLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4 flex-shrink-0" fill="currentColor" aria-hidden>
+                    <path d="M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm5 6.5A4.5 4.5 0 1016.5 13 4.5 4.5 0 0012 8.5zM18.5 6a1 1 0 11-1 1 1 1 0 011-1z" />
+                  </svg>
+                  <span className="hidden sm:inline">Instagram</span>
+                </a>
+
+                {/* Facebook */}
+                <a
+                  href={facebookLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4 flex-shrink-0" fill="currentColor" aria-hidden>
+                    <path d="M22 12a10 10 0 10-11.5 9.9v-7h-2.3V12h2.3V9.8c0-2.3 1.37-3.6 3.47-3.6.99 0 2.03.18 2.03.18v2.24h-1.15c-1.13 0-1.48.7-1.48 1.42V12h2.52l-.4 2.9h-2.12v7A10 10 0 0022 12z"/>
+                  </svg>
+                  <span className="hidden sm:inline">Facebook</span>
+                </a>
+
+                {/* Email */}
+                <a
+                  href={mailLink}
+                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4 flex-shrink-0" fill="currentColor" aria-hidden>
+                    <path d="M2 6a2 2 0 012-2h16a2 2 0 012 2v.2l-10 6.3-10-6.3V6zm0 2.7v7.3A2 2 0 004 18h16a2 2 0 002-2V8.7l-9.2 5.8a1 1 0 01-1.6 0L2 8.7z"/>
+                  </svg>
+                  <span className="hidden sm:inline">fonsecaeduar136@gmail.com</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Small copyright line */}
+            <div className="mt-3 text-xs text-muted-foreground">
+              © {new Date().getFullYear()} Dulces Sueños. Todos los derechos reservados.
+            </div>
           </div>
         </CardContent>
       </Card>
