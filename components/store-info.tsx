@@ -117,7 +117,7 @@ export default function StoreInfo() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Horario</p>
-                <p className="font-semibold text-foreground">Lun → Sáb • 10:00 → 18:00</p>
+                <p className="font-semibold text-foreground">Lun — Sáb • 10:00 am — 6:00 pm</p>
               </div>
             </div>
           </div>
