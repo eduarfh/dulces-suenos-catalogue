@@ -83,7 +83,7 @@ export default function StoreInfo() {
   const devWhatsDisplay = "+53 55550301"
   const devWhatsLink = `https://wa.me/${devWhatsRaw}?text=${encodeURIComponent("Hola Eduardo, te contacto desde la web.")}`
   const instagramLink = "https://instagram.com/eduar_fh"
-  const facebookLink = "http://localhost:3000/product/35868274-90b8-4fce-b2b4-609bbe8dc5b2"
+  const facebookLink = "https://www.facebook.com/eduardoenrique.fonsecaheredia?mibextid=wwXIfr&mibextid=wwXIfr"
   const mailLink = "mailto:fonsecaeduar136@gmail.com"
 
   const [showDevContact, setShowDevContact] = useState(false)
