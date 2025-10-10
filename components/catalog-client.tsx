@@ -51,7 +51,7 @@ export function CatalogClient({ products }: CatalogClientProps) {
   }, [filteredProducts])
 
   return (
-    <main className="container mx-auto px-4 py-8">
+    <main className="container mx-auto px-4 py-6">
       <div className="text-center mb-8">
         <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-2">Catálogo de Productos</h2>
         <p className="text-muted-foreground">Los mejores productos para el cuidado de tu bebé</p>

@@ -18,27 +18,54 @@ export default function StoreInfo() {
   const address = "Calle 68 entre 9na y 11na, Miramar, Playa"
   const lat = "23.106806"
   const lng = "-82.431900"
-  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
-  const appleMapsUrl = `https://maps.apple.com/?ll=${lat},${lng}`
   const mapsEmbedSrc = `https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed`
 
-  const [isApple, setIsApple] = useState<boolean | null>(null)
+  const [platform, setPlatform] = useState<"ios" | "android" | "desktop" | null>(null)
 
   useEffect(() => {
     try {
       const ua = navigator.userAgent || navigator.vendor || (window as any).opera || ""
       const isiOS = /iPhone|iPad|iPod/.test(ua)
-      const isMac = /Macintosh|Mac OS X/.test(ua)
       const isAndroid = /Android/.test(ua)
-      setIsApple((isiOS || (isMac && !isAndroid)) ?? false)
+      if (isiOS) setPlatform("ios")
+      else if (isAndroid) setPlatform("android")
+      else setPlatform("desktop")
     } catch {
-      setIsApple(false)
+      setPlatform("desktop")
     }
   }, [])
 
+  const buildMapsLink = () => {
+    const label = "Dulces Sueños"
+    const q = encodeURIComponent(`${lat},${lng} (${label})`) // helps show marker + label
+    // For Apple, the maps URL scheme supports `maps://?q=lat,lng` or https://maps.apple.com/?ll=
+    if (platform === "ios") {
+      // Prefer maps:// scheme for native app; include q so it centers/marks
+      return `maps://?q=${encodeURIComponent(`${lat},${lng}`)}`
+    }
+    if (platform === "android") {
+      // geo URI format with query should open Maps with marker on Android devices
+      return `geo:${lat},${lng}?q=${lat},${lng}(${encodeURIComponent("Dulces Sueños")})`
+    }
+    // Desktop / fallback: Google Maps web with query -> shows a pin
+    return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
+  }
+
   const openMaps = () => {
-    const url = isApple ? appleMapsUrl : googleMapsUrl
-    window.open(url, "_blank", "noopener,noreferrer")
+    const url = buildMapsLink()
+    // Algunos schemes (geo://, maps://) necesitan abrirse con window.location.href en móviles,
+    // pero window.open suele funcionar; hacemos open y además fallback:
+    try {
+      // Intentamos abrir en nueva ventana/pestaña (y para esquemas nativos el navegador lo manejará)
+      const newWindow = window.open(url, "_blank", "noopener,noreferrer")
+      // Si window.open fue bloqueado o devolvió null, redirigimos en la misma pestaña
+      if (!newWindow) {
+        window.location.href = url
+      }
+    } catch {
+      // último recurso
+      window.location.href = url
+    }
   }
 
   const copyToClipboard = async (text: string) => {
@@ -103,7 +130,6 @@ export default function StoreInfo() {
                   rel="noreferrer"
                   className="inline-flex items-center gap-2"
                 >
-                  {/* Usamos el mismo icono que en ProductCard (MessageCircle) y lo envolvemos para evitar deformación */}
                   <span className="inline-flex items-center justify-center w-5 h-5 flex-shrink-0">
                     <MessageCircle className="h-4 w-4 md:h-3 md:w-3" />
                   </span>
@@ -146,7 +172,7 @@ export default function StoreInfo() {
               >
                 <span className="inline-flex items-center justify-center w-5 h-5 flex-shrink-0">
                   {/* icono condicional: Apple o mapa genérico */}
-                  {isApple ? (
+                  {platform === "ios" ? (
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
@@ -165,12 +191,12 @@ export default function StoreInfo() {
                 </span>
 
                 <span className="font-medium">
-                  Abrir en {isApple === null ? "Maps" : isApple ? "Apple Maps" : "Google Maps"}
+                  Abrir en {platform === null ? "Maps" : platform === "ios" ? "Apple Maps" : platform === "android" ? "Google Maps" : "Maps"}
                 </span>
               </Button>
             </div>
 
-            <div className="mt-2 rounded overflow-hidden border">
+            {/* <div className="mt-2 rounded overflow-hidden border">
               <iframe
                 title="Mapa de Dulces Sueños"
                 src={mapsEmbedSrc}
@@ -180,13 +206,13 @@ export default function StoreInfo() {
                 className="block"
                 referrerPolicy="no-referrer-when-downgrade"
               />
-            </div>
+            </div> */}
 
-            <div className="flex justify-end">
+            {/* <div className="flex justify-end">
               <Button variant="outline" size="sm" onClick={() => copyToClipboard(`${lat}, ${lng}`)}>
                 Copiar coordenadas
               </Button>
-            </div>
+            </div> */}
           </div>
         </CardContent>
       </Card>

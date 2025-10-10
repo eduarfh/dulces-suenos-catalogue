@@ -18,7 +18,7 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
         placeholder="Buscar productos..."
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="pl-10 h-12 text-base border-2 bg-card"
+        className="pl-10 h-12 text-base outline-2 bg-card"
       />
     </div>
   )
