@@ -302,7 +302,7 @@ export default function StoreInfo() {
 
           {/* Footer / Créditos (single row spanning all columns) */}
           
-          <div className="col-span-full mt-6 pt-4 border-t border-[color:var(--color-border)/0.2]">
+          <div className="col-span-full mt-6 pt-4 border-t border-muted/20">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="text-sm text-[var(--color-muted-foreground,rgba(0,0,0,0.6))]">Desarrollado por</div>
