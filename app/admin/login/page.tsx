@@ -1,120 +1,99 @@
-// app/admin/login/page.tsx
-"use client";
+"use client"
+//app/admin/login/page.tsx
+import type React from "react"
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/auth-context";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Lock, ArrowLeft } from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { Baby, Lock } from "lucide-react"
+import Link from "next/link"
+import { ThemeToggle } from "@/components/theme-toggle"
+import Image from "next/image"
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const router = useRouter()
 
-  // USAMOS exclusivamente el hook del provider (sin importar supabase aquí)
-  const { login } = useAuth();
-  const router = useRouter();
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    try {
-      const email = username.trim().toLowerCase();
-      console.log("DEBUG - calling login from SupabaseAuthProvider with", { email });
-
-      const ok = await login(email, password);
-
-      console.log("login returned:", ok);
-
-      if (!ok) {
-        setError("Usuario o contraseña incorrectos.");
-        return;
-      }
-
-      // Navegamos sabiendo que el provider actualizó el estado
-      router.push("/admin");
-    } catch (err: any) {
-      console.error("Unexpected:", err);
-      setError(String(err?.message ?? err));
-    } finally {
-      setLoading(false);
+    // Simple authentication (in production, use proper auth)
+    if (username === "admin" && password === "admin123") {
+      localStorage.setItem("isAdminAuthenticated", "true")
+      router.push("/admin/dashboard")
+    } else {
+      setError("Usuario o contraseña incorrectos")
     }
-  };
+  }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative">
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => router.push("/")}
-        className="absolute top-4 left-4 text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Volver al Catálogo
-      </Button>
-
+    <div className="min-h-screen bg-gradient-to-br from-[#FFD4E5]/20 via-[#BEE4E7]/20 to-[#F7CCAD]/20 dark:from-[#FFD4E5]/10 dark:via-[#BEE4E7]/10 dark:to-[#F7CCAD]/10 flex items-center justify-center p-4">
       <div className="absolute top-4 right-4">
         <ThemeToggle />
       </div>
 
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="mx-auto w-12 h-12 bg-muted rounded-full flex items-center justify-center mb-4">
-            <Lock className="w-6 h-6 text-muted-foreground" />
+      <Card className="w-full max-w-md border-2">
+        <CardHeader className="flex flex-col items-center text-center space-y-4">
+          <div className="bg-transparent">
+            {/* contenedor relativo con w/h controladas; Image usará `fill` */}
+            <div className="relative rounded-2xl overflow-hidden w-25 h-25 sm:w-20 sm:h-20 md:w-30 md:h-30 mx-auto">
+              <Image
+                src="https://bypjbkhezrokhksjxfri.supabase.co/storage/v1/object/public/catalogo/logo%20recortado.jpg"
+                alt="Logo Dulces Sueños"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
           </div>
-          <CardTitle className="text-2xl font-semibold text-foreground">Acceso Administrativo</CardTitle>
-          <CardDescription className="text-muted-foreground">
-            Ingresa tus credenciales para acceder al panel de administración
-          </CardDescription>
+
+          <div>
+            <CardTitle className="text-2xl font-bold text-foreground">Panel de Administración</CardTitle>
+            <CardDescription>Ingresa tus credenciales para acceder</CardDescription>
+          </div>
         </CardHeader>
+
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username" className="text-sm font-medium text-gray-700">
-                Usuario
-              </Label>
+              <Label htmlFor="username">Usuario</Label>
               <Input
                 id="username"
                 type="text"
+                placeholder="Usuario"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Ingresa tu usuario (email)"
                 required
-                className="w-full"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-                Contraseña
-              </Label>
+              <Label htmlFor="password">Contraseña</Label>
               <Input
                 id="password"
                 type="password"
+                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Ingresa tu contraseña"
                 required
-                className="w-full"
               />
             </div>
-            {error && (
-              <Alert className="border-red-200 bg-red-50">
-                <AlertDescription className="text-red-700 text-sm">{error}</AlertDescription>
-              </Alert>
-            )}
-            <Button type="submit" className="w-full bg-gray-900 hover:bg-gray-800 text-white" disabled={loading}>
-              {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
+            {error && <p className="text-sm text-red-500 dark:text-red-400 text-center">{error}</p>}
+            <Button type="submit" className="w-full bg-[#95C7C3] hover:bg-[#95C7C3]/90 text-white">
+              <Lock className="mr-2 h-4 w-4" />
+              Iniciar Sesión
             </Button>
           </form>
+          <div className="mt-6 text-center">
+            <Link href="/" className="text-sm text-[#95C7C3] hover:underline">
+              ← Volver al catálogo
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>

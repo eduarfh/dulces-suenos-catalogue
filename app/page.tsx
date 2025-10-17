@@ -1,113 +1,68 @@
-// app/page.tsx
-"use client"
+//app/page.tsx
+import { createClient } from "@/lib/supabase/server"
+import type { Product, DbProduct, DbProductImage } from "@/lib/products"
+import { CatalogHeader } from "@/components/catalog-header"
+import { CatalogClient } from "@/components/catalog-client"
+import StoreInfo from "@/components/store-info"
 
-import React, { useEffect, useState } from "react"
-import { ThemeToggle } from "@/components/theme-toggle"
-import ContactBubble from "@/components/contact-bubble"
-import { ProductPreviewModal } from "@/components/product-preview-modal"
-import FiltersBar from "@/components/shared/filtersBar"
-import ProductGrid from "@/components/shared/productGrid"
-import { useProducts } from "@/contexts/products-context"
-import type { Electrodomestico } from "@/contexts/products-context"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Settings } from "lucide-react"
+export const dynamic = "force-dynamic"
 
-export default function HomePage() {
-  const { electrodomesticos } = useProducts()
-  const [busqueda, setBusqueda] = useState("")
-  const [selectedProduct, setSelectedProduct] = useState<Electrodomestico | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+export default async function HomePage() {
+  const supabase = await createClient()
 
-  const [availableOnly, setAvailableOnly] = useState(true)
-  const [nameSortActive, setNameSortActive] = useState(false)
-  const [priceSortActive, setPriceSortActive] = useState(false)
-  const [categorySelected, setCategorySelected] = useState<string | null>(null)
-  const [brandSelected, setBrandSelected] = useState<string | null>(null)
+  let products: Product[] = []
+  let errorMessage: string | null = null
 
-  const [isMobile, setIsMobile] = useState(false)
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 640)
-    check()
-    window.addEventListener("resize", check)
-    return () => window.removeEventListener("resize", check)
-  }, [])
+  try {
+    const { data: dbProducts, error: productsError } = await supabase
+      .from("products")
+      .select("*")
+      .order("created_at", { ascending: false })
 
-  const hasSearchText = busqueda.trim().length > 0
-  const anySortActive = nameSortActive || priceSortActive || availableOnly
-  const animKey = `${busqueda}-${nameSortActive}-${priceSortActive}-${availableOnly}`
+    if (productsError) {
+      console.error("[v0] Error fetching products:", productsError)
+      errorMessage = productsError.message
+      throw productsError
+    }
 
-  const electrodomesticosFiltrados = electrodomesticos
-    .filter((e) => {
-      if (availableOnly && !e.disponible) return false
-      if (categorySelected && e.categoria !== categorySelected) return false
-      if (brandSelected && e.marca !== brandSelected) return false
-      const q = busqueda.toLowerCase().trim()
-      if (!q) return true
-      return (
-        e.nombre.toLowerCase().includes(q) ||
-        e.marca.toLowerCase().includes(q) ||
-        e.categoria.toLowerCase().includes(q)
-      )
+    const { data: dbImages, error: imagesError } = await supabase
+      .from("product_images")
+      .select("*")
+      .order("display_order", { ascending: true })
+
+    if (imagesError) {
+      console.error("[v0] Error fetching images:", imagesError)
+    }
+
+    products = (dbProducts || []).map((product: DbProduct) => {
+      const productImages = (dbImages || [])
+        .filter((img: DbProductImage) => img.product_id === product.id)
+        .map((img: DbProductImage) => img.image_url)
+
+      return {
+        id: product.id,
+        name: product.name,
+        category: product.category,
+        price: product.price,
+        description: product.description,
+        stock: product.stock,
+        images: productImages.length > 0 ? productImages : ["/placeholder.svg?height=300&width=300"],
+        created_at: product.created_at,
+        updated_at: product.updated_at,
+      }
     })
-
-  const handleProductClick = (p: Electrodomestico) => {
-    setSelectedProduct(p)
-    setIsModalOpen(true)
+  } catch (error) {
+    console.error("[v0] Failed to load products:", error)
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="bg-background border-b">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-medium text-foreground">Electrodomésticos</h1>
-            <p className="text-muted-foreground text-sm mt-1">Todos los productos vienen con factura y 3 meses de garantía</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Link href="/admin/login">
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                <Settings className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      <div className="container mx-auto px-6 py-8">
-        <FiltersBar
-          id="home-search"
-          value={busqueda}
-          onChange={setBusqueda}
-          placeholder="Buscar productos"
-          onFocusChange={() => { }}
-          enlarged={true}
-          expandOnFocus={true}
-          availableOnly={availableOnly}
-          setAvailableOnly={setAvailableOnly}
-          onNameActiveChange={(a) => setNameSortActive(a)}
-          onPriceActiveChange={(a) => setPriceSortActive(a)}
-          isMobile={isMobile}
-          showAddButton={false}
-          categorySelected={categorySelected}
-          setCategory={setCategorySelected}
-          brandSelected={brandSelected}
-          setBrand={setBrandSelected}
-        />
-
-
-        <ProductGrid items={electrodomesticosFiltrados} onItemClick={handleProductClick} animKey={animKey} />
-
-        {electrodomesticosFiltrados.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-muted-foreground">No se encontraron productos</p>
-          </div>
-        )}
-      </div>
-
-      <ProductPreviewModal product={selectedProduct} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-      <ContactBubble />
+    <div className="min-h-screen bg-gradient-to-br from-[#FFD4E5]/10 via-[#BEE4E7]/10 to-[#F7CCAD]/10 dark:from-[#FFD4E5]/5 dark:via-[#BEE4E7]/5 dark:to-[#F7CCAD]/5">
+      <CatalogHeader />
+      <CatalogClient products={products} />
+      {/* Footer: StoreInfo */}
+      <footer>
+        <StoreInfo />
+      </footer>
     </div>
   )
 }

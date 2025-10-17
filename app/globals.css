@@ -1,54 +1,59 @@
-/*app/globals.css*/
-
+/* //app/globals.css */
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Updated color tokens to match washing machine catalog design brief */
-  --background: oklch(1 0 0); /* white */
-  --foreground: oklch(0.3 0 0); /* dark gray #374151 */
-  --card: oklch(0.99 0.01 15); /* light pink #fef2f2 */
-  --card-foreground: oklch(0.3 0 0); /* dark gray */
-  --popover: oklch(1 0 0); /* white */
-  --popover-foreground: oklch(0.3 0 0); /* dark gray */
-  --primary: oklch(0.55 0.22 25); /* red #dc2626 */
-  --primary-foreground: oklch(1 0 0); /* white */
-  --secondary: oklch(0.7 0.15 70); /* orange #f59e0b */
-  --secondary-foreground: oklch(0.3 0 0); /* dark gray */
-  --muted: oklch(0.99 0.01 15); /* light pink */
-  --muted-foreground: oklch(0.3 0 0); /* dark gray */
-  --accent: oklch(0.7 0.15 70); /* orange */
-  --accent-foreground: oklch(1 0 0); /* white */
-  --destructive: oklch(0.55 0.22 25); /* red */
-  --destructive-foreground: oklch(1 0 0); /* white */
-  --border: oklch(0.9 0 0); /* light gray #e5e7eb */
-  --input: oklch(1 0 0); /* white */
-  --ring: oklch(0.55 0.22 25); /* red */
+  /* Baby Catalog Color Palette */
+  --baby-blue: #bee4e7;
+  --baby-orange: #f49f51;
+  --baby-pink: #ffd4e5;
+  --baby-teal: #95c7c3;
+  --baby-bright-pink: #f490b9;
+  --baby-peach: #f7ccad;
+
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.5rem; /* Updated to match design brief */
-  --sidebar: oklch(0.99 0.01 15); /* light pink */
-  --sidebar-foreground: oklch(0.3 0 0); /* dark gray */
-  --sidebar-primary: oklch(0.55 0.22 25); /* red */
-  --sidebar-primary-foreground: oklch(1 0 0); /* white */
-  --sidebar-accent: oklch(0.7 0.15 70); /* orange */
-  --sidebar-accent-foreground: oklch(0.3 0 0); /* dark gray */
-  --sidebar-border: oklch(0.9 0 0); /* light gray */
-  --sidebar-ring: oklch(0.55 0.22 25); /* red */
-  --card-buttons: oklch(0.3 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
 
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
+  --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
+  --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.985 0 0);
   --primary-foreground: oklch(0.205 0 0);
@@ -59,7 +64,7 @@
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --destructive-foreground: oklch(0.985 0 0);
   --border: oklch(0.269 0 0);
   --input: oklch(0.269 0 0);
   --ring: oklch(0.439 0 0);
@@ -76,13 +81,18 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
+  --cat-ropa: #163c3d;         /* versión oscura de #BEE4E7 */
+  --cat-juguetes: #5a3817;     /* versión oscura de #F49F51 */
+  --cat-alimentacion: #4b2a31; /* versión oscura de #FFD4E5 */
+  --cat-higiene: #1f4946;      /* versión oscura de #95C7C3 */
+  --cat-accesorios: #4b2030;   /* versión oscura de #F490B9 */
+  --cat-muebles: #3e2c20;      /* versión oscura de #F7CCAD */
+  --cat-default: #2b2b2b;
+  --cat-selected-foreground: #f8fafc; /* texto en seleccionado dark */
 }
 
 @theme inline {
-  /* Updated font configuration for Space Grotesk and DM Sans */
-  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "DM Sans", ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New",
-    monospace;
+  /* optional: --font-sans, --font-serif, --font-mono if they are applied in the layout.tsx */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -129,45 +139,5 @@
     @apply bg-background text-foreground;
   }
 }
-
-/* evita que aparezca/desaparezca el scrollbar y cause desplazamientos */
-html {
-  /* support moderno: reserva el gutter del scrollbar */
-  scrollbar-gutter: stable both-edges;
-}
-
-.btn-add {
-  @apply inline-flex items-center justify-center gap-2 font-medium;
-  padding: 0.375rem 0.75rem;
-  border-radius: 0.5rem;
-  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
-  background: var(--color-primary);
-  color: var(--color-primary-foreground);
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
-}
-
-/* micro-animación / hover */
-.btn-add:hover {
-  transform: translateY(-1px);
-  filter: brightness(.98);
-}
-.btn-add:active {
-  transform: translateY(0);
-}
-
-/* foco accesible */
-.btn-add:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 4px rgba(0,0,0,0.06);
-}
-
-/* modo oscuro: degradado y sombra más intensa */
-.dark .btn-add {
-  background: linear-gradient(90deg, var(--color-sidebar-primary), var(--color-sidebar-accent));
-  color: var(--color-sidebar-primary-foreground);
-  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.6);
-}
-.dark .btn-add:focus-visible {
-  box-shadow: 0 0 0 4px rgba(255,255,255,0.06);
-}
-
+html { -webkit-text-size-adjust: 100%; }
+button, a { -webkit-tap-highlight-color: transparent; -webkit-user-select: none; }

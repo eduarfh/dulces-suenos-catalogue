@@ -1,5 +1,6 @@
-// components/theme-toggle.tsx (cliente)
+//components/theme-toggle.tsx
 "use client"
+
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
@@ -9,32 +10,24 @@ export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => setMounted(true), [])
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   if (!mounted) {
-    return (
-      <Button variant="outline" size="icon" className="w-9 h-9 bg-transparent">
-        <Sun className="h-4 w-4" />
-      </Button>
-    )
+    return null
   }
-
-  // components/theme-toggle.tsx (fragmento relevante)
-  const toggle = () => {
-    const next = theme === "dark" ? "light" : "dark"
-    // guardamos cookie para persistencia entre cargas; server leerá 'dark' y añadirá clase 'dark' si corresponde
-    document.cookie = `theme=${next}; path=/; max-age=${60 * 60 * 24 * 365}; sameSite=lax`
-    // actualizar clase y color-scheme inmediatamente para evitar parpadeos
-    document.documentElement.classList.remove(theme === "dark" ? "dark" : "light")
-    document.documentElement.classList.add(next)
-    document.documentElement.style.colorScheme = next
-    setTheme(next)
-  }
-
 
   return (
-    <Button variant="ghost" size="sm" onClick={toggle} className="w-9 h-9 text-muted-foreground hover:text-foreground">
-      {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+    <Button
+      variant="outline"
+      size="icon"
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      className="rounded-full"
+    >
+      <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+      <span className="sr-only">Toggle theme</span>
     </Button>
   )
 }

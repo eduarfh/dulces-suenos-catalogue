@@ -1,111 +1,94 @@
-// Reemplaza la función Loading() actual en app/page.tsx por esta
+"use client"
+
+import React from "react"
+
 export default function Loading() {
-  const cards = Array.from({ length: 8 })
-
   return (
-    <main className="min-h-screen bg-background">
-      <div className="container mx-auto px-6 py-8">
-        {/* HEADER / TÍTULO */}
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <div>
-            <div className="h-8 w-44 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse relative overflow-hidden">
-              <div className="absolute inset-0 shimmer" />
-            </div>
-            <div className="mt-2 h-3 w-60 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse relative overflow-hidden">
-              <div className="absolute inset-0 shimmer" />
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse relative overflow-hidden">
-              <div className="absolute inset-0 shimmer" />
-            </div>
-            <div className="h-8 w-20 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse relative overflow-hidden">
-              <div className="absolute inset-0 shimmer" />
-            </div>
-          </div>
-        </div>
-
-        {/* SEARCH / FILTROS (móvil y desktop) */}
-        <div className="mb-6">
-          <div className="mx-auto max-w-3xl">
-            <div className="h-12 rounded-full bg-gray-200 dark:bg-gray-800 animate-pulse relative overflow-hidden">
-              <div className="absolute inset-0 shimmer" />
-            </div>
-          </div>
-
-          <div className="mt-4 flex gap-3 overflow-x-auto py-2">
-            {["", "", "", "", ""].map((_, i) => (
-              <div
-                key={i}
-                className="flex-shrink-0 h-8 px-4 rounded-full bg-gray-200 dark:bg-gray-800 animate-pulse relative overflow-hidden"
-                style={{ minWidth: 110 }}
-              >
-                <div className="absolute inset-0 shimmer" />
+    <div className="min-h-screen bg-gradient-to-br from-[#FFD4E5]/10 via-[#BEE4E7]/10 to-[#F7CCAD]/10 dark:from-[#FFD4E5]/5 dark:via-[#BEE4E7]/5 dark:to-[#F7CCAD]/5">
+      {/* Header skeleton (no server imports so we mirror the header look) */}
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <div className="container mx-auto px-2 py-2 md:py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="relative flex-shrink-0 rounded-2xl overflow-hidden w-12 h-12 md:w-20 md:h-20">
+                <div className="w-full h-full rounded-2xl bg-gradient-to-br from-[#FFD4E5] to-[#BEE4E7] animate-pulse" />
               </div>
-            ))}
+
+              <div className="space-y-1">
+                <div className="h-4 w-40 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                <div className="h-3 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse" />
+              <div className="h-8 w-20 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse" />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="container mx-auto px-4 py-8">
+        {/* Hero / Search area */}
+        <div className="text-center mb-8">
+          <div className="mx-auto max-w-2xl">
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mx-auto mb-3 animate-pulse" />
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mx-auto animate-pulse" />
           </div>
         </div>
 
-        {/* GRID SKELETON (tarjetas de producto) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 items-center">
+          <div className="col-span-2">
+            <div className="h-12 rounded-lg bg-gray-200 dark:bg-gray-700 animate-pulse" />
+          </div>
+          <div className="col-span-1 flex gap-2">
+            <div className="h-12 flex-1 rounded-lg bg-gray-200 dark:bg-gray-700 animate-pulse" />
+            <div className="h-12 w-16 rounded-lg bg-gray-200 dark:bg-gray-700 animate-pulse" />
+          </div>
+        </div>
+
+        {/* Category pills skeleton */}
+        <div className="mb-8 flex flex-wrap gap-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-8 rounded-full bg-gray-200 dark:bg-gray-700 px-4 py-1 animate-pulse w-[120px]" />
+          ))}
+        </div>
+
+        {/* Grid skeleton */}
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {cards.map((_, idx) => (
-            <article key={idx} className="rounded-lg bg-card border border-border/40 p-3 space-y-3">
-              {/* imagen */}
-              <div className="rounded-md overflow-hidden aspect-[4/3] bg-gray-100 dark:bg-gray-800 relative">
-                <div className="absolute inset-0 animate-pulse" />
-                <div className="absolute inset-0 shimmer" />
+          {Array.from({ length: 8 }).map((_, i) => (
+            <article key={i} className="rounded-lg border-2 overflow-hidden p-0 bg-card">
+              <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-[#FFD4E5]/20 to-[#BEE4E7]/20">
+                <div className="w-full h-full bg-gray-200 dark:bg-gray-800 animate-pulse" />
               </div>
 
-              {/* textos */}
-              <div className="space-y-2">
-                <div className="h-4 w-3/4 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse relative overflow-hidden">
-                  <div className="absolute inset-0 shimmer" />
-                </div>
-                <div className="h-3 w-1/2 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse relative overflow-hidden">
-                  <div className="absolute inset-0 shimmer" />
+              <div className="p-4">
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2 animate-pulse" />
+                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-5/6 mb-3 animate-pulse" />
+
+                <div className="flex items-center justify-between">
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-24 animate-pulse" />
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-16 animate-pulse" />
                 </div>
 
-                <div className="flex items-center justify-between pt-2">
-                  <div className="h-8 w-20 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse relative overflow-hidden">
-                    <div className="absolute inset-0 shimmer" />
-                  </div>
-                  <div className="h-8 w-8 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse relative overflow-hidden" />
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <div className="h-8 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse" />
+                  <div className="h-8 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse" />
                 </div>
               </div>
             </article>
           ))}
         </div>
 
-        {/* CTA / placeholder inferior */}
-        <div className="mt-8">
-          <div className="h-12 rounded-md bg-gray-100 dark:bg-gray-800 animate-pulse max-w-xl relative overflow-hidden">
-            <div className="absolute inset-0 shimmer" />
-          </div>
+        {/* Footer-ish loading hint */}
+        <div className="mt-8 text-center text-sm text-muted-foreground">
+          <svg className="mx-auto mb-2 h-6 w-6 animate-spin" viewBox="0 0 24 24" aria-hidden>
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+            <path className="opacity-75" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" fill="currentColor"></path>
+          </svg>
+          Cargando catálogo... <span className="sr-only">Espere mientras cargamos los productos</span>
         </div>
-      </div>
-
-      {/* Shimmer CSS — uso <style> normal para evitar styled-jsx */}
-      <style>{`
-        .shimmer {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(
-            90deg,
-            rgba(255,255,255,0) 0%,
-            rgba(255,255,255,0.45) 50%,
-            rgba(255,255,255,0) 100%
-          );
-          transform: translateX(-110%);
-          animation: shimmer 1.2s linear infinite;
-          mix-blend-mode: overlay;
-          pointer-events: none;
-        }
-        @keyframes shimmer {
-          0% { transform: translateX(-110%); }
-          100% { transform: translateX(110%); }
-        }
-      `}</style>
-    </main>
+      </main>
+    </div>
   )
 }
