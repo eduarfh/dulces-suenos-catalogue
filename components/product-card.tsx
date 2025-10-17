@@ -25,7 +25,7 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
       try {
         await (navigator as any).share({
           title: product.name,
-          text: product.description,
+          text: product.name,
           url,
         })
       } catch (err) {
