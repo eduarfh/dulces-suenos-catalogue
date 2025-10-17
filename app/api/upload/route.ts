@@ -20,14 +20,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // // Opción A: generar nombre único (recomendado)
-    // const blob = await put(file.name, file, {
-    //   access: "public",
-    //   token,
-    //   addRandomSuffix: true, // <- evita colisiones; usa allowOverwrite: true si quieres sobrescribir
-    // })
-
-    // Opción B (si quieres sobrescribir el mismo blob):
     const blob = await put(file.name, file, { access: "public", token, allowOverwrite: true })
 
     return NextResponse.json({
@@ -38,7 +30,7 @@ export async function POST(request: NextRequest) {
     })
   } catch (error: any) {
     console.error("Upload error:", error)
-    // Devuelve el mensaje real para facilitar debugging (en prod puedes simplificar)
+   
     return NextResponse.json({ error: error?.message ?? String(error) }, { status: 500 })
   }
 }
