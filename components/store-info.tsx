@@ -288,24 +288,8 @@ export default function StoreInfo() {
                 className="flex-1 inline-flex items-center justify-center gap-2"
                 aria-label="Abrir en la app de mapas"
               >
-                <span className="inline-flex items-center justify-center w-5 h-5 flex-shrink-0">
-                  {platform === "ios" ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="16"
-                      height="16"
-                      preserveAspectRatio="xMidYMid meet"
-                      className="w-4 h-4"
-                      fill="currentColor"
-                      aria-hidden
-                    >
-                      <path d="M16.365 1.43c-.97.02-2.134.66-2.83 1.46-.616.72-1.157 1.91-.95 3.03 1.036.05 2.232-.66 2.846-1.45.616-.79 1.056-2.01.934-3.04zM20.616 7.07c-1.016-1.39-2.59-2.25-4.255-2.25-1.38 0-2.628.53-3.5.53s-2.01-.53-3.5-.53c-1.666 0-3.238.86-4.255 2.25-2.21 3.03-1.258 8.44 1.39 11.22.91.82 1.995 1.36 3.15 1.36 1.149 0 1.48-.73 3.5-.73 2.02 0 2.352.73 3.5.73 1.156 0 2.246-.54 3.155-1.36 2.648-2.78 3.6-8.2 1.39-11.22z" />
-                    </svg>
-                  ) : (
-                    <Map className="w-4 h-4" />
-                  )}
-                </span>
+
+                <Map className="w-5 h-5" />
 
                 <span className="font-medium">
                   Abrir en {platform === null ? "Maps" : platform === "ios" ? "Apple Maps" : platform === "android" ? "Google Maps" : "Maps"}
@@ -317,7 +301,8 @@ export default function StoreInfo() {
           </div>
 
           {/* Footer / Créditos (single row spanning all columns) */}
-          <div className="col-span-full mt-6 pt-4 border-t border-muted/20">
+          
+          <div className="col-span-full mt-6 pt-4 border-t border-[color:var(--color-border)/0.2]">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="text-sm text-[var(--color-muted-foreground,rgba(0,0,0,0.6))]">Desarrollado por</div>

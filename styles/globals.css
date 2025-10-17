@@ -134,4 +134,4 @@
 }
 
 html { -webkit-text-size-adjust: 100%; } /* evita que Safari cambie el tamaño del texto */
-button, input, select, textarea { -webkit-text-size-adjust: 100%; }
+button, input, select, textarea { -webkit-text-size-adjust: 100%; } 
