@@ -5,6 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Clock, Phone, MapPin, Map } from "lucide-react"
 import { MessageCircle } from "lucide-react"
+import { FacebookIcon, GmailIcon, InstagramIcon } from "./inons"
+import { WhatsAppSVG } from "./svgs"
+import { createPortal } from "react-dom"
 
 export default function StoreInfo() {
   const phoneDisplay = "+53 59158599"
@@ -47,24 +50,24 @@ export default function StoreInfo() {
   }
 
   const openMaps = () => {
-  const url = buildMapsLink()
+    const url = buildMapsLink()
 
-  try {
-    // Creamos un <a> seguro para forzar que SOLO se abra en una nueva pestaña
-    const a = document.createElement("a")
-    a.href = url
-    a.target = "_blank"
-    a.rel = "noopener noreferrer"
-    // oculto y temporal en DOM para que click() funcione en todos los navegadores
-    a.style.display = "none"
-    document.body.appendChild(a)
-    a.click()
-    a.remove()
-  } catch {
-    // fallback: si algo falla, redirigimos la pestaña actual
-    window.location.href = url
+    try {
+      // Creamos un <a> seguro para forzar que SOLO se abra en una nueva pestaña
+      const a = document.createElement("a")
+      a.href = url
+      a.target = "_blank"
+      a.rel = "noopener noreferrer"
+      // oculto y temporal en DOM para que click() funcione en todos los navegadores
+      a.style.display = "none"
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+    } catch {
+      // fallback: si algo falla, redirigimos la pestaña actual
+      window.location.href = url
+    }
   }
-}
 
 
   const copyToClipboard = async (text: string) => {
@@ -87,19 +90,111 @@ export default function StoreInfo() {
   const mailLink = "mailto:fonsecaeduar136@gmail.com"
 
   const [showDevContact, setShowDevContact] = useState(false)
-  const devRef = useRef<HTMLDivElement | null>(null)
+  const devButtonRef = useRef<HTMLButtonElement | null>(null)
+  const [popoverCoords, setPopoverCoords] = useState<{ top: number; left: number } | null>(null)
 
-  // Close popover on outside click
+  const calculateCoords = () => {
+    const btn = devButtonRef.current
+    if (!btn) return
+    const rect = btn.getBoundingClientRect()
+    const scrollY = window.scrollY || window.pageYOffset
+    const scrollX = window.scrollX || window.pageXOffset
+    const top = rect.bottom + scrollY + 8
+    const preferredLeft = rect.left + scrollX
+    const menuWidth = 260
+    let left = preferredLeft
+    if (left + menuWidth > window.innerWidth - 8) {
+      left = Math.max(8, window.innerWidth - menuWidth - 8)
+    }
+    setPopoverCoords({ top, left })
+  }
+
+  const toggleDevPopover = (e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation()
+      e.preventDefault()
+    }
+    setShowDevContact((prev) => {
+      const next = !prev
+      if (next) setTimeout(() => calculateCoords(), 0)
+      return next
+    })
+  }
+
+  // close on outside click, on Esc, recalc on scroll/resize
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (!devRef.current) return
-      if (!devRef.current.contains(e.target as Node)) {
+    if (!showDevContact) return
+
+    const onOutsideClick = (ev: MouseEvent) => {
+      const portalEl = document.getElementById("dev-contact-popover")
+      if (!portalEl) {
+        setShowDevContact(false)
+        return
+      }
+      if (devButtonRef.current && devButtonRef.current.contains(ev.target as Node)) return
+      if (!portalEl.contains(ev.target as Node)) {
         setShowDevContact(false)
       }
     }
-    document.addEventListener("click", handler)
-    return () => document.removeEventListener("click", handler)
-  }, [])
+
+    const onKey = (ev: KeyboardEvent) => {
+      if (ev.key === "Escape") setShowDevContact(false)
+    }
+
+    const onScrollOrResize = () => calculateCoords()
+
+    document.addEventListener("click", onOutsideClick)
+    document.addEventListener("keydown", onKey)
+    window.addEventListener("scroll", onScrollOrResize, { passive: true })
+    window.addEventListener("resize", onScrollOrResize)
+    return () => {
+      document.removeEventListener("click", onOutsideClick)
+      document.removeEventListener("keydown", onKey)
+      window.removeEventListener("scroll", onScrollOrResize)
+      window.removeEventListener("resize", onScrollOrResize)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showDevContact])
+
+  // Popover portal markup (styled with theme variables)
+  const devPortal = popoverCoords && showDevContact ? (
+    <div
+      id="dev-contact-popover"
+      style={{
+        position: "absolute",
+        top: popoverCoords.top,
+        left: popoverCoords.left,
+        zIndex: 99999,
+        minWidth: 200,
+      }}
+      onClick={(e) => e.stopPropagation()}
+      role="dialog"
+      aria-modal="false"
+    >
+      <div
+        className="inline-flex items-center gap-3 rounded-md px-3 py-2 text-sm"
+        style={{
+          background: "var(--color-popover, var(--color-card, #fff))",
+          color: "var(--color-popover-foreground, var(--color-foreground, #111))",
+          border: "1px solid var(--color-border, rgba(0,0,0,0.06))",
+          boxShadow: "0 8px 24px rgba(2,6,23,0.08)",
+        }}
+      >
+        <span className="inline-flex items-center justify-center w-6 h-6" aria-hidden>
+          {WhatsAppSVG}
+        </span>
+
+        <a
+          href={devWhatsLink}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring,rgba(34,197,94,0.3))] rounded"
+        >
+          {devWhatsDisplay}
+        </a>
+      </div>
+    </div>
+  ) : null
 
   return (
     <section className="container mx-auto px-4 py-8">
@@ -117,7 +212,7 @@ export default function StoreInfo() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Horario</p>
-                <p className="font-semibold text-foreground">Lun — Sáb • 10:00 am — 6:00 pm</p>
+                <p className="font-semibold text-foreground">Lun / Sáb • 10:00 am / 6:00 pm</p>
               </div>
             </div>
           </div>
@@ -224,43 +319,21 @@ export default function StoreInfo() {
           {/* Footer / Créditos (single row spanning all columns) */}
           <div className="col-span-full mt-6 pt-4 border-t border-muted/20">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-3 min-w-0" ref={devRef}>
-                <div className="text-sm text-muted-foreground">Desarrollado por</div>
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="text-sm text-[var(--color-muted-foreground,rgba(0,0,0,0.6))]">Desarrollado por</div>
 
-                {/* Developer name toggles small popover with WhatsApp number */}
                 <button
-                  onClick={() => setShowDevContact((s) => !s)}
+                  ref={devButtonRef}
+                  onClick={toggleDevPopover}
                   aria-expanded={showDevContact}
-                  className="font-medium text-foreground hover:text-foreground/90 underline-offset-2 hover:underline text-left"
+                  aria-controls="dev-contact-popover"
+                  className="font-medium text-[var(--color-foreground,#111)] hover:text-[var(--color-foreground,#111)] underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring,rgba(34,197,94,0.2))] rounded"
                   title="Contactar al desarrollador"
                 >
                   {devName}
                 </button>
 
-                {/* Popover: muestra número y link a chat */}
-                {showDevContact && (
-                  <div className="ml-3 mt-2 sm:mt-0 bg-background/90 dark:bg-background rounded-md shadow-lg border px-3 py-2 text-sm flex items-center gap-3">
-                    <span className="text-muted-foreground">WhatsApp:</span>
-                    <a
-                      href={devWhatsLink}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="font-medium text-foreground hover:text-foreground/90 underline"
-                    >
-                      {devWhatsDisplay}
-                    </a>
-                    <button
-                      onClick={() => {
-                        navigator.clipboard?.writeText(devWhatsDisplay)
-                        alert("Número copiado")
-                      }}
-                      className="ml-2 text-xs px-2 py-1 rounded bg-muted/10 hover:bg-muted/20"
-                      aria-label="Copiar número del desarrollador"
-                    >
-                      Copiar
-                    </button>
-                  </div>
-                )}
+                {typeof document !== "undefined" && devPortal ? createPortal(devPortal, document.body) : null}
               </div>
 
               <div className="flex items-center gap-3">
@@ -268,12 +341,16 @@ export default function StoreInfo() {
                 <a
                   href={instagramLink}
                   target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  rel="noreferrer noopener"
+                  className="inline-flex items-center gap-2 text-sm text-[var(--color-muted-foreground,rgba(0,0,0,0.6))] hover:text-[var(--color-foreground,#111)] transition-colors"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4 flex-shrink-0" fill="currentColor" aria-hidden>
-                    <path d="M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm5 6.5A4.5 4.5 0 1016.5 13 4.5 4.5 0 0012 8.5zM18.5 6a1 1 0 11-1 1 1 1 0 011-1z" />
-                  </svg>
+                  <span
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-md"
+
+                    aria-hidden
+                  >
+                    <InstagramIcon />
+                  </span>
                   <span className="hidden sm:inline">Instagram</span>
                 </a>
 
@@ -281,23 +358,31 @@ export default function StoreInfo() {
                 <a
                   href={facebookLink}
                   target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  rel="noreferrer noopener"
+                  className="inline-flex items-center gap-2 text-sm text-[var(--color-muted-foreground,rgba(0,0,0,0.6))] hover:text-[var(--color-foreground,#111)] transition-colors"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4 flex-shrink-0" fill="currentColor" aria-hidden>
-                    <path d="M22 12a10 10 0 10-11.5 9.9v-7h-2.3V12h2.3V9.8c0-2.3 1.37-3.6 3.47-3.6.99 0 2.03.18 2.03.18v2.24h-1.15c-1.13 0-1.48.7-1.48 1.42V12h2.52l-.4 2.9h-2.12v7A10 10 0 0022 12z"/>
-                  </svg>
+                  <span
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-md"
+
+                    aria-hidden
+                  >
+                    <FacebookIcon />
+                  </span>
                   <span className="hidden sm:inline">Facebook</span>
                 </a>
 
                 {/* Email */}
                 <a
                   href={mailLink}
-                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="inline-flex items-center gap-2 text-sm text-[var(--color-muted-foreground,rgba(0,0,0,0.6))] hover:text-[var(--color-foreground,#111)] transition-colors"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4 flex-shrink-0" fill="currentColor" aria-hidden>
-                    <path d="M2 6a2 2 0 012-2h16a2 2 0 012 2v.2l-10 6.3-10-6.3V6zm0 2.7v7.3A2 2 0 004 18h16a2 2 0 002-2V8.7l-9.2 5.8a1 1 0 01-1.6 0L2 8.7z"/>
-                  </svg>
+                  <span
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-md"
+
+                    aria-hidden
+                  >
+                    <GmailIcon />
+                  </span>
                   <span className="hidden sm:inline">fonsecaeduar136@gmail.com</span>
                 </a>
               </div>
