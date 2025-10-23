@@ -1,10 +1,10 @@
 "use client"
-//app/admin/dashboard/page.tsx
+// app/admin/dashboard/page.tsx
 import type React from "react"
 import { useEffect, useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
-import type { Product, DbProduct, DbProductImage } from "@/lib/products"
+import type { Product, DbProduct, DbProductImage, ProductImage } from "@/lib/products"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -23,6 +23,7 @@ import { Baby, LogOut, Plus, Pencil, Trash2, X } from "lucide-react"
 import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
 import Image from "next/image"
+import { StorageUsageCard } from "@/components/admin/storage-usage-card"
 
 export default function AdminDashboard() {
   const router = useRouter()
@@ -40,7 +41,8 @@ export default function AdminDashboard() {
     stock: "",
   })
   const [selectedImages, setSelectedImages] = useState<File[]>([])
-  const [existingImages, setExistingImages] = useState<string[]>([])
+  const [existingImages, setExistingImages] = useState<ProductImage[]>([])
+  const [removedImages, setRemovedImages] = useState<string[]>([]) // urls to delete from blob
   const [isCustomCategory, setIsCustomCategory] = useState(false)
 
   const existingCategories = useMemo(() => {
@@ -70,9 +72,16 @@ export default function AdminDashboard() {
 
     if (dbProducts) {
       const productsWithImages: Product[] = dbProducts.map((product: DbProduct) => {
-        const productImages = (dbImages || [])
+        const productImages: ProductImage[] = (dbImages || [])
           .filter((img: DbProductImage) => img.product_id === product.id)
-          .map((img: DbProductImage) => img.image_url)
+          .map((img: DbProductImage) => ({
+            id: img.id,
+            product_id: (img as any).product_id,
+            image_url: img.image_url,
+            display_order: img.display_order,
+            created_at: img.created_at,
+            size: (img as any).size ?? null,
+          }))
 
         return {
           id: product.id,
@@ -105,7 +114,7 @@ export default function AdminDashboard() {
         description: product.description,
         stock: product.stock.toString(),
       })
-      setExistingImages(product.images)
+      setExistingImages(product.images ?? [])
       setIsCustomCategory(!existingCategories.includes(product.category))
     } else {
       setEditingProduct(null)
@@ -134,23 +143,27 @@ export default function AdminDashboard() {
   }
 
   const removeExistingImage = (index: number) => {
+    const img = existingImages[index]
+    if (!img) return
+    // guardar para eliminar luego en el blob store (solo url)
+    if (img.image_url) setRemovedImages((prev) => [...prev, img.image_url])
     setExistingImages(existingImages.filter((_, i) => i !== index))
   }
 
-  const uploadImages = async (files: File[]): Promise<string[]> => {
-    const uploadedUrls: string[] = []
+  // uploadImages ahora devuelve array de { url, size }
+  const uploadImages = async (files: File[]): Promise<Array<{ url: string; size: number }>> => {
+    const uploaded: Array<{ url: string; size: number }> = []
 
     for (const file of files) {
-      const formData = new FormData()
-      formData.append("file", file)
+      const form = new FormData()
+      form.append("file", file)
 
       const response = await fetch("/api/upload", {
         method: "POST",
-        body: formData,
+        body: form,
       })
 
       if (!response.ok) {
-        // intenta leer JSON con mensaje de error; si no es JSON, lee el texto
         const contentType = response.headers.get("content-type") || ""
         const text = await response.text()
         let serverMsg = text
@@ -159,18 +172,16 @@ export default function AdminDashboard() {
             const json = JSON.parse(text)
             serverMsg = json.error || JSON.stringify(json)
           }
-        } catch (e) {
-          // keep text
-        }
+        } catch (e) { }
         throw new Error(`Upload failed (${response.status}): ${serverMsg}`)
       }
 
       const data = await response.json()
       if (!data?.url) throw new Error("Upload response did not include url")
-      uploadedUrls.push(data.url)
+      uploaded.push({ url: data.url, size: Number(data.size ?? 0) })
     }
 
-    return uploadedUrls
+    return uploaded
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -179,11 +190,12 @@ export default function AdminDashboard() {
     setUploadingImages(true)
 
     try {
-      // 1) Upload images to Vercel Blob (existing /api/upload)
-      const newImageUrls = await uploadImages(selectedImages)
-      const allImageUrls = [...existingImages, ...newImageUrls]
+      // 1) Upload new images
+      const newImageObjs = await uploadImages(selectedImages) // [{url,size}]
+      // Build combined images list as objects { url, size }
+      const existingObjs = existingImages.map((img) => ({ url: img.image_url, size: img.size ?? 0 }))
+      const allImageObjs = [...existingObjs, ...newImageObjs]
 
-      // Prepare product payload
       const payload = {
         product: {
           id: editingProduct?.id ?? null,
@@ -193,21 +205,21 @@ export default function AdminDashboard() {
           description: formData.description,
           stock: Number.parseInt(formData.stock),
         },
-        imageUrls: allImageUrls,
+        imageFiles: allImageObjs, // array of { url, size }
       }
 
-      const res = await fetch("/api/products", { // <- ruta correcta
+      const res = await fetch("/api/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
 
-      const json = await res.text()
+      const text = await res.text()
       let parsed
       try {
-        parsed = JSON.parse(json)
-      } catch (e) {
-        console.error("Non-JSON response from /api/admin/products:", json)
+        parsed = JSON.parse(text)
+      } catch (err) {
+        console.error("Non-JSON response from /api/products:", text)
         throw new Error("Server returned non-JSON response for product save")
       }
 
@@ -218,8 +230,26 @@ export default function AdminDashboard() {
 
       // reload products and close dialog
       await loadProducts()
+      // forzar refresh del StorageUsageCard
+      if (typeof window !== "undefined") window.dispatchEvent(new Event("storage:refresh"));
+
       setIsDialogOpen(false)
       setIsCustomCategory(false)
+
+      // borrar blobs marcados (solo si DB exitoso)
+      if (removedImages.length > 0) {
+        try {
+          await fetch("/api/upload/delete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ urls: removedImages }),
+          })
+        } catch (delErr) {
+          console.error("Failed to delete removed blobs:", delErr)
+        } finally {
+          setRemovedImages([])
+        }
+      }
     } catch (error) {
       console.error("Error saving product:", error)
       alert("Error al guardar el producto")
@@ -229,18 +259,74 @@ export default function AdminDashboard() {
     }
   }
 
-
   const handleDelete = async (id: string) => {
     if (!confirm("¿Estás seguro de eliminar este producto?")) return
 
-    const supabase = createClient()
-    const { error } = await supabase.from("products").delete().eq("id", id)
+    setIsLoading(true)
+    try {
+      const supabase = createClient()
 
-    if (error) {
-      console.error("Error deleting product:", error)
-      alert("Error al eliminar el producto")
-    } else {
+      // obtener urls desde estado local o DB
+      let imageUrls: string[] = []
+      const localProduct = products.find((p) => p.id === id)
+      if (localProduct && Array.isArray(localProduct.images) && localProduct.images.length > 0) {
+        imageUrls = localProduct.images.map((i) => i.image_url)
+      } else {
+        const imgsRes = await supabase
+          .from("product_images")
+          .select("image_url")
+          .eq("product_id", id)
+          .order("display_order", { ascending: true })
+
+        const imgs = (imgsRes as any).data as Array<{ image_url: string }> | null
+        const imgsErr = (imgsRes as any).error
+
+        if (imgsErr) {
+          console.error("Error fetching product_images before delete:", imgsErr)
+        } else if (imgs && imgs.length > 0) {
+          imageUrls = imgs.map((r) => r.image_url)
+        }
+      }
+
+      imageUrls = Array.from(new Set(imageUrls.filter(Boolean)))
+
+      // Delete rows (product_images) — your FK may cascade but we try to clear rows first
+      if (imageUrls.length > 0) {
+        const delImgsRes = await supabase.from("product_images").delete().eq("product_id", id)
+        if ((delImgsRes as any).error) {
+          console.error("Error deleting product_images rows:", (delImgsRes as any).error)
+        }
+      }
+
+      // delete product
+      const delProdRes = await supabase.from("products").delete().eq("id", id)
+      if ((delProdRes as any).error) {
+        console.error("Error deleting product row:", (delProdRes as any).error)
+        alert("Error al eliminar el producto en la base de datos.")
+        return
+      }
+
+      // borrar blobs en Vercel
+      if (imageUrls.length > 0) {
+        try {
+          await fetch("/api/upload/delete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ urls: imageUrls }),
+          })
+        } catch (blobErr) {
+          console.error("Failed to delete product images from blob store:", blobErr)
+        }
+      }
+
       await loadProducts()
+      if (typeof window !== "undefined") window.dispatchEvent(new Event("storage:refresh"));
+
+    } catch (err) {
+      console.error("handleDelete unexpected error:", err)
+      alert("Ocurrió un error al eliminar el producto.")
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -260,7 +346,6 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="p-1 bg-transparent">
-                {/* contenedor relativo con w/h controladas; Image usará `fill` */}
                 <div className="relative flex-shrink-0 rounded-2xl overflow-hidden w-20 h-20 sm:w-20 sm:h-20 md:w-24 md:h-24">
                   <Image
                     src="https://bypjbkhezrokhksjxfri.supabase.co/storage/v1/object/public/catalogo/logo%20recortado.jpg"
@@ -279,11 +364,6 @@ export default function AdminDashboard() {
             </div>
             <div className="flex items-center gap-2">
               <ThemeToggle />
-              {/* <Link href="/">
-                <Button variant="outline" size="sm">
-                  Ver Catálogo
-                </Button>
-              </Link> */}
               <Button
                 variant="outline"
                 size="sm"
@@ -300,7 +380,7 @@ export default function AdminDashboard() {
 
       <main className="container mx-auto px-4 py-8 flex flex-col gap-8">
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 order-2 md:order-1 mt-6 md:mt-0">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 order-2 md:order-1 mt-6 md:mt-0">
           <Card className="border-2">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">Total Productos</CardTitle>
@@ -325,6 +405,8 @@ export default function AdminDashboard() {
               <div className="text-3xl font-bold text-[#F49F51]">{lowStock}</div>
             </CardContent>
           </Card>
+
+          <StorageUsageCard />
         </div>
 
         {/* Products Table */}
@@ -347,6 +429,7 @@ export default function AdminDashboard() {
                     </DialogDescription>
                   </DialogHeader>
                   <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* form fields (igual que antes) */}
                     <div className="space-y-2">
                       <Label htmlFor="name">Nombre</Label>
                       <Input
@@ -356,6 +439,7 @@ export default function AdminDashboard() {
                         required
                       />
                     </div>
+
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label htmlFor="category">Categoría</Label>
@@ -399,6 +483,7 @@ export default function AdminDashboard() {
                         </Select>
                       )}
                     </div>
+
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="price">Precio</Label>
@@ -422,6 +507,7 @@ export default function AdminDashboard() {
                         />
                       </div>
                     </div>
+
                     <div className="space-y-2">
                       <Label htmlFor="description">Descripción</Label>
                       <Input
@@ -449,10 +535,10 @@ export default function AdminDashboard() {
                           <div className="mb-4">
                             <p className="text-sm font-medium mb-2">Imágenes actuales:</p>
                             <div className="grid grid-cols-4 gap-2">
-                              {existingImages.map((url, index) => (
+                              {existingImages.map((img, index) => (
                                 <div key={index} className="relative group">
                                   <Image
-                                    src={url || "/placeholder.svg"}
+                                    src={img.image_url || "/placeholder.svg"}
                                     alt={`Imagen ${index + 1}`}
                                     width={100}
                                     height={100}

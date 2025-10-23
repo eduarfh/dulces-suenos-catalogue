@@ -7,11 +7,9 @@ function getSupabaseAdminClient() {
   const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    // Lanzamos error controlado aquí para que sea claro durante runtime/build
     throw new Error("Missing SUPABASE env vars. Ensure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set.")
   }
 
-  // Crear aquí para evitar invocación en tiempo de build
   return createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 }
 
@@ -27,7 +25,8 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
     const product = body.product
-    const imageUrls: string[] = body.imageUrls || []
+    // imageFiles: array of { url, size } OR array of strings
+    const imageFiles: Array<{ url?: string; size?: number } | string> = body.imageFiles || []
 
     if (!product || !product.name) {
       return NextResponse.json({ error: "Missing product data" }, { status: 400 })
@@ -49,6 +48,7 @@ export async function POST(request: Request) {
         .eq("id", productId)
       if (updateError) throw updateError
 
+      // clear previous images (we will reinsert)
       await supabaseAdmin.from("product_images").delete().eq("product_id", productId)
     } else {
       const { data: inserted, error: insertError } = await supabaseAdmin
@@ -66,12 +66,25 @@ export async function POST(request: Request) {
       productId = inserted.id
     }
 
-    if (imageUrls.length > 0) {
-      const imageRecords = imageUrls.map((url: string, idx: number) => ({
-        product_id: productId,
-        image_url: url,
-        display_order: idx,
-      }))
+    if (imageFiles.length > 0) {
+      const imageRecords = imageFiles.map((it: any, idx: number) => {
+        if (typeof it === "string") {
+          return {
+            product_id: productId,
+            image_url: it,
+            display_order: idx,
+            size: null,
+          }
+        } else {
+          return {
+            product_id: productId,
+            image_url: it.url,
+            display_order: idx,
+            size: it.size ?? null,
+          }
+        }
+      })
+
       const { error: imagesError } = await supabaseAdmin.from("product_images").insert(imageRecords)
       if (imagesError) throw imagesError
     }
