@@ -1,4 +1,3 @@
-// components/admin/StorageUsageCard.tsx
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -9,7 +8,7 @@ export function StorageUsageCard() {
   const [loading, setLoading] = useState(true);
   const [percent, setPercent] = useState(0);
   const [usedFormatted, setUsedFormatted] = useState("0 B");
-  const [capacityFormatted, setCapacityFormatted] = useState("10 GB");
+  const [capacityFormatted, setCapacityFormatted] = useState("1 GB"); // <- cambiado a 1 GB
   const [filesCount, setFilesCount] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,7 +28,7 @@ export function StorageUsageCard() {
       if (!res.ok) throw new Error(json?.error || "Error fetching storage usage");
       setPercent(Number(json.percent ?? 0));
       setUsedFormatted(json.usedFormatted ?? "0 B");
-      setCapacityFormatted(json.capacityFormatted ?? "10 GB");
+      setCapacityFormatted(json.capacityFormatted ?? "1 GB");
       setFilesCount(json.filesCount ?? null);
     } catch (err: any) {
       // si fue abort, silencioso
@@ -78,7 +77,7 @@ export function StorageUsageCard() {
       <CardContent>
         <div className="flex items-center justify-between mb-3">
           <div>
-            <div className="text-sm text-muted-foreground">Vercel Blob</div>
+            <div className="text-sm text-muted-foreground">Supabase Bucket (Free, 1 GB)</div>
             <div className="text-base font-semibold text-foreground">
               {usedFormatted} / {capacityFormatted}
             </div>

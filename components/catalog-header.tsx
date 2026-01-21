@@ -6,14 +6,14 @@ import { ThemeToggle } from "@/components/theme-toggle"
 
 export function CatalogHeader() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className="container mx-auto px-2 py-2 md:py-3">
+    <header className="sticky top-0 z-25 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <div className="container mx-auto px-2 py-2 md:py-1">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             {/* ajuste: menos padding externo y tamaño fijo del wrapper (responsive) */}
             <div className="p-1 bg-transparent">
               {/* contenedor relativo con w/h controladas; Image usará `fill` */}
-              <div className="relative flex-shrink-0 rounded-2xl overflow-hidden w-20 h-20 sm:w-20 sm:h-20 md:w-24 md:h-24">
+              <div className="relative flex-shrink-0 rounded-2xl overflow-hidden w-20 h-20 sm:w-20 sm:h-20 md:w-23 md:h-23">
                 <Image
                   src="https://bypjbkhezrokhksjxfri.supabase.co/storage/v1/object/public/catalogo/logo%20recortado.jpg"
                   alt="Logo Dulces Sueños"

@@ -1,4 +1,3 @@
-// app/api/storage/usage/route.ts
 import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 
@@ -77,7 +76,8 @@ export async function GET() {
       usedBytes += sizes.reduce((s, v) => s + (v || 0), 0)
     }
 
-    const capacityBytes = 10 * 1024 * 1024 * 1024 // 10 GB
+    // <-- capacidad ajustada a 1 GB (Supabase free bucket)
+    const capacityBytes = 1 * 1024 * 1024 * 1024 // 1 GB
     const percent = Math.min(100, (usedBytes / capacityBytes) * 100)
 
     return NextResponse.json({

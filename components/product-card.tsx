@@ -44,16 +44,37 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
     }
   }
 
+  // Determine availability: prefer explicit `available`, otherwise fallback to stock > 0
+  const isAvailable = typeof product.available === "boolean"
+    ? product.available
+    : (product.stock ?? 0) > 0
+
   return (
+    // Implementación 2: dejamos la badge donde estaba, pero:
+    // - añadimos `isolate` al Card para crear un stacking context local
+    // - bajamos el z-index de la badge (p.ej. z-10) para que no pueda superponerse al header
     <Card
-      className={`overflow-hidden hover:shadow-lg transition-all duration-300 border-2 hover:scale-[1.02] bg-card ${compact ? "h-full" : ""}`}
+      className={`relative isolate overflow-hidden hover:shadow-lg transition-all duration-300 border-2 hover:scale-[1.02] bg-card ${compact ? "h-full" : ""}`}
     >
+      {/* Availability badge — keep its original placement but lower the z so it won't overlap the global header */}
+      <div
+        className={`absolute left-3 ${compact ? "top-2" : "top-3"} z-10`}
+      >
+        <span
+          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium opacity-100 block pointer-events-auto
+              ${isAvailable ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+          aria-hidden={false}
+        >
+          {isAvailable ? "Disponible" : "Agotado"}
+        </span>
+      </div>
+
       <div
         className={`relative overflow-hidden bg-gradient-to-br from-[#FFD4E5]/20 to-[#BEE4E7]/20 dark:from-[#FFD4E5]/10 dark:to-[#BEE4E7]/10 ${compact ? "aspect-square" : "aspect-square"}`}
       >
-        <ImageCarousel images={product.images} alt={product.name} autoRotate={true} interval={3000} className="w-full h-full" />
+        <ImageCarousel images={product.images} alt={product.name} autoRotate={true} interval={5000} className="w-full h-full" />
 
-        {/* Centralized category badge */}
+        {/* Centralized category badge (right side) */}
         <CategoryBadge
           category={product.category}
           className={`${compact ? "top-2 right-2 text-[10px] px-1.5 py-0.5" : "top-3 right-3"} font-medium z-10`}
@@ -65,15 +86,14 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
           {product.name}
         </h3>
 
-        <p className={`text-xs ${compact ? "md:text-sm mb-2" : "mb-3"} text-muted-foreground line-clamp-2`}>
-          {product.description}
-        </p>
+        {/* <p className={`text-xs ${compact ? "md:text-sm mb-2" : "mb-3"} text-muted-foreground line-clamp-2`}>
+          {product.description ?? ""}
+        </p> */}
 
         <div className={`flex items-center justify-between ${compact ? "mb-2" : "mb-3"}`}>
           <span className={`${compact ? "text-lg md:text-xl" : "text-2xl"} font-bold text-[#95C7C3]`}>
-            ${product.price.toFixed(2)}
+            ${product.price.toFixed(2)} CUP
           </span>
-          <span className="text-xs text-muted-foreground">Stock: {product.stock}</span>
         </div>
 
         <div className={`flex flex-col ${compact ? "gap-1.5" : "gap-2"} items-stretch`}>

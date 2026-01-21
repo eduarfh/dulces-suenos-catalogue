@@ -7,21 +7,27 @@ export default function Loading() {
     <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-[#FFD4E5]/10 via-[#BEE4E7]/10 to-[#F7CCAD]/10 dark:from-[#FFD4E5]/5 dark:via-[#BEE4E7]/5 dark:to-[#F7CCAD]/5">
       <div className="w-full max-w-6xl">
         {/* Hero skeleton */}
-        <div className="flex items-center gap-6 mb-8">
-          <div className="relative rounded-2xl overflow-hidden w-28 h-28 flex-shrink-0 border-2 border-dashed bg-white/60 dark:bg-black/30 p-4">
-            <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-[#FFD4E5] to-[#BEE4E7] animate-pulse" />
-          </div>
+        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+          <div className="container mx-auto px-2 py-2 md:py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="relative flex-shrink-0 rounded-2xl overflow-hidden w-12 h-12 md:w-20 md:h-20">
+                  <div className="w-full h-full rounded-2xl bg-gradient-to-br from-[#FFD4E5] to-[#BEE4E7] animate-pulse" />
+                </div>
 
-          <div className="flex-1">
-            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-3/4 mb-3 animate-pulse" />
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-full w-1/2 mb-2 animate-pulse" />
+                <div className="space-y-1">
+                  <div className="h-4 w-40 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                  <div className="h-3 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                </div>
+              </div>
 
-            <div className="flex gap-4 mt-4">
-              <div className="flex-1 h-14 rounded-lg border-2 p-3 bg-white/40 animate-pulse" />
-              <div className="flex-1 h-14 rounded-lg border-2 p-3 bg-white/40 animate-pulse" />
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse" />
+                <div className="h-8 w-20 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse" />
+              </div>
             </div>
           </div>
-        </div>
+        </header>
 
         <div className="grid md:grid-cols-2 gap-8">
           {/* Large image + details skeleton */}
