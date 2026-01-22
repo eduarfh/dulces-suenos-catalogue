@@ -1,10 +1,12 @@
 "use client"
+
 import React, { useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import type { Product } from "@/lib/products"
 import { ProductCard } from "@/components/product-card"
 import { CategoryFilter } from "@/components/category-filter"
 import { SearchBar } from "@/components/search-bar"
+import AvailabilityFilter from "./availability-filter."
 
 interface CatalogClientProps {
   products: Product[]
@@ -14,17 +16,17 @@ type ListingState = {
   filters?: {
     category?: string | null
     q?: string | null
+    available?: boolean | null
   }
   scrollY?: number
 }
 
 /**
  * CatalogClient
- *
  * - restaura filtros + scroll desde history.state / sessionStorage
  * - guarda estado antes de navegar
  * - evita nested <a> usando wrappers no-anchor
- * - **NO** anima el scroll al navegar (se eliminó la animación)
+ * - mantiene navegación sin animación (pero restaura scroll al volver)
  */
 
 export function CatalogClient({ products }: CatalogClientProps) {
@@ -32,11 +34,12 @@ export function CatalogClient({ products }: CatalogClientProps) {
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState<string>("")
+  const [availableOnly, setAvailableOnly] = useState<boolean>(false)
 
   const rafRef = useRef<number | null>(null)
   const isAnimatingRef = useRef(false)
 
-  // easing (ya no se usa para la navegación, pero se mantiene para restaurar scroll)
+  // easing (solo para restaurar scroll)
   const easeOutQuad = (t: number) => 1 - (1 - t) * (1 - t)
 
   // Helper: animate from current scroll to targetY over duration (ms)
@@ -71,7 +74,7 @@ export function CatalogClient({ products }: CatalogClientProps) {
   function saveListingState(scrollY?: number) {
     try {
       const state: ListingState = {
-        filters: { category: selectedCategory, q: searchQuery },
+        filters: { category: selectedCategory, q: searchQuery, available: availableOnly },
         scrollY: typeof scrollY === "number" ? scrollY : typeof window !== "undefined" ? window.scrollY : 0,
       }
       history.replaceState({ ...(history.state || {}), listingState: state }, "")
@@ -126,12 +129,15 @@ export function CatalogClient({ products }: CatalogClientProps) {
       if (saved && saved.filters) {
         if (typeof saved.filters.category !== "undefined") setSelectedCategory(saved.filters.category ?? null)
         if (typeof saved.filters.q !== "undefined") setSearchQuery(saved.filters.q ?? "")
+        if (typeof saved.filters.available !== "undefined") setAvailableOnly(Boolean(saved.filters.available))
       } else {
         const params = new URLSearchParams(window.location.search)
         const c = params.get("category")
         const q = params.get("q")
+        const a = params.get("available")
         if (c) setSelectedCategory(c)
         if (q) setSearchQuery(q)
+        if (a === "1") setAvailableOnly(true)
       }
 
       if (saved && typeof saved.scrollY === "number") {
@@ -177,6 +183,7 @@ export function CatalogClient({ products }: CatalogClientProps) {
           if (saved.filters) {
             if (typeof saved.filters.category !== "undefined") setSelectedCategory(saved.filters.category ?? null)
             if (typeof saved.filters.q !== "undefined") setSearchQuery(saved.filters.q ?? "")
+            if (typeof saved.filters.available !== "undefined") setAvailableOnly(Boolean(saved.filters.available))
           }
           // animate to saved scrollY (only if present)
           if (typeof saved.scrollY === "number") {
@@ -202,18 +209,19 @@ export function CatalogClient({ products }: CatalogClientProps) {
   // Keep querystring in sync when filters change (no push)
   useEffect(() => {
     try {
-      const listingState: ListingState = { filters: { category: selectedCategory, q: searchQuery } }
+      const listingState: ListingState = { filters: { category: selectedCategory, q: searchQuery, available: availableOnly } }
       const newState = { ...(history.state || {}), listingState }
       const params = new URLSearchParams()
       if (selectedCategory) params.set("category", selectedCategory)
       if (searchQuery) params.set("q", searchQuery)
+      if (availableOnly) params.set("available", "1")
       const newUrl = params.toString() ? `${window.location.pathname}?${params.toString()}` : window.location.pathname
       history.replaceState(newState, "", newUrl)
       sessionStorage.setItem("catalogListingState", JSON.stringify(listingState))
     } catch (e) {
       console.error("Error syncing filters to history:", e)
     }
-  }, [selectedCategory, searchQuery])
+  }, [selectedCategory, searchQuery, availableOnly])
 
   // Filtering logic
   const filteredProducts = useMemo(() => {
@@ -233,8 +241,12 @@ export function CatalogClient({ products }: CatalogClientProps) {
       filtered = filtered.filter((p) => p.category === selectedCategory)
     }
 
+    if (availableOnly) {
+      filtered = filtered.filter((p) => p.available)
+    }
+
     return filtered
-  }, [products, searchQuery, selectedCategory])
+  }, [products, searchQuery, selectedCategory, availableOnly])
 
   // Group by category for mobile layout
   const productsByCategory = useMemo(() => {
@@ -252,8 +264,15 @@ export function CatalogClient({ products }: CatalogClientProps) {
         <p className="text-muted-foreground">Los mejores productos para el cuidado de tu bebé</p>
       </div>
 
-      <div className="mb-6">
-        <SearchBar value={searchQuery} onChange={setSearchQuery} />
+      {/* Search + AvailableFilter in a single row */}
+      <div className="mb-6 flex items-center gap-3">
+        <div className="flex-1">
+          <SearchBar value={searchQuery} onChange={setSearchQuery} />
+        </div>
+        <div className="flex-shrink-0">
+          {/* Usa el nuevo AvailableFilter; pasamos `availableOnly` como `active` */}
+          <AvailabilityFilter active={availableOnly} onChange={setAvailableOnly} />
+        </div>
       </div>
 
       <div className="mb-8">
@@ -305,3 +324,5 @@ export function CatalogClient({ products }: CatalogClientProps) {
     </main>
   )
 }
+
+export default CatalogClient

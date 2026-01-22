@@ -242,9 +242,10 @@ export default function AdminDashboard() {
       `}</style>
 
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+
         <div className="container mx-auto px-2 py-2 md:py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center">
               <div className="p-1 bg-transparent">
                 <div className="relative flex-shrink-0 rounded-2xl overflow-hidden w-20 h-20 sm:w-20 sm:h-20 md:w-24 md:h-24">
                   <Image
@@ -263,7 +264,7 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <ThemeToggle />
 
               {/* Botón de configuración que abre modal fullscreen/responsive */}
@@ -308,8 +309,7 @@ export default function AdminDashboard() {
                 onClick={handleLogout}
                 className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 bg-transparent"
               >
-                <LogOut className="h-4 w-4 mr-2 " />
-                Salir
+                <LogOut className="h-4 w-4" />
               </Button>
             </div>
           </div>
