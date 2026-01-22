@@ -1,29 +1,28 @@
 // lib/supabase/server.ts
-import { createClient as createSupabaseClient, SupabaseClient } from "@supabase/supabase-js";
+import { createClient as createSupabaseClient, type SupabaseClient } from "@supabase/supabase-js";
 
 /**
- * Variables de entorno (usa los nombres que tú tengas en .env.local)
+ * Variables de entorno soportadas:
  * - SUPABASE_URL
- * - NEXT_PUBLIC_SUPABASE_ANON_KEY (opcional, para lectura pública)
- * - SUPABASE_SERVICE_ROLE_KEY (server-only, para writes)
- * - ADMIN_API_KEY (alias/también posible key admin)
+ * - NEXT_PUBLIC_SUPABASE_URL (fallback)
+ * - NEXT_PUBLIC_SUPABASE_ANON_KEY (opcional, lectura pública)
+ * - SUPABASE_SERVICE_ROLE_KEY (server-only, para writes seguros)
+ * - SUPABASE_SERVICE_KEY / ADMIN_API_KEY (aliases posibles)
  */
+
+/* --- resolver variables de entorno con fallbacks --- */
 const ENV_URL = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
 const ENV_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? process.env.SUPABASE_ANON_KEY;
 const ENV_SERVICE_KEY =
   process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SERVICE_KEY ?? process.env.ADMIN_API_KEY;
 
-/**
- * Nota: hacemos checks tempranos para que TypeScript deje de quejarse
- * y para fallar rápidamente si falta algo crítico.
- */
 function ensureEnv(name: string, value?: string): asserts value is string {
   if (!value) {
     throw new Error(`Missing env var ${name}`);
   }
 }
 
-/** Admin client: usa service role (solo server) */
+/** Cliente "admin" — usa la service role key. SOLO server-side. */
 export function getSupabaseAdminClient(): SupabaseClient {
   ensureEnv("SUPABASE_URL", ENV_URL);
   ensureEnv("SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_SERVICE_KEY / ADMIN_API_KEY)", ENV_SERVICE_KEY);
@@ -34,7 +33,7 @@ export function getSupabaseAdminClient(): SupabaseClient {
   });
 }
 
-/** Read client: usa anon key si existe, si no usa service key como fallback */
+/** Cliente de solo-lectura: usa anon key si existe, si no hace fallback a service key (solo server). */
 export function getSupabaseReadClient(): SupabaseClient {
   ensureEnv("SUPABASE_URL", ENV_URL);
 
@@ -50,10 +49,10 @@ export function getSupabaseReadClient(): SupabaseClient {
 }
 
 /**
- * Compatibilidad: createClient() async — devuelve cliente de lectura.
- * (Tu código existente puede usar `await createClient()`).
+ * Compatibilidad: createClient() devuelve un cliente de lectura (igual que getSupabaseReadClient).
+ * Algunas partes del código podrían usar `import { createClient } from "@/lib/supabase/server"`.
  */
-export async function createClient(): Promise<SupabaseClient> {
+export function createClient(): SupabaseClient {
   return getSupabaseReadClient();
 }
 
